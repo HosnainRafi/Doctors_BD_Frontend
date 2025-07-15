@@ -1,0 +1,70 @@
+ {
+  "_id": {
+    "$oid": "68752989b8b2e259f495489f"
+  },
+  "id": "barisal0002",
+  "district": "barisal",
+  "name": "Dr. Asim Biswas",
+  "photo": "https://www.doctorbangladesh.com/wp-content/uploads/dr-male.jpg",
+  "degree": "MBBS, MD (Cardiology)",
+  "specialty": "Cardiology & Heart Diseases Specialist",
+  "workplace": "Assistant Professor, Cardiology",
+  "hospital_name": "Medinova Medical Services, Barisal",
+  "hospital_link": "https://www.google.com/maps/search/?api=1&query=Medinova%20Medical%20Services%2C%20Barisal%2C%20K.B.%20Hemayet%20Uddin%20Road%2C%20Girja%20Moholla%2C%20Barisal",
+  "rating": "12",
+  "chambers": [
+    {
+      "hospital_name": "South Apollo Diagnostic Complex, Barisal",
+      "address": "135, Sadar Road, Barisal",
+      "appointment_contact": "+8801711457444",
+      "visiting_hours": {
+        "visiting_days": ["Thursday"],
+        "visiting_hours": ["7pm-9pm"],
+        "closed_days": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Friday",
+          "Saturday"
+        ],
+        "original_text": "7pm to 9pm (Only Thursday)",
+        "time_slots": [
+          {
+            "start_time_24hr": "19:00",
+            "end_time_24hr": "21:00",
+            "original_time": "7pm-9pm"
+          }
+        ]
+      },
+      "url": "https://www.doctorbangladesh.com/apollo-barisal-doctor-list-contact/",
+      "googleMapUrl": "https://www.google.com/maps/search/?api=1&query=South%20Apollo%20Diagnostic%20Complex%2C%20Barisal%2C%20135%2C%20Sadar%20Road%2C%20Barisal",
+      "latitude": 22.701427,
+      "longitude": 90.370587,
+      "geocodedAddressDetails": {
+        "house_number": "5",
+        "road": "Sadar Road",
+        "county": "Barisal",
+        "state": "Barisal",
+        "postcode": "8200",
+        "country": "Bangladesh",
+        "country_code": "bd"
+      }
+    }
+  ],
+  "profile_url": "https://www.doctorbangladesh.com/dr-muhammad-masudur-rahman/",
+  "designation": "Assistant Professor, Neurology",
+  "source_hospital": "South Apollo Diagnostic Complex, Barisal",
+  "specialtyList": ["Cardiology Specialist", "Heart Diseases Specialist"],
+  "specialtyCategories": ["Cardiology", "ENT"],
+  "isDeleted": false,
+  "latitude": 22.70497,
+  "longitude": 90.37013,
+  "geocodedAddressDetails": {
+    "city": "Barisal",
+    "county": "Barisal",
+    "state": "Barisal",
+    "country": "Bangladesh",
+    "country_code": "bd"
+  }
+}

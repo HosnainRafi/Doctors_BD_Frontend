@@ -1,22 +1,29 @@
 import { useEffect, useState } from 'react';
+import DoctorsCard from '../../components/DoctorsCard';
 
 const FindDoctorByDistrict = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [districtName, setDistrictName] = useState([]);
+  const [doctorsList, setDoctorsList] = useState([]);
   useEffect(() => {
     (async () => {
       const response = await fetch(
         'https://doctors-bd-backend-five.vercel.app/api/v1/districts'
       );
       const data = await response.json();
-      console.log(data.data)
+      console.log(data.data);
       setDistrictName(data.data);
     })();
   }, []);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (selectedDistrict) {
-      console.log('Searching doctors in:', selectedDistrict);
+      const response = await fetch(
+        `https://doctors-bd-backend-five.vercel.app/api/v1/doctors?district=${selectedDistrict}`
+      );
+      const data = await response.json();
+      console.log(data.data);
+      setDoctorsList(data.data);
     }
   };
 
@@ -38,7 +45,7 @@ const FindDoctorByDistrict = () => {
           >
             <option value="">Select District</option>
             {districtName?.map(district => (
-              <option key={district._id} value={district.name}>
+              <option key={district._id} value={district.name.toLowerCase()}>
                 {district.name}
               </option>
             ))}
@@ -52,6 +59,11 @@ const FindDoctorByDistrict = () => {
             Search
           </button>
         </div>
+      </div>
+      <div className='grid grid-cols-1 mt-4 md:mt-12 max-w-5xl mx-auto gap-3 md:gap-6'>
+        {doctorsList?.map(doctor => (
+          <DoctorsCard key={doctor._id} doctor={doctor} />
+        ))}
       </div>
     </section>
   );

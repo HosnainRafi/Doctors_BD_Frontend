@@ -19,16 +19,19 @@ const DoctorsCard = ({ doctor }) => {
         </div>
         <hr className="border-t-1 border-purple-600 w-full " />
         <div>
-          <h5 className="text-2xl text-center bg-purple-700 text-white p-1">Chambers </h5>
+          <h5 className="text-2xl text-center bg-purple-700 text-white p-1">
+            Chambers
+          </h5>
           <hr className="border-t-1 border-purple-600 w-full " />
-          <div className="pt-4 pl-4 pr-4 md:pt-6 md:pl-6 md:pr-6 grid grid-cols-1 md:grid-cols-2">
-            {doctor?.chambers?.map(chamber => (
-              <div key={chamber?.appointment_contact}>
-                <h5>Chamber Name: {chamber?.hospital_name}</h5>
-                <p>Chamber Address: {chamber?.address}</p>
-                <p>Visiting Time: {chamber?.visiting_hours?.original_text}</p>
-              </div>
-            ))}
+          <div className="pt-4 pl-4 pr-4 md:pt-6 md:pl-6 md:pr-6">
+            <div>
+              <h5>Chamber Name: {doctor?.chambers[0]?.hospital_name}</h5>
+              <p>Chamber Address: {doctor?.chambers[0]?.address}</p>
+              <p>
+                Visiting Time:
+                {doctor?.chambers[0]?.visiting_hours?.original_text}
+              </p>
+            </div>
           </div>
         </div>
       </div>

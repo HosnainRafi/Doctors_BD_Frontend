@@ -1,10 +1,13 @@
+import FindYourDoctor from '../../components/HomePage/FindDoctors';
+import Hero from '../../components/HomePage/Hero';
 
 const Home = () => {
   return (
     <div>
-      <h4>Home</h4>
+      <Hero />
+      <FindYourDoctor />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

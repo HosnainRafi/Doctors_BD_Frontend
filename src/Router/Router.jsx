@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../Layout/MainLayout";
 import Home from "../Pages/Home/Home";
 import ChatWithAssistant from "../Pages/ChatWithAssistant/ChatWithAssistant";
+import FindDoctorByDistrict from "../Pages/FindDoctorByDistrict/FindDoctorByDistrict";
 
 export const router = createBrowserRouter([
   {
@@ -11,12 +12,16 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element:<Home/>
+        element: <Home />,
       },
       {
         path: '/chat-with-assistant',
-        element:<ChatWithAssistant/>
-      }
-    ]
+        element: <ChatWithAssistant />,
+      },
+      {
+        path: '/find-doctor-by-district',
+        element: <FindDoctorByDistrict/>
+      },
+    ],
   },
 ]);

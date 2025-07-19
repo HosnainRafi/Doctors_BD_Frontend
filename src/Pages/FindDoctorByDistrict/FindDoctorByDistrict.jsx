@@ -1,27 +1,27 @@
-import { useEffect, useState } from 'react';
-import DoctorCard from '../../components/DoctorCard';
-import CircleSpinner from '../../components/Spinner/CircleSpinner';
+import { useEffect, useState } from "react";
+import DoctorCard from "../../components/DoctorCard";
+//import CircleSpinner from '../../components/Spinner/CircleSpinner';
 
 const FindDoctorByDistrict = () => {
-  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState("");
   const [districtName, setDistrictName] = useState([]);
   const [doctorsList, setDoctorsList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  //const [loading, setLoading] = useState(true);
   useEffect(() => {
     (async () => {
-      setLoading(true);
+      //setLoading(true);
       const response = await fetch(
-        'https://doctors-bd-backend-five.vercel.app/api/v1/districts'
+        "https://doctors-bd-backend-five.vercel.app/api/v1/districts"
       );
       const data = await response.json();
       console.log(data.data);
       setDistrictName(data.data);
-      setLoading(false);
+      //setLoading(false);
     })();
   }, []);
 
   const handleSearch = async () => {
-    setLoading(true);
+    //setLoading(true);
     if (selectedDistrict) {
       const response = await fetch(
         `https://doctors-bd-backend-five.vercel.app/api/v1/doctors?district=${selectedDistrict}`
@@ -29,11 +29,11 @@ const FindDoctorByDistrict = () => {
       const data = await response.json();
       console.log(data.data);
       setDoctorsList(data.data);
-      setLoading(false);
+      //setLoading(false);
     }
   };
-  if (loading) return <CircleSpinner />;
-  
+  //if (loading) return <CircleSpinner />;
+
   return (
     <section className="bg-white py-12 px-4 sm:px-8 lg:px-16">
       <div className="max-w-3xl mx-auto text-center">
@@ -47,11 +47,11 @@ const FindDoctorByDistrict = () => {
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <select
             value={selectedDistrict}
-            onChange={e => setSelectedDistrict(e.target.value)}
+            onChange={(e) => setSelectedDistrict(e.target.value)}
             className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/2 focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="">Select District</option>
-            {districtName?.map(district => (
+            {districtName?.map((district) => (
               <option key={district._id} value={district.name.toLowerCase()}>
                 {district.name}
               </option>
@@ -68,7 +68,7 @@ const FindDoctorByDistrict = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
-        {doctorsList?.map(doctor => (
+        {doctorsList?.map((doctor) => (
           <DoctorCard key={doctor._id} doctor={doctor} />
         ))}
       </div>

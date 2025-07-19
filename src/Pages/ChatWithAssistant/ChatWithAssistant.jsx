@@ -1,32 +1,52 @@
-import React, { useState } from 'react';
-import { SendHorizonal } from 'lucide-react';
-import AiSearchCard from '../../components/AiSearchCard';
-import DoctorsCard from '../../components/DoctorsCard';
+import React, { useState } from "react";
+import { SendHorizonal } from "lucide-react";
+import AiSearchCard from "../../components/AiSearchCard";
+import DoctorsCard from "../../components/DoctorsCard";
+import { useUserDistrict } from "./UserDistrict";
+
+// Free location hook using Nominatim reverse geocoding
 
 export default function ChatWithAssistant() {
-  const [input, setInput] = useState('');
-  const [submittedText, setSubmittedText] = useState('');
+  const [input, setInput] = useState("");
+  const [submittedText, setSubmittedText] = useState("");
   const [doctorList, setDoctorList] = useState([]);
+  const userDistrict = useUserDistrict();
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    setSubmittedText(input);
+    let prompt = input;
 
-    const res = await fetch(
-      'https://doctors-bd-backend-five.vercel.app/api/v1/doctors/ai-search',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt: input }),
-      }
-    );
+    // Check if user already provided district info manually
+    const lowerInput = input.toLowerCase();
+    const hasDistrict =
+      lowerInput.includes("district") || lowerInput.includes("in ");
 
-    const data = await res.json();
-    setDoctorList(data.data);
-    setInput('');
+    if (!hasDistrict && userDistrict) {
+      prompt = `${input} in ${userDistrict}`;
+    }
+
+    setSubmittedText(prompt);
+
+    try {
+      const res = await fetch(
+        "http://localhost:5000/api/v1/doctors/ai-search",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt, fallbackLocation: userDistrict }),
+        }
+      );
+
+      const data = await res.json();
+      setDoctorList(data.data);
+    } catch (error) {
+      console.error("Search failed:", error);
+    }
+
+    setInput("");
   };
 
   return (
@@ -35,6 +55,13 @@ export default function ChatWithAssistant() {
         🤖 Chat with CarePoint Assistant
       </h1>
 
+      {userDistrict && (
+        <div className="mb-4 text-sm text-gray-700 bg-purple-100 border border-purple-300 rounded-md p-2">
+          📍 Using your current location:{" "}
+          <strong className="capitalize">{userDistrict}</strong>
+        </div>
+      )}
+
       <div className="w-full max-w-2xl">
         <div className="flex items-center border rounded-xl bg-white shadow-md p-3">
           <textarea
@@ -42,9 +69,9 @@ export default function ChatWithAssistant() {
             placeholder="Describe your problem..."
             className="flex-1 resize-none text-sm md:text-base p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 handleSend();
               }
@@ -68,7 +95,7 @@ export default function ChatWithAssistant() {
             <p className="font-semibold text-purple-700">Suggested Doctors:</p>
             <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
               {doctorList &&
-                doctorList?.map(doctor => (
+                doctorList.map((doctor) => (
                   <DoctorsCard key={doctor._id} doctor={doctor} />
                 ))}
             </div>

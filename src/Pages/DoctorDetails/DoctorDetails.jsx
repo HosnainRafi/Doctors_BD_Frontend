@@ -26,15 +26,15 @@ const DoctorDetails = () => {
     <div className="bg-gray-100">
       <div className="max-w-7xl mx-auto py-4 md:py-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8">
-          <div className="col-span-2">
+          <div className="col-span-4">
             <img
-              className="md:w-[204px] md:h-[272px] w-20 h-[100px] rounded-3xl object-cover border-white border-[6px] shadow"
+              className="md:w-[350px] md:h-[300px] w-20 h-[100px] rounded-3xl object-cover border-white border-[6px] shadow object-top"
               src={doctorDetails?.photo}
               alt=""
             />
           </div>
-          <div className="col-span-10">
-            <h1 className="text-xl font-bold md:text-2xl">
+          <div className="col-span-8">
+            <h1 className="text-xl font-bold md:text-3xl">
               {doctorDetails?.name}
             </h1>
             <p className="text-black-600 font-medium rounded-full bg-gray-100 text-gray-600">

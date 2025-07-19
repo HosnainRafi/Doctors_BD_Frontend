@@ -1,22 +1,27 @@
 import { useEffect, useState } from 'react';
 import DoctorCard from '../../components/DoctorCard';
+import CircleSpinner from '../../components/Spinner/CircleSpinner';
 
 const FindDoctorByDistrict = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [districtName, setDistrictName] = useState([]);
   const [doctorsList, setDoctorsList] = useState([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     (async () => {
+      setLoading(true);
       const response = await fetch(
         'https://doctors-bd-backend-five.vercel.app/api/v1/districts'
       );
       const data = await response.json();
       console.log(data.data);
       setDistrictName(data.data);
+      setLoading(false);
     })();
   }, []);
 
   const handleSearch = async () => {
+    setLoading(true);
     if (selectedDistrict) {
       const response = await fetch(
         `https://doctors-bd-backend-five.vercel.app/api/v1/doctors?district=${selectedDistrict}`
@@ -24,9 +29,11 @@ const FindDoctorByDistrict = () => {
       const data = await response.json();
       console.log(data.data);
       setDoctorsList(data.data);
+      setLoading(false);
     }
   };
-
+  if (loading) return <CircleSpinner />;
+  
   return (
     <section className="bg-white py-12 px-4 sm:px-8 lg:px-16">
       <div className="max-w-3xl mx-auto text-center">
@@ -60,7 +67,7 @@ const FindDoctorByDistrict = () => {
           </button>
         </div>
       </div>
-      <div className='grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6'>
+      <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
         {doctorsList?.map(doctor => (
           <DoctorCard key={doctor._id} doctor={doctor} />
         ))}

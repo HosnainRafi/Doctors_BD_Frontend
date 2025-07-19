@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import DoctorsCard from '../../components/DoctorsCard';
+import DoctorCard from '../../components/DoctorCard';
 
 const FindDoctorByDistrict = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -62,7 +62,7 @@ const FindDoctorByDistrict = () => {
       </div>
       <div className='grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6'>
         {doctorsList?.map(doctor => (
-          <DoctorsCard key={doctor._id} doctor={doctor} />
+          <DoctorCard key={doctor._id} doctor={doctor} />
         ))}
       </div>
     </section>

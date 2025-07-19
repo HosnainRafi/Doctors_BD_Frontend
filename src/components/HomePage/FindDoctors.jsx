@@ -21,7 +21,7 @@ export default function FindYourDoctor() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div
             onClick={handleDistrictClick}
-            className="cursor-pointer bg-purple-50 hover:bg-purple-100 p-4 rounded-2xl shadow-md transition duration-300 flex flex-col gap-4"
+            className="cursor-pointer bg-purple-50 hover:bg-purple-100 p-4 rounded-2xl shadow-md transition duration-300 flex flex-col gap-4 justify-between"
           >
             <h3 className="text-2xl font-semibold text-purple-700 mb-2">
               Search by District
@@ -41,7 +41,7 @@ export default function FindYourDoctor() {
 
           <div
             onClick={handleHospitalClick}
-            className="cursor-pointer bg-green-50 hover:bg-green-100 p-4 rounded-2xl shadow-md transition duration-300 flex flex-col gap-4"
+            className="cursor-pointer bg-green-50 hover:bg-green-100 p-4 rounded-2xl shadow-md transition duration-300 flex flex-col gap-4 justify-between"
           >
             <h3 className="text-2xl font-semibold text-green-700 mb-2">
               Search by Category
@@ -62,7 +62,7 @@ export default function FindYourDoctor() {
 
           <div
             onClick={handleHospitalClick}
-            className="cursor-pointer bg-blue-50 hover:bg-blue-100 p-4 rounded-2xl shadow-md transition duration-300 flex flex-col gap-4"
+            className="cursor-pointer bg-blue-50 hover:bg-blue-100 p-4 rounded-2xl shadow-md transition duration-300 flex flex-col gap-4 justify-between"
           >
             <h3 className="text-2xl font-semibold text-blue-700 mb-2">
               Search by Hospital Name

@@ -1,27 +1,27 @@
 import { useEffect, useState } from "react";
 import DoctorCard from "../../components/DoctorCard";
-//import CircleSpinner from '../../components/Spinner/CircleSpinner';
+import CircleSpinner from '../../components/Spinner/CircleSpinner';
 
 const FindDoctorByDistrict = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [districtName, setDistrictName] = useState([]);
   const [doctorsList, setDoctorsList] = useState([]);
-  //const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     (async () => {
-      //setLoading(true);
+      setLoading(true);
       const response = await fetch(
         "https://doctors-bd-backend-five.vercel.app/api/v1/districts"
       );
       const data = await response.json();
       console.log(data.data);
       setDistrictName(data.data);
-      //setLoading(false);
+      setLoading(false);
     })();
   }, []);
 
   const handleSearch = async () => {
-    //setLoading(true);
+    setLoading(true);
     if (selectedDistrict) {
       const response = await fetch(
         `https://doctors-bd-backend-five.vercel.app/api/v1/doctors?district=${selectedDistrict}`
@@ -29,10 +29,10 @@ const FindDoctorByDistrict = () => {
       const data = await response.json();
       console.log(data.data);
       setDoctorsList(data.data);
-      //setLoading(false);
+      setLoading(false);
     }
   };
-  //if (loading) return <CircleSpinner />;
+  if (loading) return <CircleSpinner />;
 
   return (
     <section className="bg-white py-12 px-4 sm:px-8 lg:px-16">

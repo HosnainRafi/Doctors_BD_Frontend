@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { SendHorizonal } from "lucide-react";
-import AiSearchCard from "../../components/AiSearchCard";
-import DoctorsCard from "../../components/DoctorsCard";
 import { useUserDistrict } from "./UserDistrict";
+import DoctorCard from "../../components/DoctorCard";
 
 // Free location hook using Nominatim reverse geocoding
 
@@ -96,7 +95,7 @@ export default function ChatWithAssistant() {
             <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
               {doctorList &&
                 doctorList.map((doctor) => (
-                  <DoctorsCard key={doctor._id} doctor={doctor} />
+                  <DoctorCard key={doctor._id} doctor={doctor} />
                 ))}
             </div>
           </div>

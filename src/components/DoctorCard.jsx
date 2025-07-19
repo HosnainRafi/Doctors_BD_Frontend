@@ -1,4 +1,5 @@
 import { FaArrowRight, FaClock, FaHospitalAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const DoctorCard = ({ doctor }) => {
   return (
@@ -72,10 +73,10 @@ const DoctorCard = ({ doctor }) => {
           </div>
           <hr className="mt-2 mb-2 border-t border-t-purple-700 " />
           <div className="flex justify-end">
-            <button className="flex items-center gap-2 text-purple-700 border border-purple-700 px-3 py-1 rounded-md hover:bg-purple-700 hover:text-white transition-all duration-300">
+            <Link to={`/doctor/${doctor?.id}`} className="flex items-center gap-2 text-purple-700 border border-purple-700 px-3 py-1 rounded-md hover:bg-purple-700 hover:text-white transition-all duration-300">
               Show Details
               <FaArrowRight className="text-sm" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>

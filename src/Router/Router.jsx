@@ -3,6 +3,7 @@ import MainLayout from "../Layout/MainLayout";
 import Home from "../Pages/Home/Home";
 import ChatWithAssistant from "../Pages/ChatWithAssistant/ChatWithAssistant";
 import FindDoctorByDistrict from "../Pages/FindDoctorByDistrict/FindDoctorByDistrict";
+import DoctorDetails from "../Pages/DoctorDetails/DoctorDetails";
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
       {
         path: '/find-doctor-by-district',
         element: <FindDoctorByDistrict/>
+      },
+      {
+        path: '/doctor/:id',
+        element: <DoctorDetails/>
       },
     ],
   },

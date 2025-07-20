@@ -1,9 +1,10 @@
-import { createBrowserRouter } from "react-router-dom";
-import MainLayout from "../Layout/MainLayout";
-import Home from "../Pages/Home/Home";
-import ChatWithAssistant from "../Pages/ChatWithAssistant/ChatWithAssistant";
-import FindDoctorByDistrict from "../Pages/FindDoctorByDistrict/FindDoctorByDistrict";
-import DoctorDetails from "../Pages/DoctorDetails/DoctorDetails";
+import { createBrowserRouter } from 'react-router-dom';
+import MainLayout from '../Layout/MainLayout';
+import Home from '../Pages/Home/Home';
+import ChatWithAssistant from '../Pages/ChatWithAssistant/ChatWithAssistant';
+import FindDoctorByDistrict from '../Pages/FindDoctorByDistrict/FindDoctorByDistrict';
+import DoctorDetails from '../Pages/DoctorDetails/DoctorDetails';
+import AllDoctors from '../Pages/AllDoctors/AllDoctors';
 
 export const router = createBrowserRouter([
   {
@@ -21,11 +22,15 @@ export const router = createBrowserRouter([
       },
       {
         path: '/find-doctor-by-district',
-        element: <FindDoctorByDistrict/>
+        element: <FindDoctorByDistrict />,
       },
       {
         path: '/doctor/:id',
-        element: <DoctorDetails/>
+        element: <DoctorDetails />,
+      },
+      {
+        path: '/all-doctors',
+        element: <AllDoctors />,
       },
     ],
   },

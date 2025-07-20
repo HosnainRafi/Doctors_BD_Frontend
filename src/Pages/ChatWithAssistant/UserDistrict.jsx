@@ -4,7 +4,7 @@ const districtsWithCoords = [
   { name: "Rangpur", lat: 25.7463, lon: 89.2517 },
   { name: "Bogura", lat: 24.8465, lon: 89.3776 },
   { name: "Khulna", lat: 22.8456, lon: 89.5403 },
-  { name: "Kustia", lat: 23.901, lon: 89.122 },
+  { name: "Kushtia", lat: 23.901, lon: 89.122 },
   { name: "Pabna", lat: 24.0064, lon: 89.2372 },
   { name: "Sylhet", lat: 24.8949, lon: 91.8687 },
   { name: "Rajshahi", lat: 24.3745, lon: 88.6042 },

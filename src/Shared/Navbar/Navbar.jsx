@@ -7,6 +7,11 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navItem = [
     { key: 'home', label: 'Home', path: '/' },
+    {
+      key: 'find-doctor',
+      label: 'Find Doctors',
+      path: '/find-doctor-by-district',
+    },
     { key: 'chat', label: 'Chat With Assistant', path: '/chat-with-assistant' },
     { key: 'contact', label: 'Contact', path: '/contact' },
   ];

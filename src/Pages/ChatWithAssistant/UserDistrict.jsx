@@ -15,7 +15,7 @@ const districtsWithCoords = [
   { name: "Narayanganj", lat: 23.6238, lon: 90.5 },
 ];
 
-const getNearestDistrict = (userLat, userLon) => {
+export const getNearestDistrict = (userLat, userLon) => {
   const toRad = (value) => (value * Math.PI) / 180;
   let nearest = null;
   let minDist = Infinity;

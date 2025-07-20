@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SendHorizonal } from "lucide-react";
-import { useUserDistrict } from "./UserDistrict";
+import { getNearestDistrict } from "./UserDistrict";
 import DoctorCard from "../../components/DoctorCard";
-
-// Free location hook using Nominatim reverse geocoding
 
 export default function ChatWithAssistant() {
   const districtTranslations = {
@@ -22,14 +20,12 @@ export default function ChatWithAssistant() {
   };
 
   function containsBengaliDistrict(input, districtTranslations) {
-    // Check for any Bengali district name with or without locative suffixes
     return Object.values(districtTranslations).some((bnDistrict) => {
-      // Check for: exact, "য়", "তে", "ে" suffixes
       const patterns = [
-        bnDistrict, // "ঢাকা"
-        bnDistrict + "য়", // "ঢাকায়"
-        bnDistrict + "তে", // "কুষ্টিয়াতে"
-        bnDistrict.replace(/া$/, "ে"), // "ঢাকায়" (sometimes "া" becomes "ে")
+        bnDistrict,
+        bnDistrict + "য়",
+        bnDistrict + "তে",
+        bnDistrict.replace(/া$/, "ে"),
       ];
       return patterns.some((pattern) => input.includes(pattern));
     });
@@ -38,54 +34,72 @@ export default function ChatWithAssistant() {
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  function cleanQueryText() {
-    const isBengali = /[\u0980-\u09FF]/.test(input); // Bengali character detection
-    if (isBengali) {
-      return input.replace(/\bin\b\s?/gi, ""); // Remove "in ", "in"
-    }
-    return input;
-  }
-
   const [input, setInput] = useState("");
   const [submittedText, setSubmittedText] = useState("");
   const [doctorList, setDoctorList] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
-  const [language, setLanguage] = useState("bn-BD"); // Default: Bangla
+  const [language, setLanguage] = useState("bn-BD");
+  const [userDistrict, setUserDistrict] = useState(null);
+  const [realLocation, setRealLocation] = useState("");
 
-  const userDistrict = useUserDistrict();
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          const nearestDistrict = getNearestDistrict(lat, lon);
+          setUserDistrict(nearestDistrict);
+
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+            );
+            const data = await response.json();
+            const address = data.address;
+            const locationName = `
+              ${address.village || address.town || address.suburb || ""},
+              ${address.county || address.district || ""}`
+              .replace(/\s*,\s*/, ", ")
+              .trim();
+            setRealLocation(locationName);
+          } catch (err) {
+            console.error("Reverse geocoding failed:", err);
+          }
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    }
+  }, []);
+
+  const usedDistrict =
+    doctorList && doctorList.length > 0 ? doctorList[0].district : null;
 
   function detectLanguage(text) {
-    // If it contains Bengali Unicode range (0980–09FF)
     const hasBangla = /[\u0980-\u09FF]/.test(text);
     return hasBangla ? "bn-BD" : "en-US";
   }
 
   const handleVoiceInput = () => {
-    // const detectedLang = detectLanguage(input);
-    // setLanguage(detectedLang);
     if (!SpeechRecognition) {
       alert("Speech Recognition not supported in this browser.");
       return;
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = language; // Use "en-US" for English or "bn-BD" for Bangla
+    recognition.lang = language;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    recognition.onstart = () => {
-      setIsRecording(true);
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-    };
-
+    recognition.onstart = () => setIsRecording(true);
+    recognition.onend = () => setIsRecording(false);
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setInput((prev) => `${prev} ${transcript}`);
     };
-
     recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
       setIsRecording(false);
@@ -94,12 +108,24 @@ export default function ChatWithAssistant() {
     recognition.start();
   };
 
+  const cleanQueryText = (input) => {
+    const isBengali = /[\u0980-\u09FF]/.test(input);
+    if (isBengali) {
+      return input.replace(/\bin\b\s?/gi, "");
+    }
+    return input;
+  };
+
+  console.log(realLocation);
+  console.log(usedDistrict);
+  console.log("userDistrict:", userDistrict);
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
     let prompt = cleanQueryText(input);
-
     let hasDistrict = false;
+
     if (language === "bn-BD") {
       hasDistrict = containsBengaliDistrict(input, districtTranslations);
     } else {
@@ -153,15 +179,19 @@ export default function ChatWithAssistant() {
         🤖 Chat with CarePoint Assistant
       </h1>
 
-      {userDistrict && (
-        <div className="mb-4 text-sm text-gray-700 bg-purple-100 border border-purple-300 rounded-md p-2">
-          📍 Using your current location:{" "}
-          <strong className="capitalize">{userDistrict}</strong>
-        </div>
-      )}
+      {realLocation &&
+        usedDistrict &&
+        !realLocation.toLowerCase().includes(usedDistrict.toLowerCase()) && (
+          <div className="mb-4 text-sm text-gray-700 bg-yellow-100 border border-yellow-300 rounded-md p-2">
+            <strong>Your current location is {realLocation}</strong>, but we
+            don’t have doctor data for this area.
+            <br />
+            So we are showing doctors from the nearest available district:{" "}
+            <strong>{usedDistrict}</strong>.
+          </div>
+        )}
 
       <div className="w-full max-w-2xl">
-        {/* Textarea + Send Button */}
         <div className="flex items-center border rounded-xl bg-white shadow-md p-3">
           <textarea
             rows={3}
@@ -171,7 +201,7 @@ export default function ChatWithAssistant() {
             onChange={(e) => {
               const value = e.target.value;
               setInput(value);
-              setLanguage(detectLanguage(value)); // <-- auto-detect language
+              setLanguage(detectLanguage(value));
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -187,12 +217,12 @@ export default function ChatWithAssistant() {
             <SendHorizonal className="w-4 h-4" />
           </button>
         </div>
+
         <p className="text-sm text-gray-500 mt-1">
           Detected Language: {language === "bn-BD" ? "বাংলা" : "English"}
         </p>
-        {/* ⬇️ Add this RIGHT HERE: below the input box, inside same container */}
+
         <div className="flex items-center gap-4 mt-2">
-          {/* Language selector */}
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
@@ -202,7 +232,6 @@ export default function ChatWithAssistant() {
             <option value="en-US">English</option>
           </select>
 
-          {/* Microphone button */}
           <button
             onClick={handleVoiceInput}
             className={`p-2 rounded-md ${

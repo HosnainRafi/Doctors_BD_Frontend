@@ -5,7 +5,8 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import DoctorAbout from '../../components/DoctorAbout';
 import ChamberDetails from '../../components/ChamberDetails';
-import './DoctorDetails.css'
+import './DoctorDetails.css';
+import { FaStar } from 'react-icons/fa';
 const DoctorDetails = () => {
   const [doctorDetails, setDoctorDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,6 +76,14 @@ const DoctorDetails = () => {
                 District:{' '}
                 {doctorDetails?.district?.charAt(0).toUpperCase() +
                   doctorDetails?.district?.slice(1)}
+              </p>
+              <p className="flex items-center gap-1 w-full bg-gray-100 text-gray-600 text-black-600 font-medium">
+                Rating:
+                <FaStar className="text-[#f7b033]" />
+                <span className="text-black font-bold">
+                  {doctorDetails?.ratingStar}
+                </span>
+                ({doctorDetails?.rating})
               </p>
             </div>
           </div>

@@ -9,7 +9,7 @@ const Footer = () => {
       <footer className="flex flex-col space-y-10 justify-center m-10">
         <nav className="flex justify-center flex-wrap gap-6 text-gray-500 font-medium">
           {navItem.map((item, index) => (
-            <Link key={index} className="hover:text-gray-900" to="/item">
+            <Link key={index} className="hover:text-gray-900" to={`/${item}`}>
               {item.charAt(0).toUpperCase() + item.slice(1)}
             </Link>
           ))}

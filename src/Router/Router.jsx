@@ -1,16 +1,18 @@
 import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../Layout/MainLayout';
 import Home from '../Pages/Home/Home';
+import Contact from '../Pages/Contact/Contact';
 import ChatWithAssistant from '../Pages/ChatWithAssistant/ChatWithAssistant';
 import FindDoctorByDistrict from '../Pages/FindDoctorByDistrict/FindDoctorByDistrict';
 import DoctorDetails from '../Pages/DoctorDetails/DoctorDetails';
 import AllDoctors from '../Pages/AllDoctors/AllDoctors';
+import ErrorPage from '../Pages/ErrorPage/ErrorPage';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
-    errorElement: <h4>Error Page</h4>,
+    errorElement: <ErrorPage/>,
     children: [
       {
         path: '/',
@@ -31,6 +33,10 @@ export const router = createBrowserRouter([
       {
         path: '/all-doctors',
         element: <AllDoctors />,
+      },
+      {
+        path: '/all-doctors',
+        element: <Contact />,
       },
     ],
   },

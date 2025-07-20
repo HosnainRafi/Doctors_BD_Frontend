@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
         element: <AllDoctors />,
       },
       {
-        path: '/all-doctors',
+        path: '/contact',
         element: <Contact />,
       },
     ],

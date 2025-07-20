@@ -1,11 +1,17 @@
-import { FaArrowRight, FaClock, FaHospitalAlt, FaMapMarkerAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import {
+  FaArrowRight,
+  FaClock,
+  FaHospitalAlt,
+  FaMapMarkerAlt,
+  FaStar,
+} from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const DoctorCard = ({ doctor }) => {
   return (
     <div>
       <div className="p-4 flex flex-col md:grid md:grid-cols-4 gap-4 md:gap-6  border border-r-black-100 border-b-black-100 bg-white rounded-lg md:rounded-2xl md:shadow-none md:border md:border-[#E3E3E3] px-4 py-3 md:gap-x-4 md:hover:border-primary-600 hover:shadow-lg cursor-pointer hover:border-purple-700">
-        <div>
+        <div className="relative">
           <div>
             <img
               className=" rounded-lg w-32 h-44  object-cover object-top "
@@ -13,7 +19,12 @@ const DoctorCard = ({ doctor }) => {
               alt=""
             />
           </div>
-          <div></div>
+          <div className="absolute bottom-[47px] w-full">
+            <p className="flex items-center gap-1 bg-white px-2 py-1 w-full opacity-70 ">
+              <FaStar className="text-[#f7b033]" />
+              <span className='text-black font-bold'>{doctor?.ratingStar}</span> ({doctor?.rating})
+            </p>
+          </div>
         </div>
         <div className="col-span-3">
           <div>
@@ -73,7 +84,10 @@ const DoctorCard = ({ doctor }) => {
           </div>
           <hr className="mt-2 mb-2 border-t border-t-purple-700 " />
           <div className="flex justify-end">
-            <Link to={`/doctor/${doctor?.id}`} className="flex items-center gap-2 text-purple-700 border border-purple-700 px-3 py-1 rounded-md hover:bg-purple-700 hover:text-white transition-all duration-300">
+            <Link
+              to={`/doctor/${doctor?.id}`}
+              className="flex items-center gap-2 text-purple-700 border border-purple-700 px-3 py-1 rounded-md hover:bg-purple-700 hover:text-white transition-all duration-300"
+            >
               Show Details
               <FaArrowRight className="text-sm" />
             </Link>

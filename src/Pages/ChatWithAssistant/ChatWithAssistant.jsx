@@ -54,11 +54,11 @@ export default function ChatWithAssistant() {
 
   const userDistrict = useUserDistrict();
 
-  // function detectLanguage(text) {
-  //   // If it contains Bengali Unicode range (0980–09FF)
-  //   const hasBangla = /[\u0980-\u09FF]/.test(text);
-  //   return hasBangla ? "bn-BD" : "en-US";
-  // }
+  function detectLanguage(text) {
+    // If it contains Bengali Unicode range (0980–09FF)
+    const hasBangla = /[\u0980-\u09FF]/.test(text);
+    return hasBangla ? "bn-BD" : "en-US";
+  }
 
   const handleVoiceInput = () => {
     // const detectedLang = detectLanguage(input);
@@ -124,13 +124,17 @@ export default function ChatWithAssistant() {
 
     try {
       const res = await fetch(
-        "https://doctors-bd-backend.vercel.app/api/v1/doctors/ai-search",
+        "http://localhost:5000/api/v1/doctors/ai-search",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ prompt, fallbackLocation: userDistrict }),
+          body: JSON.stringify({
+            prompt,
+            fallbackLocation: userDistrict,
+            language: language.startsWith("bn-BD") ? "bn-BD" : "en-US",
+          }),
         }
       );
 
@@ -164,7 +168,11 @@ export default function ChatWithAssistant() {
             placeholder="Describe your problem..."
             className="flex-1 resize-none text-sm md:text-base p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setInput(value);
+              setLanguage(detectLanguage(value)); // <-- auto-detect language
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();

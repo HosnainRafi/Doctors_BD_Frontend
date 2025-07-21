@@ -1,30 +1,23 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { SendHorizonal } from "lucide-react";
 import { getNearestDistrict } from "./UserDistrict";
 import DoctorCard from "../../components/DoctorCard";
-=======
-import React, { useState } from 'react';
-import { SendHorizonal } from 'lucide-react';
-import { useUserDistrict } from './UserDistrict';
-import DoctorCard from '../../components/DoctorCard';
-import CircleSpinner from '../../components/Spinner/CircleSpinner';
->>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
+import CircleSpinner from "../../components/Spinner/CircleSpinner";
 
 export default function ChatWithAssistant() {
   const districtTranslations = {
-    rangpur: 'রংপুর',
-    bogura: 'বগুড়া',
-    khulna: 'খুলনা',
-    kushtia: 'কুষ্টিয়া',
-    pabna: 'পাবনা',
-    sylhet: 'সিলেট',
-    rajshahi: 'রাজশাহী',
-    chittagong: 'চট্টগ্রাম',
-    barisal: 'বরিশাল',
-    dhaka: 'ঢাকা',
-    mymensingh: 'ময়মনসিংহ',
-    narayanganj: 'নারায়ণগঞ্জ',
+    rangpur: "রংপুর",
+    bogura: "বগুড়া",
+    khulna: "খুলনা",
+    kushtia: "কুষ্টিয়া",
+    pabna: "পাবনা",
+    sylhet: "সিলেট",
+    rajshahi: "রাজশাহী",
+    chittagong: "চট্টগ্রাম",
+    barisal: "বরিশাল",
+    dhaka: "ঢাকা",
+    mymensingh: "ময়মনসিংহ",
+    narayanganj: "নারায়ণগঞ্জ",
   };
 
   function containsBengaliDistrict(input, districtTranslations) {
@@ -35,7 +28,7 @@ export default function ChatWithAssistant() {
         bnDistrict + "তে",
         bnDistrict.replace(/া$/, "ে"),
       ];
-      return patterns.some(pattern => input.includes(pattern));
+      return patterns.some((pattern) => input.includes(pattern));
     });
   }
 
@@ -49,6 +42,7 @@ export default function ChatWithAssistant() {
   const [language, setLanguage] = useState("bn-BD");
   const [userDistrict, setUserDistrict] = useState(null);
   const [realLocation, setRealLocation] = useState("");
+  const [loading, setLoading] = useState("");
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -88,12 +82,12 @@ export default function ChatWithAssistant() {
 
   function detectLanguage(text) {
     const hasBangla = /[\u0980-\u09FF]/.test(text);
-    return hasBangla ? 'bn-BD' : 'en-US';
+    return hasBangla ? "bn-BD" : "en-US";
   }
 
   const handleVoiceInput = () => {
     if (!SpeechRecognition) {
-      alert('Speech Recognition not supported in this browser.');
+      alert("Speech Recognition not supported in this browser.");
       return;
     }
 
@@ -106,7 +100,7 @@ export default function ChatWithAssistant() {
     recognition.onend = () => setIsRecording(false);
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setInput(prev => `${prev} ${transcript}`);
+      setInput((prev) => `${prev} ${transcript}`);
     };
     recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
@@ -139,12 +133,12 @@ export default function ChatWithAssistant() {
     } else {
       const lowerInput = input.toLowerCase();
       hasDistrict =
-        lowerInput.includes('district') || lowerInput.includes('in ');
+        lowerInput.includes("district") || lowerInput.includes("in ");
     }
 
     if (!hasDistrict && userDistrict) {
       let locationPhrase;
-      if (language === 'bn-BD') {
+      if (language === "bn-BD") {
         const bengaliDistrict =
           districtTranslations[userDistrict?.toLowerCase()] || userDistrict;
         locationPhrase = `${bengaliDistrict}`;
@@ -159,16 +153,16 @@ export default function ChatWithAssistant() {
     try {
       setLoading(true);
       const res = await fetch(
-        'https://doctors-bd-backend-five.vercel.app/api/v1/doctors/ai-search',
+        "http://localhost:5000/api/v1/doctors/ai-search",
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             prompt,
             fallbackLocation: userDistrict,
-            language: language.startsWith('bn-BD') ? 'bn-BD' : 'en-US',
+            language: language.startsWith("bn-BD") ? "bn-BD" : "en-US",
           }),
         }
       );
@@ -176,12 +170,12 @@ export default function ChatWithAssistant() {
       const data = await res.json();
       setDoctorList(data.data);
     } catch (error) {
-      console.error('Search failed:', error);
+      console.error("Search failed:", error);
     } finally {
       setLoading(false);
     }
 
-    setInput('');
+    setInput("");
   };
   if (loading) return <CircleSpinner />;
   return (
@@ -209,13 +203,13 @@ export default function ChatWithAssistant() {
             placeholder="Describe your problem..."
             className="flex-1 resize-none text-sm md:text-base p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             value={input}
-            onChange={e => {
+            onChange={(e) => {
               const value = e.target.value;
               setInput(value);
               setLanguage(detectLanguage(value));
             }}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 handleSend();
               }
@@ -230,13 +224,13 @@ export default function ChatWithAssistant() {
         </div>
 
         <p className="text-sm text-gray-500 mt-1">
-          Detected Language: {language === 'bn-BD' ? 'বাংলা' : 'English'}
+          Detected Language: {language === "bn-BD" ? "বাংলা" : "English"}
         </p>
 
         <div className="flex items-center gap-4 mt-2">
           <select
             value={language}
-            onChange={e => setLanguage(e.target.value)}
+            onChange={(e) => setLanguage(e.target.value)}
             className="text-sm border rounded-md p-1 bg-white text-gray-700"
           >
             <option value="bn-BD">বাংলা (Bangla)</option>
@@ -246,10 +240,10 @@ export default function ChatWithAssistant() {
           <button
             onClick={handleVoiceInput}
             className={`p-2 rounded-md ${
-              isRecording ? 'bg-red-500' : 'bg-green-600'
+              isRecording ? "bg-red-500" : "bg-green-600"
             } text-white`}
           >
-            🎤 {isRecording ? 'Listening...' : 'Start Talking'}
+            🎤 {isRecording ? "Listening..." : "Start Talking"}
           </button>
         </div>
       </div>
@@ -263,7 +257,7 @@ export default function ChatWithAssistant() {
             <p className="font-semibold text-purple-700">Suggested Doctors:</p>
             <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
               {doctorList &&
-                doctorList.map(doctor => (
+                doctorList.map((doctor) => (
                   <DoctorCard key={doctor._id} doctor={doctor} />
                 ))}
             </div>

@@ -28,23 +28,12 @@ export default function ChatWithAssistant() {
   };
 
   function containsBengaliDistrict(input, districtTranslations) {
-<<<<<<< HEAD
     return Object.values(districtTranslations).some((bnDistrict) => {
       const patterns = [
         bnDistrict,
         bnDistrict + "য়",
         bnDistrict + "তে",
         bnDistrict.replace(/া$/, "ে"),
-=======
-    // Check for any Bengali district name with or without locative suffixes
-    return Object.values(districtTranslations).some(bnDistrict => {
-      // Check for: exact, "য়", "তে", "ে" suffixes
-      const patterns = [
-        bnDistrict, // "ঢাকা"
-        bnDistrict + 'য়', // "ঢাকায়"
-        bnDistrict + 'তে', // "কুষ্টিয়াতে"
-        bnDistrict.replace(/া$/, 'ে'), // "ঢাকায়" (sometimes "া" becomes "ে")
->>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
       ];
       return patterns.some(pattern => input.includes(pattern));
     });
@@ -53,7 +42,6 @@ export default function ChatWithAssistant() {
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
-<<<<<<< HEAD
   const [input, setInput] = useState("");
   const [submittedText, setSubmittedText] = useState("");
   const [doctorList, setDoctorList] = useState([]);
@@ -97,23 +85,6 @@ export default function ChatWithAssistant() {
 
   const usedDistrict =
     doctorList && doctorList.length > 0 ? doctorList[0].district : null;
-=======
-  function cleanQueryText() {
-    const isBengali = /[\u0980-\u09FF]/.test(input); // Bengali character detection
-    if (isBengali) {
-      return input.replace(/\bin\b\s?/gi, ''); // Remove "in ", "in"
-    }
-    return input;
-  }
-
-  const [input, setInput] = useState('');
-  const [submittedText, setSubmittedText] = useState('');
-  const [doctorList, setDoctorList] = useState([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const [language, setLanguage] = useState('bn-BD'); // Default: Bangla
-  const [loading, setLoading] = useState(false);
-  const userDistrict = useUserDistrict();
->>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
 
   function detectLanguage(text) {
     const hasBangla = /[\u0980-\u09FF]/.test(text);
@@ -131,32 +102,14 @@ export default function ChatWithAssistant() {
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-<<<<<<< HEAD
     recognition.onstart = () => setIsRecording(true);
     recognition.onend = () => setIsRecording(false);
     recognition.onresult = (event) => {
-=======
-    recognition.onstart = () => {
-      setIsRecording(true);
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-    };
-
-    recognition.onresult = event => {
->>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
       const transcript = event.results[0][0].transcript;
       setInput(prev => `${prev} ${transcript}`);
     };
-<<<<<<< HEAD
     recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
-=======
-
-    recognition.onerror = event => {
-      console.error('Speech recognition error:', event.error);
->>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
       setIsRecording(false);
     };
 
@@ -180,12 +133,8 @@ export default function ChatWithAssistant() {
 
     let prompt = cleanQueryText(input);
     let hasDistrict = false;
-<<<<<<< HEAD
 
     if (language === "bn-BD") {
-=======
-    if (language === 'bn-BD') {
->>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
       hasDistrict = containsBengaliDistrict(input, districtTranslations);
     } else {
       const lowerInput = input.toLowerCase();
@@ -241,7 +190,6 @@ export default function ChatWithAssistant() {
         🤖 Chat with CarePoint Assistant
       </h1>
 
-<<<<<<< HEAD
       {realLocation &&
         usedDistrict &&
         !realLocation.toLowerCase().includes(usedDistrict.toLowerCase()) && (
@@ -253,14 +201,6 @@ export default function ChatWithAssistant() {
             <strong>{usedDistrict}</strong>.
           </div>
         )}
-=======
-      {userDistrict && (
-        <div className="mb-4 text-sm text-gray-700 bg-purple-100 border border-purple-300 rounded-md p-2">
-          📍 Using your current location:{' '}
-          <strong className="capitalize">{userDistrict}</strong>
-        </div>
-      )}
->>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
 
       <div className="w-full max-w-2xl">
         <div className="flex items-center border rounded-xl bg-white shadow-md p-3">

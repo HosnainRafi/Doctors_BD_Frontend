@@ -1,39 +1,59 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { SendHorizonal } from "lucide-react";
 import { getNearestDistrict } from "./UserDistrict";
 import DoctorCard from "../../components/DoctorCard";
+=======
+import React, { useState } from 'react';
+import { SendHorizonal } from 'lucide-react';
+import { useUserDistrict } from './UserDistrict';
+import DoctorCard from '../../components/DoctorCard';
+import CircleSpinner from '../../components/Spinner/CircleSpinner';
+>>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
 
 export default function ChatWithAssistant() {
   const districtTranslations = {
-    rangpur: "রংপুর",
-    bogura: "বগুড়া",
-    khulna: "খুলনা",
-    kushtia: "কুষ্টিয়া",
-    pabna: "পাবনা",
-    sylhet: "সিলেট",
-    rajshahi: "রাজশাহী",
-    chittagong: "চট্টগ্রাম",
-    barisal: "বরিশাল",
-    dhaka: "ঢাকা",
-    mymensingh: "ময়মনসিংহ",
-    narayanganj: "নারায়ণগঞ্জ",
+    rangpur: 'রংপুর',
+    bogura: 'বগুড়া',
+    khulna: 'খুলনা',
+    kushtia: 'কুষ্টিয়া',
+    pabna: 'পাবনা',
+    sylhet: 'সিলেট',
+    rajshahi: 'রাজশাহী',
+    chittagong: 'চট্টগ্রাম',
+    barisal: 'বরিশাল',
+    dhaka: 'ঢাকা',
+    mymensingh: 'ময়মনসিংহ',
+    narayanganj: 'নারায়ণগঞ্জ',
   };
 
   function containsBengaliDistrict(input, districtTranslations) {
+<<<<<<< HEAD
     return Object.values(districtTranslations).some((bnDistrict) => {
       const patterns = [
         bnDistrict,
         bnDistrict + "য়",
         bnDistrict + "তে",
         bnDistrict.replace(/া$/, "ে"),
+=======
+    // Check for any Bengali district name with or without locative suffixes
+    return Object.values(districtTranslations).some(bnDistrict => {
+      // Check for: exact, "য়", "তে", "ে" suffixes
+      const patterns = [
+        bnDistrict, // "ঢাকা"
+        bnDistrict + 'য়', // "ঢাকায়"
+        bnDistrict + 'তে', // "কুষ্টিয়াতে"
+        bnDistrict.replace(/া$/, 'ে'), // "ঢাকায়" (sometimes "া" becomes "ে")
+>>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
       ];
-      return patterns.some((pattern) => input.includes(pattern));
+      return patterns.some(pattern => input.includes(pattern));
     });
   }
 
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
+<<<<<<< HEAD
   const [input, setInput] = useState("");
   const [submittedText, setSubmittedText] = useState("");
   const [doctorList, setDoctorList] = useState([]);
@@ -77,15 +97,32 @@ export default function ChatWithAssistant() {
 
   const usedDistrict =
     doctorList && doctorList.length > 0 ? doctorList[0].district : null;
+=======
+  function cleanQueryText() {
+    const isBengali = /[\u0980-\u09FF]/.test(input); // Bengali character detection
+    if (isBengali) {
+      return input.replace(/\bin\b\s?/gi, ''); // Remove "in ", "in"
+    }
+    return input;
+  }
+
+  const [input, setInput] = useState('');
+  const [submittedText, setSubmittedText] = useState('');
+  const [doctorList, setDoctorList] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [language, setLanguage] = useState('bn-BD'); // Default: Bangla
+  const [loading, setLoading] = useState(false);
+  const userDistrict = useUserDistrict();
+>>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
 
   function detectLanguage(text) {
     const hasBangla = /[\u0980-\u09FF]/.test(text);
-    return hasBangla ? "bn-BD" : "en-US";
+    return hasBangla ? 'bn-BD' : 'en-US';
   }
 
   const handleVoiceInput = () => {
     if (!SpeechRecognition) {
-      alert("Speech Recognition not supported in this browser.");
+      alert('Speech Recognition not supported in this browser.');
       return;
     }
 
@@ -94,14 +131,32 @@ export default function ChatWithAssistant() {
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
+<<<<<<< HEAD
     recognition.onstart = () => setIsRecording(true);
     recognition.onend = () => setIsRecording(false);
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setInput((prev) => `${prev} ${transcript}`);
+=======
+    recognition.onstart = () => {
+      setIsRecording(true);
     };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognition.onresult = event => {
+>>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
+      const transcript = event.results[0][0].transcript;
+      setInput(prev => `${prev} ${transcript}`);
+    };
+<<<<<<< HEAD
     recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
+=======
+
+    recognition.onerror = event => {
+      console.error('Speech recognition error:', event.error);
+>>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
       setIsRecording(false);
     };
 
@@ -125,18 +180,22 @@ export default function ChatWithAssistant() {
 
     let prompt = cleanQueryText(input);
     let hasDistrict = false;
+<<<<<<< HEAD
 
     if (language === "bn-BD") {
+=======
+    if (language === 'bn-BD') {
+>>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
       hasDistrict = containsBengaliDistrict(input, districtTranslations);
     } else {
       const lowerInput = input.toLowerCase();
       hasDistrict =
-        lowerInput.includes("district") || lowerInput.includes("in ");
+        lowerInput.includes('district') || lowerInput.includes('in ');
     }
 
     if (!hasDistrict && userDistrict) {
       let locationPhrase;
-      if (language === "bn-BD") {
+      if (language === 'bn-BD') {
         const bengaliDistrict =
           districtTranslations[userDistrict?.toLowerCase()] || userDistrict;
         locationPhrase = `${bengaliDistrict}`;
@@ -149,17 +208,18 @@ export default function ChatWithAssistant() {
     setSubmittedText(prompt);
 
     try {
+      setLoading(true);
       const res = await fetch(
-        "http://localhost:5000/api/v1/doctors/ai-search",
+        'https://doctors-bd-backend-five.vercel.app/api/v1/doctors/ai-search',
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             prompt,
             fallbackLocation: userDistrict,
-            language: language.startsWith("bn-BD") ? "bn-BD" : "en-US",
+            language: language.startsWith('bn-BD') ? 'bn-BD' : 'en-US',
           }),
         }
       );
@@ -167,18 +227,21 @@ export default function ChatWithAssistant() {
       const data = await res.json();
       setDoctorList(data.data);
     } catch (error) {
-      console.error("Search failed:", error);
+      console.error('Search failed:', error);
+    } finally {
+      setLoading(false);
     }
 
-    setInput("");
+    setInput('');
   };
-
+  if (loading) return <CircleSpinner />;
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
       <h1 className="text-2xl md:text-3xl font-semibold text-purple-700 mb-6">
         🤖 Chat with CarePoint Assistant
       </h1>
 
+<<<<<<< HEAD
       {realLocation &&
         usedDistrict &&
         !realLocation.toLowerCase().includes(usedDistrict.toLowerCase()) && (
@@ -190,6 +253,14 @@ export default function ChatWithAssistant() {
             <strong>{usedDistrict}</strong>.
           </div>
         )}
+=======
+      {userDistrict && (
+        <div className="mb-4 text-sm text-gray-700 bg-purple-100 border border-purple-300 rounded-md p-2">
+          📍 Using your current location:{' '}
+          <strong className="capitalize">{userDistrict}</strong>
+        </div>
+      )}
+>>>>>>> da5cf0441eb088f11d63fa34cdb1f3e5ebc033d8
 
       <div className="w-full max-w-2xl">
         <div className="flex items-center border rounded-xl bg-white shadow-md p-3">
@@ -198,13 +269,13 @@ export default function ChatWithAssistant() {
             placeholder="Describe your problem..."
             className="flex-1 resize-none text-sm md:text-base p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             value={input}
-            onChange={(e) => {
+            onChange={e => {
               const value = e.target.value;
               setInput(value);
               setLanguage(detectLanguage(value));
             }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 handleSend();
               }
@@ -219,13 +290,13 @@ export default function ChatWithAssistant() {
         </div>
 
         <p className="text-sm text-gray-500 mt-1">
-          Detected Language: {language === "bn-BD" ? "বাংলা" : "English"}
+          Detected Language: {language === 'bn-BD' ? 'বাংলা' : 'English'}
         </p>
 
         <div className="flex items-center gap-4 mt-2">
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value)}
+            onChange={e => setLanguage(e.target.value)}
             className="text-sm border rounded-md p-1 bg-white text-gray-700"
           >
             <option value="bn-BD">বাংলা (Bangla)</option>
@@ -235,10 +306,10 @@ export default function ChatWithAssistant() {
           <button
             onClick={handleVoiceInput}
             className={`p-2 rounded-md ${
-              isRecording ? "bg-red-500" : "bg-green-600"
+              isRecording ? 'bg-red-500' : 'bg-green-600'
             } text-white`}
           >
-            🎤 {isRecording ? "Listening..." : "Start Talking"}
+            🎤 {isRecording ? 'Listening...' : 'Start Talking'}
           </button>
         </div>
       </div>
@@ -252,7 +323,7 @@ export default function ChatWithAssistant() {
             <p className="font-semibold text-purple-700">Suggested Doctors:</p>
             <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
               {doctorList &&
-                doctorList.map((doctor) => (
+                doctorList.map(doctor => (
                   <DoctorCard key={doctor._id} doctor={doctor} />
                 ))}
             </div>

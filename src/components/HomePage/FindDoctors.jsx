@@ -15,7 +15,7 @@ export default function FindYourDoctor() {
   return (
     <section className="w-full py-6 md:py-12 bg-white">
       <div className="max-w-5xl mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8">
+        <h2 className="text-3xl md:text-4xl font-semibold text-purple-700 mb-8 text-center">
           Find Your Doctor
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

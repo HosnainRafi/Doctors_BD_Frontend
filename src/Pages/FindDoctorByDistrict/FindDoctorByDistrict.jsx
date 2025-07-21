@@ -27,7 +27,6 @@ const FindDoctorByDistrict = () => {
         `https://doctors-bd-backend-five.vercel.app/api/v1/doctors?district=${selectedDistrict}`
       );
       const data = await response.json();
-      console.log(data.data);
       setDoctorsList(data.data);
       setLoading(false);
     }

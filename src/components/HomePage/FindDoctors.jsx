@@ -7,6 +7,9 @@ export default function FindYourDoctor() {
   const handleDistrictClick = () => {
     navigate('/find-doctor-by-district');
   };
+  const handleCategoryClick = () => {
+    navigate('/find-doctor-by-category');
+  };
 
   const handleHospitalClick = () => {
     navigate('/find-doctor-by-hospital');
@@ -40,7 +43,7 @@ export default function FindYourDoctor() {
           </div>
 
           <div
-            onClick={handleHospitalClick}
+            onClick={handleCategoryClick}
             className="cursor-pointer bg-green-50 hover:bg-green-100 p-4 rounded-2xl shadow-md transition duration-300 flex flex-col gap-4 justify-between"
           >
             <h3 className="text-2xl font-semibold text-green-700 mb-2">

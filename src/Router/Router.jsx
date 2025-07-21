@@ -6,6 +6,9 @@ import FindDoctorByDistrict from "../Pages/FindDoctorByDistrict/FindDoctorByDist
 import DoctorDetails from "../Pages/DoctorDetails/DoctorDetails";
 import AllDoctors from "../Pages/AllDoctors/AllDoctors";
 import ErrorPage from "../Pages/ErrorPage/ErrorPage";
+import Contact from "../Pages/Contact/Contact";
+import FindDoctorByHospital from "../Pages/FindDoctorByHospital/FindDoctorByHospital";
+import FindDoctorByCategory from "../Pages/FindDoctorByCategory/FindDoctorByCategory";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +29,14 @@ export const router = createBrowserRouter([
         element: <FindDoctorByDistrict />,
       },
       {
+        path: "/find-doctor-by-hospital",
+        element: <FindDoctorByHospital />,
+      },
+      {
+        path: "/find-doctor-by-category",
+        element: <FindDoctorByCategory />,
+      },
+      {
         path: "/doctor/:id",
         element: <DoctorDetails />,
       },
@@ -33,10 +44,10 @@ export const router = createBrowserRouter([
         path: "/all-doctors",
         element: <AllDoctors />,
       },
-      // {
-      //   path: '/contact',
-      //   element: <Contact />,
-      // },
+      {
+        path: '/contact',
+        element: <Contact />,
+      },
     ],
   },
 ]);

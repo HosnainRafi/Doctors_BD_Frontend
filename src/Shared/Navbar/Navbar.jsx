@@ -17,13 +17,14 @@ const Navbar = () => {
   ];
 
   return (
-    <div className='fixed top-0 w-full left-0 z-50'>
+    <div className="fixed top-0 w-full left-0 z-50">
       <nav className="border-gray-200 py-2.5 bg-gray-900">
         <div className="flex flex-wrap items-center justify-between max-w-7xl px-4 mx-auto">
           <NavLink to="/" className="flex items-center">
-            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-              Care<span className="text-red-700 font-bold">P</span>oint
-            </span>
+            <img className='w-28 h-16 object-contain'
+              src="https://i.postimg.cc/P5nJkfDF/image-43-removebg-preview.png"
+              alt=""
+            />
           </NavLink>
 
           <div className="flex items-center lg:order-2">

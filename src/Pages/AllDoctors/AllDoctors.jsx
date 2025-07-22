@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import DoctorCard from '../../components/DoctorCard';
 import CircleSpinner from '../../components/Spinner/CircleSpinner';

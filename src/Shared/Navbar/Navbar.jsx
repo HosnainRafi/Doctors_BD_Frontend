@@ -14,6 +14,7 @@ const Navbar = () => {
     },
     { key: 'chat', label: 'Chat With Assistant', path: '/chat-with-assistant' },
     { key: 'contact', label: 'Contact', path: '/contact' },
+    { key: 'about-us', label: 'About Us', path: '/about-us' },
   ];
 
   return (

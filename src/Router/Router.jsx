@@ -11,6 +11,7 @@ import FindDoctorByHospital from '../Pages/FindDoctorByHospital/FindDoctorByHosp
 import FindDoctorByCategory from '../Pages/FindDoctorByCategory/FindDoctorByCategory';
 import ArticleDetailPage from '../components/ArticleDetailPage';
 import DevTeam from '../Pages/Team/Team';
+import AboutUs from '../Pages/AboutUs/AboutUs';
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
       {
         path: '/contact',
         element: <Contact />,
+      },
+      {
+        path: '/about-us',
+        element: <AboutUs />,
       },
       {
         path: '/team',

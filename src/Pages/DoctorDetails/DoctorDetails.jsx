@@ -25,7 +25,7 @@ const DoctorDetails = () => {
   if (loading) return <CircleSpinner />;
   return (
     <div className="bg-gray-100">
-      <div className="max-w-7xl mx-auto py-4 md:py-6">
+      <div className="max-w-7xl mx-auto py-4 md:py-6 px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8">
           <div className="col-span-4">
             <img

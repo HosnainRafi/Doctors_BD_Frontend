@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import DoctorCard from '../../components/DoctorCard';
-import CircleSpinner from '../../components/Spinner/CircleSpinner';
+import { ColorRing } from 'react-loader-spinner';
 
 const FindDoctorByHospital = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -8,7 +8,6 @@ const FindDoctorByHospital = () => {
 
   const [districts, setDistricts] = useState([]);
   const [hospitalList, setHospitalList] = useState([]);
-
   const [doctorsList, setDoctorsList] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -42,16 +41,24 @@ const FindDoctorByHospital = () => {
 
   const handleSearch = async () => {
     if (!selectedDistrict || !selectedHospitalId) return;
+
+    const selectedHospital = hospitalList.find(
+      h => h._id === selectedHospitalId
+    );
+    const selectedHospitalName = selectedHospital?.name;
+
+    if (!selectedHospitalName) return;
+
     setLoading(true);
     const response = await fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/doctors?district=${selectedDistrict}&hospitalIds=["${selectedHospitalId}"]`
+      `https://doctors-bd-backend.vercel.app/api/v1/doctors?district=${selectedDistrict}&hospital=${encodeURIComponent(
+        selectedHospitalName
+      )}`
     );
     const data = await response.json();
     setDoctorsList(data.data || []);
     setLoading(false);
   };
-
-  if (loading) return <CircleSpinner />;
 
   return (
     <section className="bg-white py-12 px-4 sm:px-8 lg:px-16">
@@ -71,7 +78,7 @@ const FindDoctorByHospital = () => {
           >
             <option value="">Select District</option>
             {districts.map(d => (
-              <option key={d._id} value={d.name.toLowerCase()}>
+              <option key={d._id} value={d._id}>
                 {d.name}
               </option>
             ))}
@@ -96,7 +103,19 @@ const FindDoctorByHospital = () => {
             className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 w-full sm:w-auto"
             disabled={!selectedDistrict || !selectedHospitalId}
           >
-            Search
+            {loading ? (
+              <ColorRing
+                visible={true}
+                height="25"
+                width="25"
+                ariaLabel="color-ring-loading"
+                wrapperStyle={{}}
+                wrapperClass="color-ring-wrapper"
+                colors={['#fff', '#fff', '#fff', '#fff', '#fff']}
+              />
+            ) : (
+              'Search Doctors'
+            )}
           </button>
         </div>
       </div>

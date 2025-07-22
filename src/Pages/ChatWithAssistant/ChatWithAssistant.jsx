@@ -5,6 +5,21 @@ import DoctorCard from "../../components/DoctorCard";
 import CircleSpinner from "../../components/Spinner/CircleSpinner";
 
 export default function ChatWithAssistant() {
+  const SUPPORTED_DISTRICTS = [
+    "Rangpur",
+    "Bogura",
+    "Khulna",
+    "Kushtia",
+    "Pabna",
+    "Sylhet",
+    "Rajshahi",
+    "Chittagong",
+    "Barisal",
+    "Dhaka",
+    "Mymensingh",
+    "Narayanganj",
+  ];
+
   const districtTranslations = {
     rangpur: "রংপুর",
     bogura: "বগুড়া",
@@ -20,7 +35,11 @@ export default function ChatWithAssistant() {
     narayanganj: "নারায়ণগঞ্জ",
   };
 
-  function containsBengaliDistrict(input, districtTranslations) {
+  function inputMentionsSupportedDistrict(input) {
+    const lowerInput = input.toLowerCase();
+    if (SUPPORTED_DISTRICTS.some((d) => lowerInput.includes(d.toLowerCase()))) {
+      return true;
+    }
     return Object.values(districtTranslations).some((bnDistrict) => {
       const patterns = [
         bnDistrict,
@@ -43,6 +62,10 @@ export default function ChatWithAssistant() {
   const [userDistrict, setUserDistrict] = useState(null);
   const [realLocation, setRealLocation] = useState("");
   const [loading, setLoading] = useState("");
+  const [note, setNote] = useState("");
+  const [usedDistrict, setUsedDistrict] = useState("");
+  const [userLat, setUserLat] = useState(null);
+  const [userLon, setUserLon] = useState(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -50,6 +73,8 @@ export default function ChatWithAssistant() {
         async (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
+          setUserLat(lat);
+          setUserLon(lon);
 
           const nearestDistrict = getNearestDistrict(lat, lon);
           setUserDistrict(nearestDistrict);
@@ -76,9 +101,6 @@ export default function ChatWithAssistant() {
       );
     }
   }, []);
-
-  const usedDistrict =
-    doctorList && doctorList.length > 0 ? doctorList[0].district : null;
 
   function detectLanguage(text) {
     const hasBangla = /[\u0980-\u09FF]/.test(text);
@@ -118,25 +140,14 @@ export default function ChatWithAssistant() {
     return input;
   };
 
-  console.log(realLocation);
-  console.log(usedDistrict);
-  console.log("userDistrict:", userDistrict);
-
   const handleSend = async () => {
     if (!input.trim()) return;
 
     let prompt = cleanQueryText(input);
-    let hasDistrict = false;
 
-    if (language === "bn-BD") {
-      hasDistrict = containsBengaliDistrict(input, districtTranslations);
-    } else {
-      const lowerInput = input.toLowerCase();
-      hasDistrict =
-        lowerInput.includes("district") || lowerInput.includes("in ");
-    }
+    const mentionsDistrict = inputMentionsSupportedDistrict(input);
 
-    if (!hasDistrict && userDistrict) {
+    if (!mentionsDistrict && userDistrict) {
       let locationPhrase;
       if (language === "bn-BD") {
         const bengaliDistrict =
@@ -152,6 +163,7 @@ export default function ChatWithAssistant() {
 
     try {
       setLoading(true);
+
       const res = await fetch(
         "http://localhost:5000/api/v1/doctors/ai-search",
         {
@@ -163,12 +175,16 @@ export default function ChatWithAssistant() {
             prompt,
             fallbackLocation: userDistrict,
             language: language.startsWith("bn-BD") ? "bn-BD" : "en-US",
+            lat: userLat,
+            lon: userLon,
           }),
         }
       );
 
       const data = await res.json();
       setDoctorList(data.data);
+      setNote(data.note || "");
+      setUsedDistrict(data.usedDistrict || "");
     } catch (error) {
       console.error("Search failed:", error);
     } finally {
@@ -177,6 +193,7 @@ export default function ChatWithAssistant() {
 
     setInput("");
   };
+
   if (loading) return <CircleSpinner />;
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
@@ -252,7 +269,11 @@ export default function ChatWithAssistant() {
         <div className="mt-8 w-full  md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6  rounded-lg ">
           <p className="font-medium text-gray-800">Your query:</p>
           <p className="text-gray-600 mt-2">{submittedText}</p>
-
+          {note && (
+            <div className="mb-4 text-sm text-gray-700 bg-yellow-100 border border-yellow-300 rounded-md p-2">
+              {note}
+            </div>
+          )}
           <div>
             <p className="font-semibold text-purple-700">Suggested Doctors:</p>
             <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">

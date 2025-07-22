@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "title": "5 Tips for a Healthy Heart",
+    "summary": "Learn simple lifestyle changes that can improve your heart health and reduce risk of cardiovascular diseases.",
+    "url": "/articles/healthy-heart",
+    "image": "https://i.postimg.cc/PJH6bjDV/2019-09-27.jpg",
+    "author": "Dr. Ayesha Rahman",
+    "publishedDate": "2024-11-12",
+    "category": "Cardiology",
+    "tags": ["Heart", "Fitness", "Wellness", "Diet"],
+    "readTime": "5 min",
+    "content": "Heart disease is a leading cause of death worldwide. The good news is that many heart-related conditions can be prevented or managed with lifestyle changes. In this article, we will go over five practical tips for maintaining a healthy heart:\n\n1. **Eat a Heart-Healthy Diet**: Focus on whole grains, lean proteins, fruits, and vegetables. Reduce your intake of saturated fats, trans fats, and sodium.\n2. **Exercise Regularly**: At least 30 minutes of moderate activity like walking, biking, or swimming, five days a week.\n3. **Quit Smoking**: Smoking damages blood vessels and increases your risk of heart disease.\n4. **Monitor Blood Pressure and Cholesterol**: Get regular checkups and follow your doctor's advice.\n5. **Manage Stress**: Practice mindfulness, breathing exercises, or activities that relax you.\n\nMaking these changes might seem overwhelming, but starting with one small step can make a big difference in your heart health."
+  },
+  {
+    "id": 2,
+    "title": "How to Boost Your Immunity Naturally",
+    "summary": "Discover natural ways to strengthen your immune system with diet, exercise, and stress management.",
+    "url": "/articles/boost-immunity",
+    "image": "https://i.postimg.cc/MHzDMYkh/10-Essential-Tips-for-Boosting-Your-Childs-Immunity-Naturally.jpg",
+    "author": "Dr. Tanvir Alam",
+    "publishedDate": "2024-10-20",
+    "category": "General Health",
+    "tags": ["Immunity", "Supplements", "Lifestyle", "Wellness"],
+    "readTime": "6 min",
+    "content": "The immune system is your body’s defense against illness. Supporting it naturally can help you prevent infections and stay healthier year-round. Here's how:\n\n- **Eat immune-boosting foods**: Include garlic, ginger, turmeric, citrus fruits, yogurt, and green leafy vegetables.\n- **Get quality sleep**: 7–9 hours of sleep is essential for immune regeneration.\n- **Stay hydrated**: Water helps carry oxygen to cells and flushes out toxins.\n- **Exercise**: Moderate activity helps reduce inflammation and promotes healthy circulation.\n- **Minimize stress**: Chronic stress can suppress your immune response. Practice yoga or meditation.\n\nNo supplement can replace a healthy lifestyle. Instead, aim to build long-term habits that keep your immune system in peak condition."
+  },
+  {
+    "id": 3,
+    "title": "Understanding Diabetes: What You Need to Know",
+    "summary": "A comprehensive guide to diabetes types, symptoms, prevention, and management.",
+    "url": "/articles/understanding-diabetes",
+    "image": "https://i.postimg.cc/Z5WLdRgK/Everything-You-Need-to-Know-About-Diabetes-01-11zon.webp",
+    "author": "Dr. Sharmeen Akter",
+    "publishedDate": "2024-09-18",
+    "category": "Endocrinology",
+    "tags": ["Diabetes", "Blood Sugar", "Insulin", "Type 2"],
+    "readTime": "7 min",
+    "content": "Diabetes is a chronic condition that affects how your body turns food into energy. When you have diabetes, your body either doesn't make enough insulin or can't use it effectively.\n\n**Types of Diabetes**:\n- **Type 1**: Autoimmune destruction of insulin-producing cells.\n- **Type 2**: Insulin resistance over time, often linked with lifestyle.\n- **Gestational**: Occurs during pregnancy and usually resolves after childbirth.\n\n**Symptoms**:\n- Increased thirst and urination\n- Fatigue\n- Blurry vision\n- Slow-healing wounds\n\n**Management**:\n- Maintain a healthy diet low in sugar and refined carbs.\n- Regular physical activity.\n- Monitor blood glucose levels.\n- Medication or insulin if required.\n\nEarly diagnosis and lifestyle adjustments can help manage or even reverse Type 2 diabetes in many cases."
+  },
+  {
+    "id": 4,
+    "title": "The Importance of Regular Sleep",
+    "summary": "Sleep is essential for good health. Learn how to build better sleep habits and improve your overall well-being.",
+    "url": "/articles/sleep-habits",
+    "image": "https://i.postimg.cc/R0rwJTKX/images.jpg",
+    "author": "Dr. Mahmud Hasan",
+    "publishedDate": "2024-08-05",
+    "category": "Sleep Health",
+    "tags": ["Sleep", "Insomnia", "Mental Health", "Rest"],
+    "readTime": "5 min",
+    "content": "Sleep affects almost every system in your body. Poor sleep can lead to weight gain, mental health issues, and even chronic illnesses like diabetes and heart disease.\n\nTo improve sleep:\n- Stick to a consistent sleep schedule.\n- Avoid screens 1 hour before bed.\n- Create a calm and dark environment.\n- Limit caffeine and heavy meals before bedtime.\n\nTry relaxation techniques such as reading, taking a warm shower, or doing breathing exercises to help you wind down. Getting enough sleep isn’t a luxury—it’s a necessity."
+  },
+  {
+    "id": 5,
+    "title": "Mental Health: Coping with Stress",
+    "summary": "Explore effective strategies for managing daily stress and improving mental well-being.",
+    "url": "/articles/coping-with-stress",
+    "image": "https://i.postimg.cc/j2jfY3Yd/images-1.jpg",
+    "author": "Dr. Nusrat Jahan",
+    "publishedDate": "2024-07-22",
+    "category": "Mental Health",
+    "tags": ["Stress", "Anxiety", "Therapy", "Mindfulness"],
+    "readTime": "6 min",
+    "content": "In today’s fast-paced world, stress is inevitable—but it doesn’t have to control you. Chronic stress can lead to serious physical and mental health problems, including depression, high blood pressure, and insomnia.\n\n**Coping Techniques**:\n- **Mindfulness Meditation**: Stay grounded in the present.\n- **Physical Activity**: Exercise releases endorphins, improving your mood.\n- **Talk Therapy**: Speaking to a counselor can help you gain perspective.\n- **Journaling**: Writing your thoughts can help offload mental tension.\n\nEven small changes—like taking breaks, breathing deeply, or saying 'no' when needed—can significantly reduce your stress levels. Prioritize your mental health the same way you do your physical health."
+  },
+  {
+    "id": 6,
+    "title": "The Power of Hydration: Why Water Matters",
+    "summary": "Staying hydrated is essential for your body’s functions. Learn how much water you really need and why it matters.",
+    "url": "/articles/importance-of-hydration",
+    "image": "https://i.postimg.cc/XJjG91Jc/images-2.jpg",
+    "author": "Dr. Rehana Kabir",
+    "publishedDate": "2024-11-30",
+    "category": "Nutrition",
+    "tags": ["Hydration", "Water", "Kidney Health", "Energy"],
+    "readTime": "4 min",
+    "content": "Water makes up about 60% of your body, and nearly every system depends on it to function properly. From regulating temperature to flushing out toxins, hydration plays a vital role in your health.\n\n**Benefits of Staying Hydrated**:\n- Keeps skin healthy and glowing\n- Aids in digestion and nutrient absorption\n- Improves energy and brain function\n- Supports kidney function and detox\n\n**How Much Water Do You Need?**\nWhile the '8 glasses a day' rule is a helpful guideline, your needs vary based on activity, climate, and diet. A better rule: drink when you're thirsty and monitor the color of your urine (pale yellow = good).\n\n**Tips to Stay Hydrated**:\n- Carry a reusable water bottle\n- Set reminders on your phone\n- Infuse water with fruits or herbs for flavor\n\nHydration isn’t just about water. Foods like cucumber, watermelon, and oranges also contribute to your intake. Make hydration a habit—it’s one of the simplest ways to boost your health."
+  }
+]

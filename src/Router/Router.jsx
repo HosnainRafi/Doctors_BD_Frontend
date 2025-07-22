@@ -9,44 +9,49 @@ import ErrorPage from "../Pages/ErrorPage/ErrorPage";
 import Contact from "../Pages/Contact/Contact";
 import FindDoctorByHospital from "../Pages/FindDoctorByHospital/FindDoctorByHospital";
 import FindDoctorByCategory from "../Pages/FindDoctorByCategory/FindDoctorByCategory";
+import ArticleDetailPage from "../components/ArticleDetailPage";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <Home />,
       },
       {
-        path: "/chat-with-assistant",
+        path: '/chat-with-assistant',
         element: <ChatWithAssistant />,
       },
       {
-        path: "/find-doctor-by-district",
+        path: '/find-doctor-by-district',
         element: <FindDoctorByDistrict />,
       },
       {
-        path: "/find-doctor-by-hospital",
+        path: '/find-doctor-by-hospital',
         element: <FindDoctorByHospital />,
       },
       {
-        path: "/find-doctor-by-category",
+        path: '/find-doctor-by-category',
         element: <FindDoctorByCategory />,
       },
       {
-        path: "/doctor/:id",
+        path: '/doctor/:id',
         element: <DoctorDetails />,
       },
       {
-        path: "/all-doctors",
+        path: '/all-doctors',
         element: <AllDoctors />,
       },
       {
         path: '/contact',
         element: <Contact />,
+      },
+      {
+        path: '/article/:id',
+        element: <ArticleDetailPage/>
       },
     ],
   },

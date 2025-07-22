@@ -6,11 +6,9 @@ import { FaArrowRight } from 'react-icons/fa';
 
 const FeaturedDoctors = () => {
   const [doctorsList, setDoctorsList] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      setLoading(true);
       try {
         const response = await fetch(
           'https://doctors-bd-backend-five.vercel.app/api/v1/doctors?limit=4'
@@ -19,13 +17,9 @@ const FeaturedDoctors = () => {
         setDoctorsList(data.data);
       } catch (error) {
         console.error('Failed to fetch featured doctors:', error);
-      } finally {
-        setLoading(false);
       }
     })();
   }, []);
-
-  if (loading) return <CircleSpinner />;
 
   return (
     <section className="bg-gray-50 py-12 px-4 sm:px-8 lg:px-16">
@@ -34,9 +28,13 @@ const FeaturedDoctors = () => {
           Featured Doctors
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {doctorsList?.map(doctor => (
-            <DoctorCard key={doctor._id} doctor={doctor} />
-          ))}
+          {doctorsList.length > 0 ? (
+            doctorsList?.map(doctor => (
+              <DoctorCard key={doctor._id} doctor={doctor} />
+            ))
+          ) : (
+            <CircleSpinner />
+          )}
         </div>
         <div className="flex justify-center mt-8">
           <Link

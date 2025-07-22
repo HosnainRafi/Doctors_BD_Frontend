@@ -36,7 +36,7 @@ const ArticleDetailPage = () => {
         <img
           src={article.image}
           alt={article.title}
-          className="w-full h-auto rounded-md shadow mb-6"
+          className="w-full h-[400px] object-contain rounded-md shadow mb-6"
         />
       )}
 

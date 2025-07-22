@@ -4,7 +4,7 @@ import CircleSpinner from '../../components/Spinner/CircleSpinner';
 
 const FindDoctorByHospital = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [selectedHospital, setSelectedHospital] = useState('');
+  const [selectedHospitalId, setSelectedHospitalId] = useState('');
 
   const [districts, setDistricts] = useState([]);
   const [hospitalList, setHospitalList] = useState([]);
@@ -32,19 +32,19 @@ const FindDoctorByHospital = () => {
           `https://doctors-bd-backend-five.vercel.app/api/v1/hospitals?district=${selectedDistrict}`
         );
         const data = await response.json();
-        setHospitalList(data.data || []);
+        setHospitalList(data.data.data);
       })();
     } else {
       setHospitalList([]);
-      setSelectedHospital('');
+      setSelectedHospitalId('');
     }
   }, [selectedDistrict]);
 
   const handleSearch = async () => {
-    if (!selectedDistrict || !selectedHospital) return;
+    if (!selectedDistrict || !selectedHospitalId) return;
     setLoading(true);
     const response = await fetch(
-      `https://doctors-bd-backend-five.vercel.app/api/v1/doctors/ai-search?district=${selectedDistrict}&hospital_name=${selectedHospital}`
+      `https://doctors-bd-backend.vercel.app/api/v1/doctors?district=${selectedDistrict}&hospitalIds=["${selectedHospitalId}"]`
     );
     const data = await response.json();
     setDoctorsList(data.data || []);
@@ -78,15 +78,15 @@ const FindDoctorByHospital = () => {
           </select>
 
           <select
-            value={selectedHospital}
-            onChange={e => setSelectedHospital(e.target.value)}
+            value={selectedHospitalId}
+            onChange={e => setSelectedHospitalId(e.target.value)}
             className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-[48%] focus:outline-none focus:ring-2 focus:ring-purple-500"
             disabled={!hospitalList.length}
           >
             <option value="">Select Hospital</option>
-            {hospitalList && hospitalList?.map((h, idx) => (
-              <option key={idx} value={h.name || h}>
-                {h.name || h}
+            {hospitalList.map(h => (
+              <option key={h._id} value={h._id}>
+                {h.name}
               </option>
             ))}
           </select>
@@ -94,7 +94,7 @@ const FindDoctorByHospital = () => {
           <button
             onClick={handleSearch}
             className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 w-full sm:w-auto"
-            disabled={!selectedDistrict || !selectedHospital}
+            disabled={!selectedDistrict || !selectedHospitalId}
           >
             Search
           </button>

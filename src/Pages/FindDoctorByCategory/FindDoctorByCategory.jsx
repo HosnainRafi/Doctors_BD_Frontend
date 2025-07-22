@@ -49,7 +49,7 @@ const FindDoctorByCategory = () => {
 
   return (
     <section className="bg-white py-12 px-4 sm:px-8 lg:px-16">
-      <div className="max-w-4xl mx-auto text-center">
+      <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-3xl font-bold text-purple-700 mb-4">
           Find Doctors by Category
         </h2>
@@ -58,7 +58,7 @@ const FindDoctorByCategory = () => {
         </p>
 
         {!searched && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-left">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6 text-left">
             {categoryList.map(category => (
               <label
                 key={category._id}

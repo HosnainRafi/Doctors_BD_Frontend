@@ -32,7 +32,7 @@ const DoctorDetails = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8">
           <div className="col-span-4">
             <img
-              className="md:w-[350px] md:h-[300px] w-20 h-[100px] rounded-3xl object-cover border-white border-[6px] shadow object-top"
+              className="md:w-[350px] md:h-[300px] w-20 h-[100px] rounded-3xl object-contain border-white border-[6px] shadow object-top"
               src={doctorDetails?.photo}
               alt=""
             />

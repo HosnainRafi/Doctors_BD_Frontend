@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 import { useEffect, useState } from "react";
 import DoctorCard from "../../components/DoctorCard";
 import { ColorRing } from "react-loader-spinner";
+=======
+import { useEffect, useState } from 'react';
+import DoctorCard from '../../components/DoctorCard';
+import { ColorRing } from 'react-loader-spinner';
+import CircleSpinner from '../../components/Spinner/CircleSpinner';
+>>>>>>> cb5d57a1c80a909ae39a98acd5f2a4cbd360b0ac
 
 const FindDoctorByHospital = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -28,10 +35,14 @@ const FindDoctorByHospital = () => {
     if (selectedDistrict) {
       (async () => {
         const response = await fetch(
+<<<<<<< HEAD
           `https://doctors-bd-backend.vercel.app/api/v1/hospitals?district=${selectedDistrict}`
+=======
+          `https://doctors-bd-backend.vercel.app/api/v1/hospitals/by-district/${selectedDistrict}`
+>>>>>>> cb5d57a1c80a909ae39a98acd5f2a4cbd360b0ac
         );
         const data = await response.json();
-        setHospitalList(data.data.data);
+        setHospitalList(data.data);
       })();
     } else {
       setHospitalList([]);
@@ -51,9 +62,7 @@ const FindDoctorByHospital = () => {
 
     setLoading(true);
     const response = await fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/doctors?district=${selectedDistrict}&hospital=${encodeURIComponent(
-        selectedHospitalName
-      )}`
+      `https://doctors-bd-backend.vercel.app/api/v1/doctors?district=${selectedDistrict}&hospital=${selectedHospitalName}`
     );
     const data = await response.json();
     setDoctorsList(data.data || []);
@@ -71,14 +80,20 @@ const FindDoctorByHospital = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 flex-wrap">
+          {/* 🔄 Updated to pass district name instead of ID */}
           <select
             value={selectedDistrict}
             onChange={(e) => setSelectedDistrict(e.target.value)}
             className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-[48%] focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="">Select District</option>
+<<<<<<< HEAD
             {districts.map((d) => (
               <option key={d._id} value={d._id}>
+=======
+            {districts.map(d => (
+              <option key={d._id} value={d.name}>
+>>>>>>> cb5d57a1c80a909ae39a98acd5f2a4cbd360b0ac
                 {d.name}
               </option>
             ))}
@@ -119,12 +134,24 @@ const FindDoctorByHospital = () => {
           </button>
         </div>
       </div>
+<<<<<<< HEAD
 
       <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
         {doctorsList.map((doctor) => (
           <DoctorCard key={doctor._id} doctor={doctor} />
         ))}
       </div>
+=======
+      {loading && doctorsList.length == 0 ? (
+        <CircleSpinner />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
+          {doctorsList.map(doctor => (
+            <DoctorCard key={doctor._id} doctor={doctor} />
+          ))}
+        </div>
+      )}
+>>>>>>> cb5d57a1c80a909ae39a98acd5f2a4cbd360b0ac
     </section>
   );
 };

@@ -3,6 +3,7 @@ import { SendHorizonal } from "lucide-react";
 import { getNearestDistrict } from "./UserDistrict";
 import DoctorCard from "../../components/DoctorCard";
 import CircleSpinner from "../../components/Spinner/CircleSpinner";
+import { Helmet } from "react-helmet";
 
 export default function ChatWithAssistant() {
   const SUPPORTED_DISTRICTS = [
@@ -196,95 +197,169 @@ export default function ChatWithAssistant() {
 
   if (loading) return <CircleSpinner />;
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
-      <h1 className="text-2xl md:text-3xl font-semibold text-purple-700 mb-6">
-        🤖 Chat with CarePoint Assistant
-      </h1>
+    <>
+      <Helmet>
+        <title>Find the Best Dentists in Narayanganj | CarePoint</title>
+        <meta
+          name="description"
+          content="Book appointments with the best dentists in Narayanganj. See ratings, schedules, and more."
+        />
+        <meta name="robots" content="index, follow" />
+        <link
+          rel="canonical"
+          href="https://yourdomain.com/doctors/dentist/narayanganj"
+        />
 
-      {realLocation &&
-        usedDistrict &&
-        !realLocation.toLowerCase().includes(usedDistrict.toLowerCase()) && (
-          <div className="mb-4 text-sm text-gray-700 bg-yellow-100 border border-yellow-300 rounded-md p-2">
-            <strong>Your current location is {realLocation}</strong>, but we
-            don’t have doctor data for this area.
-            <br />
-            So we are showing doctors from the nearest available district:{" "}
-            <strong>{usedDistrict}</strong>.
-          </div>
-        )}
+        {/* Open Graph */}
+        <meta
+          property="og:title"
+          content="Find the Best Dentists in Narayanganj"
+        />
+        <meta
+          property="og:description"
+          content="Book appointments with the best dentists in Narayanganj."
+        />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:url"
+          content="https://yourdomain.com/doctors/dentist/narayanganj"
+        />
+        <meta
+          property="og:image"
+          content="https://yourdomain.com/og-image.jpg"
+        />
 
-      <div className="w-full max-w-2xl">
-        <div className="flex items-center border rounded-xl bg-white shadow-md p-3">
-          <textarea
-            rows={3}
-            placeholder="Describe your problem..."
-            className="flex-1 resize-none text-sm md:text-base p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-            value={input}
-            onChange={(e) => {
-              const value = e.target.value;
-              setInput(value);
-              setLanguage(detectLanguage(value));
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-          />
-          <button
-            onClick={handleSend}
-            className="ml-3 bg-purple-700 text-white p-2 rounded-md hover:bg-purple-800"
-          >
-            <SendHorizonal className="w-4 h-4" />
-          </button>
-        </div>
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="Find the Best Dentists in Narayanganj"
+        />
+        <meta
+          name="twitter:description"
+          content="Book appointments with the best dentists in Narayanganj."
+        />
+        <meta
+          name="twitter:image"
+          content="https://yourdomain.com/twitter-image.jpg"
+        />
 
-        <p className="text-sm text-gray-500 mt-1">
-          Detected Language: {language === "bn-BD" ? "বাংলা" : "English"}
-        </p>
+        {/* Viewport */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <div className="flex items-center gap-4 mt-2">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="text-sm border rounded-md p-1 bg-white text-gray-700"
-          >
-            <option value="bn-BD">বাংলা (Bangla)</option>
-            <option value="en-US">English</option>
-          </select>
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" />
 
-          <button
-            onClick={handleVoiceInput}
-            className={`p-2 rounded-md ${
-              isRecording ? "bg-red-500" : "bg-green-600"
-            } text-white`}
-          >
-            🎤 {isRecording ? "Listening..." : "Start Talking"}
-          </button>
-        </div>
-      </div>
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {`
+      {
+        "@context": "https://schema.org",
+        "@type": "Physician",
+        "name": "Dr. Tarit Kumar Samadder",
+        "medicalSpecialty": "Oncology",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Barisal",
+          "addressCountry": "Bangladesh"
+        }
+      }
+    `}
+        </script>
+      </Helmet>
 
-      {submittedText && (
-        <div className="mt-8 w-full  md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6  rounded-lg ">
-          <p className="font-medium text-gray-800">Your query:</p>
-          <p className="text-gray-600 mt-2">{submittedText}</p>
-          {note && (
+      <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
+        <h1 className="text-2xl md:text-3xl font-semibold text-purple-700 mb-6">
+          🤖 Chat with CarePoint Assistant
+        </h1>
+
+        {realLocation &&
+          usedDistrict &&
+          !realLocation.toLowerCase().includes(usedDistrict.toLowerCase()) && (
             <div className="mb-4 text-sm text-gray-700 bg-yellow-100 border border-yellow-300 rounded-md p-2">
-              {note}
+              <strong>Your current location is {realLocation}</strong>, but we
+              don’t have doctor data for this area.
+              <br />
+              So we are showing doctors from the nearest available district:{" "}
+              <strong>{usedDistrict}</strong>.
             </div>
           )}
-          <div>
-            <p className="font-semibold text-purple-700">Suggested Doctors:</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
-              {doctorList &&
-                doctorList.map((doctor) => (
-                  <DoctorCard key={doctor._id} doctor={doctor} />
-                ))}
-            </div>
+
+        <div className="w-full max-w-2xl">
+          <div className="flex items-center border rounded-xl bg-white shadow-md p-3">
+            <textarea
+              rows={3}
+              placeholder="Describe your problem..."
+              className="flex-1 resize-none text-sm md:text-base p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              value={input}
+              onChange={(e) => {
+                const value = e.target.value;
+                setInput(value);
+                setLanguage(detectLanguage(value));
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+            />
+            <button
+              onClick={handleSend}
+              className="ml-3 bg-purple-700 text-white p-2 rounded-md hover:bg-purple-800"
+            >
+              <SendHorizonal className="w-4 h-4" />
+            </button>
+          </div>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Detected Language: {language === "bn-BD" ? "বাংলা" : "English"}
+          </p>
+
+          <div className="flex items-center gap-4 mt-2">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="text-sm border rounded-md p-1 bg-white text-gray-700"
+            >
+              <option value="bn-BD">বাংলা (Bangla)</option>
+              <option value="en-US">English</option>
+            </select>
+
+            <button
+              onClick={handleVoiceInput}
+              className={`p-2 rounded-md ${
+                isRecording ? "bg-red-500" : "bg-green-600"
+              } text-white`}
+            >
+              🎤 {isRecording ? "Listening..." : "Start Talking"}
+            </button>
           </div>
         </div>
-      )}
-    </div>
+
+        {submittedText && (
+          <div className="mt-8 w-full  md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6  rounded-lg ">
+            <p className="font-medium text-gray-800">Your query:</p>
+            <p className="text-gray-600 mt-2">{submittedText}</p>
+            {note && (
+              <div className="mb-4 text-sm text-gray-700 bg-yellow-100 border border-yellow-300 rounded-md p-2">
+                {note}
+              </div>
+            )}
+            <div>
+              <p className="font-semibold text-purple-700">
+                Suggested Doctors:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
+                {doctorList &&
+                  doctorList.map((doctor) => (
+                    <DoctorCard key={doctor._id} doctor={doctor} />
+                  ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

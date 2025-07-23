@@ -5,10 +5,10 @@ const devTeam = [
     name: 'Hosnain Rafi',
     role: 'Full-stack Developer',
     image: 'https://i.postimg.cc/XJQ9DGD5/rafi.jpg',
-    bio: 'Focused on server-side logic, API architecture, and database systems using Node.js and Express and AI implementationboth frontend and backend.',
+    bio: 'Focused on server-side logic, API architecture, and database systems using Node.js and Express and AI implementation both frontend and backend.',
     facebook: 'https://web.facebook.com/hosnain.rafi',
     linkedin: 'https://www.linkedin.com/in/hosnain-rafi1/',
-    portfolio: 'https://hosnainrafi.dev',
+    //portfolio: "https://hosnainrafi.dev",
   },
   {
     name: 'Asadul Islam Imran',
@@ -17,7 +17,7 @@ const devTeam = [
     bio: 'Specializes in building modern, responsive UIs using React and Tailwind CSS.',
     facebook: 'https://web.facebook.com/asad9340/',
     linkedin: 'https://www.linkedin.com/in/asad9340/',
-    portfolio: 'https://asad-dev-portfolio.web.app/',
+    //portfolio: "https://asad-dev-portfolio.web.app/",
   },
   {
     name: 'Tanvir Ahmmed Sifat',
@@ -26,7 +26,7 @@ const devTeam = [
     bio: 'Frontend enthusiast passionate about user experience and interactive design.',
     facebook: 'https://web.facebook.com/sifat.7847',
     linkedin: 'https://linkedin.com/in/tanvirsifat',
-    portfolio: 'https://www.linkedin.com/in/sifat26/',
+    //portfolio: "https://www.linkedin.com/in/sifat26/",
   },
 ];
 
@@ -60,7 +60,9 @@ const DevTeam = () => {
               <p className="text-purple-600 text-sm font-medium mb-2">
                 {member.role}
               </p>
-              <p className="text-gray-600 text-sm mb-4">{member.bio}</p>
+              <p className="text-gray-600 text-sm mb-4 min-h-[84px]">
+                {member.bio}
+              </p>
 
               <div className="flex flex-wrap justify-center gap-2 mt-4">
                 <a
@@ -81,7 +83,7 @@ const DevTeam = () => {
                 >
                   LinkedIn <FaLinkedin />
                 </a>
-                <a
+                {/* <a
                   href={member.portfolio}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -89,7 +91,7 @@ const DevTeam = () => {
                              hover:bg-purple-600 hover:text-white hover:scale-105 transform transition duration-300"
                 >
                   Portfolio <FaGlobe />
-                </a>
+                </a> */}
               </div>
             </div>
           ))}

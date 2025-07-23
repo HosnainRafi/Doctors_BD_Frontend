@@ -18,13 +18,9 @@ const FeaturedDoctors = () => {
         const data = await response.json();
         setDoctorsList(data.data || []);
       } catch (error) {
-<<<<<<< HEAD
         console.error("Failed to fetch featured doctors:", error);
-=======
-        console.error('Failed to fetch featured doctors:', error);
       } finally {
         setLoading(false);
->>>>>>> cb5d57a1c80a909ae39a98acd5f2a4cbd360b0ac
       }
     })();
   }, []);
@@ -35,16 +31,10 @@ const FeaturedDoctors = () => {
         <h2 className="text-3xl md:text-4xl font-semibold text-purple-700 mb-8 text-center">
           Featured Doctors
         </h2>
-<<<<<<< HEAD
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {doctorsList.length > 0 ? (
-            doctorsList?.map((doctor) => (
-=======
 
         {!loading && doctorsList.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {doctorsList?.map(doctor => (
->>>>>>> cb5d57a1c80a909ae39a98acd5f2a4cbd360b0ac
+            {doctorsList?.map((doctor) => (
               <DoctorCard key={doctor._id} doctor={doctor} />
             ))}
           </div>

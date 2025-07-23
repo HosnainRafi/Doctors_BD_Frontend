@@ -19,11 +19,6 @@ const FeaturedDoctors = () => {
         setDoctorsList(data.data || []);
       } catch (error) {
         console.error("Failed to fetch featured doctors:", error);
-<<<<<<< HEAD
-      } finally {
-        setLoading(false);
-=======
->>>>>>> cca9238ee211642f269fb101d226de5f40c4af28
       }
     })();
   }, []);
@@ -37,11 +32,7 @@ const FeaturedDoctors = () => {
 
         {!loading && doctorsList.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<<<<<<< HEAD
             {doctorsList?.map((doctor) => (
-=======
-            {doctorsList?.map(doctor => (
->>>>>>> cca9238ee211642f269fb101d226de5f40c4af28
               <DoctorCard key={doctor._id} doctor={doctor} />
             ))}
           </div>

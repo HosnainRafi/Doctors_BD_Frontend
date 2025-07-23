@@ -4,8 +4,8 @@ import {
   FaHospitalAlt,
   FaMapMarkerAlt,
   FaStar,
-} from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+} from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const DoctorCard = ({ doctor }) => {
   return (
@@ -22,7 +22,10 @@ const DoctorCard = ({ doctor }) => {
           <div className="absolute bottom-[47px] w-full">
             <p className="flex items-center gap-1 bg-white px-2 py-1 w-full opacity-70 ">
               <FaStar className="text-[#f7b033]" />
-              <span className='text-black font-bold'>{doctor?.ratingStar}</span> ({doctor?.rating})
+              <span className="text-black font-bold">
+                {doctor?.ratingStar}
+              </span>{" "}
+              ({doctor?.rating})
             </p>
           </div>
         </div>
@@ -41,11 +44,11 @@ const DoctorCard = ({ doctor }) => {
                 title={doctor?.specialty}
               >
                 {doctor?.specialty?.length > 60
-                  ? doctor.specialty.slice(0, 60) + '...'
+                  ? doctor.specialty.slice(0, 60) + "..."
                   : doctor?.specialty}
               </p>
               <svg
-                style={{ marginLeft: '-2px' }}
+                style={{ marginLeft: "-2px" }}
                 height="25"
                 width="18"
                 viewBox="0 0 11 18"
@@ -60,17 +63,17 @@ const DoctorCard = ({ doctor }) => {
             </div>
             <p className="text-sm text-gray-600 flex items-center gap-2 truncate mt-2">
               <FaHospitalAlt className="text-purple-700" />
-              Hospital:{' '}
+              Hospital:{" "}
               {doctor.chambers[0].hospital_name.length > 50
-                ? doctor.chambers[0].hospital_name.slice(0, 50) + '...'
+                ? doctor.chambers[0].hospital_name.slice(0, 50) + "..."
                 : doctor.chambers[0].hospital_name}
             </p>
 
             <p className="text-sm text-gray-600 flex items-center gap-2 truncate">
               <FaMapMarkerAlt className="text-purple-700" />
-              Location:{' '}
+              Location:{" "}
               {doctor.chambers[0].address.length > 40
-                ? doctor.chambers[0].address.slice(0, 40) + '...'
+                ? doctor.chambers[0].address.slice(0, 40) + "..."
                 : doctor.chambers[0].address}
             </p>
 
@@ -78,14 +81,14 @@ const DoctorCard = ({ doctor }) => {
               <FaClock className="text-purple-700" />
               {doctor.chambers[0].visiting_hours.original_text.length > 50
                 ? doctor.chambers[0].visiting_hours.original_text.slice(0, 50) +
-                  '...'
+                  "..."
                 : doctor.chambers[0].visiting_hours.original_text}
             </p>
           </div>
           <hr className="mt-2 mb-2 border-t border-t-purple-700 " />
           <div className="flex justify-end">
             <Link
-              to={`/doctor/${doctor?.id}`}
+              to={`/doctor/${doctor?.slug}`}
               className="flex items-center gap-2 text-purple-700 border border-purple-700 px-3 py-1 rounded-md hover:bg-purple-700 hover:text-white transition-all duration-300"
             >
               Show Details

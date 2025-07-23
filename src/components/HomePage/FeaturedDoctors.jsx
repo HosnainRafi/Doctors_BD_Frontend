@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import DoctorCard from '../../components/DoctorCard';
-import CircleSpinner from '../../components/Spinner/CircleSpinner';
-import { Link } from 'react-router-dom';
-import { FaArrowRight } from 'react-icons/fa';
+import { useEffect, useState } from "react";
+import DoctorCard from "../../components/DoctorCard";
+import CircleSpinner from "../../components/Spinner/CircleSpinner";
+import { Link } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
 
 const FeaturedDoctors = () => {
   const [doctorsList, setDoctorsList] = useState([]);
@@ -11,12 +11,12 @@ const FeaturedDoctors = () => {
     (async () => {
       try {
         const response = await fetch(
-          'https://doctors-bd-backend-five.vercel.app/api/v1/doctors?limit=4'
+          "https://doctors-bd-backend.vercel.app/api/v1/doctors?limit=4"
         );
         const data = await response.json();
         setDoctorsList(data.data);
       } catch (error) {
-        console.error('Failed to fetch featured doctors:', error);
+        console.error("Failed to fetch featured doctors:", error);
       }
     })();
   }, []);
@@ -29,7 +29,7 @@ const FeaturedDoctors = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {doctorsList.length > 0 ? (
-            doctorsList?.map(doctor => (
+            doctorsList?.map((doctor) => (
               <DoctorCard key={doctor._id} doctor={doctor} />
             ))
           ) : (
@@ -38,7 +38,7 @@ const FeaturedDoctors = () => {
         </div>
         <div className="flex justify-center mt-8">
           <Link
-            to={'/all-doctors'}
+            to={"/all-doctors"}
             className="bg-purple-700 text-white px-6 py-2 rounded-lg hover:bg-purple-800 transition flex items-center gap-2"
           >
             View More <FaArrowRight />

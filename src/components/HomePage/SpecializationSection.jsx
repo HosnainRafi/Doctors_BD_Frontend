@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import CircleSpinner from '../../components/Spinner/CircleSpinner';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import CircleSpinner from "../../components/Spinner/CircleSpinner";
 
 const SpecializationSection = () => {
   const [specializations, setSpecializations] = useState([]);
@@ -11,12 +11,12 @@ const SpecializationSection = () => {
       try {
         setLoading(true);
         const res = await fetch(
-          'https://doctors-bd-backend-five.vercel.app/api/v1/specializations?limit=6'
+          "https://doctors-bd-backend.vercel.app/api/v1/specializations?limit=6"
         );
         const data = await res.json();
         setSpecializations(data.data || []);
       } catch (error) {
-        console.error('Failed to fetch specializations:', error);
+        console.error("Failed to fetch specializations:", error);
       } finally {
         setLoading(false);
       }
@@ -35,8 +35,10 @@ const SpecializationSection = () => {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {specializations.map(doctor => (
-            <h2 key={doctor?._id}>No data found this text is static not dynamic</h2>
+          {specializations.map((doctor) => (
+            <h2 key={doctor?._id}>
+              No data found this text is static not dynamic
+            </h2>
           ))}
         </div>
       </div>

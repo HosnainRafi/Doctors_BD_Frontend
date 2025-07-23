@@ -32,11 +32,7 @@ const FeaturedDoctors = () => {
 
         {!loading && doctorsList.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<<<<<<< HEAD
             {doctorsList?.map((doctor) => (
-=======
-            {doctorsList?.map(doctor => (
->>>>>>> 3ef94434ddbb71a89855a7ebd182ffbd5f92a630
               <DoctorCard key={doctor._id} doctor={doctor} />
             ))}
           </div>

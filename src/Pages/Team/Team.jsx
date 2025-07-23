@@ -8,7 +8,7 @@ const devTeam = [
     bio: "Focused on server-side logic, API architecture, and database systems using Node.js and Express and AI implementationboth frontend and backend.",
     facebook: "https://web.facebook.com/hosnain.rafi",
     linkedin: "https://www.linkedin.com/in/hosnain-rafi1/",
-    portfolio: "https://hosnainrafi.dev",
+    //portfolio: "https://hosnainrafi.dev",
   },
   {
     name: "Asadul Islam Imran",
@@ -17,7 +17,7 @@ const devTeam = [
     bio: "Specializes in building modern, responsive UIs using React and Tailwind CSS.",
     facebook: "https://web.facebook.com/asad9340/",
     linkedin: "https://www.linkedin.com/in/asad9340/",
-    portfolio: "https://asad-dev-portfolio.web.app/",
+    //portfolio: "https://asad-dev-portfolio.web.app/",
   },
   {
     name: "Tanvir Ahmmed Sifat",
@@ -26,7 +26,7 @@ const devTeam = [
     bio: "Frontend enthusiast passionate about user experience and interactive design.",
     facebook: "https://web.facebook.com/sifat.7847",
     linkedin: "https://linkedin.com/in/tanvirsifat",
-    portfolio: "https://www.linkedin.com/in/sifat26/",
+    //portfolio: "https://www.linkedin.com/in/sifat26/",
   },
 ];
 
@@ -79,7 +79,7 @@ const DevTeam = () => {
                 >
                   LinkedIn <FaLinkedin />
                 </a>
-                <a
+                {/* <a
                   href={member.portfolio}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -87,7 +87,7 @@ const DevTeam = () => {
                              hover:bg-purple-600 hover:text-white hover:scale-105 transform transition duration-300"
                 >
                   Portfolio <FaGlobe />
-                </a>
+                </a> */}
               </div>
             </div>
           ))}

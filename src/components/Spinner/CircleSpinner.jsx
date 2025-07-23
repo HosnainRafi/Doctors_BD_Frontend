@@ -2,14 +2,7 @@ import { ColorRing } from 'react-loader-spinner';
 
 const CircleSpinner = () => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 9999,
-      }}
-    >
+    <div className="flex justify-center items-center py-8 md:py-14 z-50 ">
       <ColorRing
         visible={true}
         height="80"

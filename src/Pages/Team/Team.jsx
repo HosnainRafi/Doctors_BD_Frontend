@@ -1,32 +1,32 @@
-import { FaFacebook, FaLinkedin, FaGlobe } from "react-icons/fa";
+import { FaFacebook, FaLinkedin, FaGlobe } from 'react-icons/fa';
 
 const devTeam = [
   {
-    name: "Hosnain Rafi",
-    role: "Full-stack Developer",
-    image: "https://i.postimg.cc/XJQ9DGD5/rafi.jpg",
-    bio: "Focused on server-side logic, API architecture, and database systems using Node.js and Express and AI implementationboth frontend and backend.",
-    facebook: "https://web.facebook.com/hosnain.rafi",
-    linkedin: "https://www.linkedin.com/in/hosnain-rafi1/",
-    portfolio: "https://hosnainrafi.dev",
+    name: 'Hosnain Rafi',
+    role: 'Full-stack Developer',
+    image: 'https://i.postimg.cc/XJQ9DGD5/rafi.jpg',
+    bio: 'Focused on server-side logic, API architecture, and database systems using Node.js and Express and AI implementationboth frontend and backend.',
+    facebook: 'https://web.facebook.com/hosnain.rafi',
+    linkedin: 'https://www.linkedin.com/in/hosnain-rafi1/',
+    portfolio: 'https://hosnainrafi.dev',
   },
   {
-    name: "Asadul Islam Imran",
-    role: "Frontend Developer",
-    image: "https://i.postimg.cc/wMrL9KzT/profile.jpg",
-    bio: "Specializes in building modern, responsive UIs using React and Tailwind CSS.",
-    facebook: "https://web.facebook.com/asad9340/",
-    linkedin: "https://www.linkedin.com/in/asad9340/",
-    portfolio: "https://asad-dev-portfolio.web.app/",
+    name: 'Asadul Islam Imran',
+    role: 'Frontend Developer',
+    image: 'https://i.postimg.cc/wMrL9KzT/profile.jpg',
+    bio: 'Specializes in building modern, responsive UIs using React and Tailwind CSS.',
+    facebook: 'https://web.facebook.com/asad9340/',
+    linkedin: 'https://www.linkedin.com/in/asad9340/',
+    portfolio: 'https://asad-dev-portfolio.web.app/',
   },
   {
-    name: "Tanvir Ahmmed Sifat",
-    role: "Frontend Developer",
-    image: "https://i.postimg.cc/0Q2wm52y/sifat.jpg",
-    bio: "Frontend enthusiast passionate about user experience and interactive design.",
-    facebook: "https://web.facebook.com/sifat.7847",
-    linkedin: "https://linkedin.com/in/tanvirsifat",
-    portfolio: "https://www.linkedin.com/in/sifat26/",
+    name: 'Tanvir Ahmmed Sifat',
+    role: 'Frontend Developer',
+    image: 'https://i.postimg.cc/0Q2wm52y/sifat.jpg',
+    bio: 'Frontend enthusiast passionate about user experience and interactive design.',
+    facebook: 'https://web.facebook.com/sifat.7847',
+    linkedin: 'https://linkedin.com/in/tanvirsifat',
+    portfolio: 'https://www.linkedin.com/in/sifat26/',
   },
 ];
 
@@ -47,11 +47,13 @@ const DevTeam = () => {
               key={index}
               className="bg-gray-50 p-6 rounded-xl shadow hover:shadow-md transition duration-300"
             >
-              <img
-                src={member.image}
-                alt={member.name}
-                className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-              />
+              <div className="flex justify-center mb-2">
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className=" w-64 h-[250px] rounded-3xl object-cover border-white border-[6px] shadow object-top"
+                />
+              </div>
               <h3 className="text-xl font-semibold text-gray-800">
                 {member.name}
               </h3>

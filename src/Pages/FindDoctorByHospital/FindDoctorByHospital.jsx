@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import DoctorCard from '../../components/DoctorCard';
 import { ColorRing } from 'react-loader-spinner';
+import CircleSpinner from '../../components/Spinner/CircleSpinner';
 
 const FindDoctorByHospital = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -28,10 +29,10 @@ const FindDoctorByHospital = () => {
     if (selectedDistrict) {
       (async () => {
         const response = await fetch(
-          `https://doctors-bd-backend-five.vercel.app/api/v1/hospitals?district=${selectedDistrict}`
+          `https://doctors-bd-backend.vercel.app/api/v1/hospitals/by-district/${selectedDistrict}`
         );
         const data = await response.json();
-        setHospitalList(data.data.data);
+        setHospitalList(data.data);
       })();
     } else {
       setHospitalList([]);
@@ -51,9 +52,7 @@ const FindDoctorByHospital = () => {
 
     setLoading(true);
     const response = await fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/doctors?district=${selectedDistrict}&hospital=${encodeURIComponent(
-        selectedHospitalName
-      )}`
+      `https://doctors-bd-backend.vercel.app/api/v1/doctors?district=${selectedDistrict}&hospital=${selectedHospitalName}`
     );
     const data = await response.json();
     setDoctorsList(data.data || []);
@@ -71,6 +70,7 @@ const FindDoctorByHospital = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 flex-wrap">
+          {/* 🔄 Updated to pass district name instead of ID */}
           <select
             value={selectedDistrict}
             onChange={e => setSelectedDistrict(e.target.value)}
@@ -78,7 +78,7 @@ const FindDoctorByHospital = () => {
           >
             <option value="">Select District</option>
             {districts.map(d => (
-              <option key={d._id} value={d._id}>
+              <option key={d._id} value={d.name}>
                 {d.name}
               </option>
             ))}
@@ -119,12 +119,15 @@ const FindDoctorByHospital = () => {
           </button>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
-        {doctorsList.map(doctor => (
-          <DoctorCard key={doctor._id} doctor={doctor} />
-        ))}
-      </div>
+      {loading && doctorsList.length == 0 ? (
+        <CircleSpinner />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
+          {doctorsList.map(doctor => (
+            <DoctorCard key={doctor._id} doctor={doctor} />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

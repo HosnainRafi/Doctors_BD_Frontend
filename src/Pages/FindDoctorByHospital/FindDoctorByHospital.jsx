@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 import { useEffect, useState } from "react";
 import DoctorCard from "../../components/DoctorCard";
 import { ColorRing } from "react-loader-spinner";
 import CircleSpinner from "../../components/Spinner/CircleSpinner";
+=======
+import { useEffect, useState } from 'react';
+import DoctorCard from '../../components/DoctorCard';
+import { ColorRing } from 'react-loader-spinner';
+import CircleSpinner from '../../components/Spinner/CircleSpinner';
+>>>>>>> 3ef94434ddbb71a89855a7ebd182ffbd5f92a630
 
 const FindDoctorByHospital = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -77,7 +84,11 @@ const FindDoctorByHospital = () => {
             className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-[48%] focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="">Select District</option>
+<<<<<<< HEAD
             {districts.map((d) => (
+=======
+            {districts.map(d => (
+>>>>>>> 3ef94434ddbb71a89855a7ebd182ffbd5f92a630
               <option key={d._id} value={d.name}>
                 {d.name}
               </option>

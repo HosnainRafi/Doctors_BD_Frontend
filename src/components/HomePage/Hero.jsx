@@ -1,47 +1,92 @@
-import { FaArrowRight } from 'react-icons/fa';
+/* eslint-disable no-unused-vars */
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const Hero = () => {
   return (
-    <div>
-      <div className="bg-gray-50">
-        <section className="bg-[#FCF8F1] bg-opacity-30 py-6 md:py-12 ">
-          <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div className="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
-              <div>
-                <p className="text-base font-semibold tracking-wider text-purple-700 uppercase">
-                  আপনার বিশ্বস্ত স্বাস্থ্য সঙ্গী
-                </p>
-                <h1 className="mt-4 text-4xl font-bold text-black lg:mt-8 sm:text-6xl xl:text-8xl">
-                  কাছাকাছি সেরা ডাক্তার খুঁজুন
-                </h1>
-                <p className="mt-4 text-base text-black lg:mt-8 sm:text-xl">
-                  যাচাই করা ডাক্তারের সাথে যেকোনো সময়, যেকোনো স্থান থেকে
-                  অনুসন্ধান, বুকিং এবং পরামর্শ করুন।
-                </p>
+    <section className="relative overflow-hidden bg-gradient-to-r from-purple-100 via-white to-purple-100 py-28">
+      {/* Background Blur Circles */}
+      <div
+        aria-hidden="true"
+        className="absolute -top-40 -left-40 w-96 h-96 bg-purple-300 rounded-full filter blur-3xl opacity-30 animate-blob"
+      ></div>
+      <div
+        aria-hidden="true"
+        className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-300 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-2000"
+      ></div>
 
-                <Link
-                  className="px-6 py-4 mt-2 font-semibold text-white transition-all duration-200 bg-purple-400 rounded-full lg:mt-4 hover:bg-purple-700 focus:bg-purple-700 inline-flex items-center gap-2"
-                  role="button"
-                  to="/search"
-                >
-                  ডাক্তার খুঁজুন
-                  <FaArrowRight />
-                </Link>
-              </div>
+      <div className="max-w-7xl mx-auto px-6 lg:px-16 flex flex-col-reverse md:flex-row items-center gap-12">
+        {/* Text Content */}
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1 }}
+          className="w-full md:w-1/2 text-center md:text-left space-y-8"
+        >
+          <h1 className="text-5xl font-extrabold text-purple-700 leading-tight drop-shadow-lg tracking-wide">
+            Find Trusted{' '}
+            <span className="text-indigo-600 drop-shadow-md">
+              Doctors Near You
+            </span>
+          </h1>
+          <p className="text-gray-700 text-lg max-w-xl mx-auto md:mx-0 leading-relaxed">
+            CasePoint helps you quickly search, compare, and book appointments
+            with top-rated healthcare professionals in your area.
+          </p>
 
-              <div>
-                <img
-                  className="w-full h-[400px] md:h-[500px] object-cover rounded-lg"
-                  src="https://i.postimg.cc/4dSw6LtP/doctors-fotor-bg-remover-20250717104959.png"
-                  alt="Doctor"
-                />
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-6 mt-8">
+            <Link
+              to="/all-doctors"
+              className="inline-block bg-purple-700 hover:bg-purple-800 text-white font-semibold px-10 py-3 rounded-lg shadow-lg transition transform hover:scale-105"
+            >
+              Find Doctors
+            </Link>
+            <Link
+              to="/about-us"
+              className="inline-block border border-purple-700 text-purple-700 hover:bg-purple-100 font-semibold px-10 py-3 rounded-lg transition"
+            >
+              Learn More
+            </Link>
           </div>
-        </section>
+        </motion.div>
+
+        {/* Image */}
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1 }}
+          className="w-full md:w-1/2 max-w-2xl mx-auto md:mx-0 relative"
+        >
+          <img
+            src="https://i.postimg.cc/4dSw6LtP/doctors-fotor-bg-remover-20250717104959.png"
+            alt="Doctors"
+            className="w-full h-auto object-contain rounded-lg shadow-2xl transition-transform duration-700 hover:scale-105"
+            draggable={false}
+          />
+        </motion.div>
       </div>
-    </div>
+
+      {/* Tailwind CSS Animation */}
+      <style>{`
+        @keyframes blob {
+          0%, 100% {
+            transform: translate(0px, 0px) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+      `}</style>
+    </section>
   );
 };
 

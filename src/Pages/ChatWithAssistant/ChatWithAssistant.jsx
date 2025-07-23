@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { SendHorizonal } from "lucide-react";
 import { getNearestDistrict } from "./UserDistrict";
 import DoctorCard from "../../components/DoctorCard";
-import CircleSpinner from "../../components/Spinner/CircleSpinner";
 import { Helmet } from "react-helmet";
+import { ColorRing } from "react-loader-spinner";
 
 export default function ChatWithAssistant() {
   const SUPPORTED_DISTRICTS = [
@@ -62,7 +62,7 @@ export default function ChatWithAssistant() {
   const [language, setLanguage] = useState("bn-BD");
   const [userDistrict, setUserDistrict] = useState(null);
   const [realLocation, setRealLocation] = useState("");
-  const [loading, setLoading] = useState("");
+  const [loading, setLoading] = useState(false);
   const [note, setNote] = useState("");
   const [usedDistrict, setUsedDistrict] = useState("");
   const [userLat, setUserLat] = useState(null);
@@ -166,7 +166,7 @@ export default function ChatWithAssistant() {
       setLoading(true);
 
       const res = await fetch(
-        "http://localhost:5000/api/v1/doctors/ai-search",
+        "https://doctors-bd-backend-five.vercel.app/api/v1/doctors/ai-search",
         {
           method: "POST",
           headers: {
@@ -195,76 +195,74 @@ export default function ChatWithAssistant() {
     setInput("");
   };
 
-  if (loading) return <CircleSpinner />;
   return (
     <>
       <Helmet>
-        <title>Find the Best Dentists in Narayanganj | CarePoint</title>
+        <title>
+          {submittedText
+            ? `Doctor Search: ${submittedText} | CarePoint Assistant`
+            : "Chat with CarePoint Assistant | Find Doctors in Bangladesh"}
+        </title>
         <meta
           name="description"
-          content="Book appointments with the best dentists in Narayanganj. See ratings, schedules, and more."
+          content={
+            submittedText
+              ? `See doctor suggestions for: ${submittedText}. Find the best doctors in ${
+                  usedDistrict || "Bangladesh"
+                } with CarePoint Assistant.`
+              : "Chat with CarePoint AI Assistant to find the best doctors in Bangladesh. Search by symptoms, specialty, or location."
+          }
         />
         <meta name="robots" content="index, follow" />
         <link
           rel="canonical"
-          href="https://yourdomain.com/doctors/dentist/narayanganj"
+          href={`https://yourdomain.com/ai-assistant${
+            submittedText ? `?q=${encodeURIComponent(submittedText)}` : ""
+          }`}
         />
-
         {/* Open Graph */}
-        <meta
-          property="og:title"
-          content="Find the Best Dentists in Narayanganj"
-        />
+        <meta property="og:title" content="CarePoint AI Doctor Assistant" />
         <meta
           property="og:description"
-          content="Book appointments with the best dentists in Narayanganj."
+          content={
+            submittedText
+              ? `Doctor suggestions for: ${submittedText}.`
+              : "Chat with CarePoint AI Assistant to find the best doctors in Bangladesh."
+          }
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:url"
-          content="https://yourdomain.com/doctors/dentist/narayanganj"
+          content={`https://yourdomain.com/ai-assistant`}
         />
-        <meta
-          property="og:image"
-          content="https://yourdomain.com/og-image.jpg"
-        />
-
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Find the Best Dentists in Narayanganj"
-        />
+        <meta name="twitter:title" content="CarePoint AI Doctor Assistant" />
         <meta
           name="twitter:description"
-          content="Book appointments with the best dentists in Narayanganj."
+          content={
+            submittedText
+              ? `Doctor suggestions for: ${submittedText}.`
+              : "Chat with CarePoint AI Assistant to find the best doctors in Bangladesh."
+          }
         />
-        <meta
-          name="twitter:image"
-          content="https://yourdomain.com/twitter-image.jpg"
-        />
-
         {/* Viewport */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
-
         {/* Structured Data */}
         <script type="application/ld+json">
-          {`
-      {
-        "@context": "https://schema.org",
-        "@type": "Physician",
-        "name": "Dr. Tarit Kumar Samadder",
-        "medicalSpecialty": "Oncology",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Barisal",
-          "addressCountry": "Bangladesh"
-        }
-      }
-    `}
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "CarePoint AI Doctor Assistant",
+            description: submittedText
+              ? `Doctor suggestions for: ${submittedText}.`
+              : "Chat with CarePoint AI Assistant to find the best doctors in Bangladesh.",
+            url: `https://yourdomain.com/ai-assistant${
+              submittedText ? `?q=${encodeURIComponent(submittedText)}` : ""
+            }`,
+          })}
         </script>
       </Helmet>
 
@@ -307,8 +305,21 @@ export default function ChatWithAssistant() {
             <button
               onClick={handleSend}
               className="ml-3 bg-purple-700 text-white p-2 rounded-md hover:bg-purple-800"
+              disabled={loading}
             >
-              <SendHorizonal className="w-4 h-4" />
+              {loading ? (
+                <ColorRing
+                  visible={true}
+                  height="20"
+                  width="20"
+                  ariaLabel="color-ring-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="color-ring-wrapper"
+                  colors={["#fff", "#fff", "#fff", "#fff", "#fff"]}
+                />
+              ) : (
+                <SendHorizonal className="w-4 h-4" />
+              )}
             </button>
           </div>
 
@@ -338,7 +349,7 @@ export default function ChatWithAssistant() {
         </div>
 
         {submittedText && (
-          <div className="mt-8 w-full  md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6  rounded-lg ">
+          <div className="mt-8 w-full md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6 rounded-lg">
             <p className="font-medium text-gray-800">Your query:</p>
             <p className="text-gray-600 mt-2">{submittedText}</p>
             {note && (

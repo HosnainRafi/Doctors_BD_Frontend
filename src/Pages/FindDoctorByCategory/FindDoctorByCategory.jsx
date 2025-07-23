@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import DoctorCard from '../../components/DoctorCard';
-import CircleSpinner from '../../components/Spinner/CircleSpinner';
+import { ColorRing } from 'react-loader-spinner';
 
 const FindDoctorByCategory = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -45,8 +45,6 @@ const FindDoctorByCategory = () => {
     setSearched(false);
   };
 
-  if (loading) return <CircleSpinner />;
-
   return (
     <section className="bg-white py-12 px-4 sm:px-8 lg:px-16">
       <div className="max-w-7xl mx-auto text-center">
@@ -84,7 +82,19 @@ const FindDoctorByCategory = () => {
               className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
               disabled={selectedCategories.length === 0}
             >
-              Search
+              {loading ? (
+                <ColorRing
+                  visible={true}
+                  height="25"
+                  width="25"
+                  ariaLabel="color-ring-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="color-ring-wrapper"
+                  colors={['#fff', '#fff', '#fff', '#fff', '#fff']}
+                />
+              ) : (
+                'Search Doctors'
+              )}
             </button>
           )}
           {searched && (

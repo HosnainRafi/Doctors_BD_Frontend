@@ -166,7 +166,7 @@ export default function ChatWithAssistant() {
       setLoading(true);
 
       const res = await fetch(
-        "https://doctors-bd-backend-five.vercel.app/api/v1/doctors/ai-search",
+        "https://doctors-bd-backend.vercel.app/api/v1/doctors/ai-search",
         {
           method: "POST",
           headers: {

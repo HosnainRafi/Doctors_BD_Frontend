@@ -5,7 +5,7 @@ const devTeam = [
     name: "Hosnain Rafi",
     role: "Full-stack Developer",
     image: "https://i.postimg.cc/XJQ9DGD5/rafi.jpg",
-    bio: "Focused on server-side logic, API architecture, and database systems using Node.js and Express and AI implementationboth frontend and backend.",
+    bio: "Focused on server-side logic, API architecture, and database systems using Node.js and Express and AI implementation both frontend and backend.",
     facebook: "https://web.facebook.com/hosnain.rafi",
     linkedin: "https://www.linkedin.com/in/hosnain-rafi1/",
     //portfolio: "https://hosnainrafi.dev",
@@ -58,7 +58,9 @@ const DevTeam = () => {
               <p className="text-purple-600 text-sm font-medium mb-2">
                 {member.role}
               </p>
-              <p className="text-gray-600 text-sm mb-4">{member.bio}</p>
+              <p className="text-gray-600 text-sm mb-4 min-h-[84px]">
+                {member.bio}
+              </p>
 
               <div className="flex flex-wrap justify-center gap-2 mt-4">
                 <a

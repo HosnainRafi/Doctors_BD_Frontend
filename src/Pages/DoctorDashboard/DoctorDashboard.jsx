@@ -4,7 +4,8 @@ import PrescriptionList from "./PrescriptionList";
 import FollowUpList from "./FollowUpList";
 import SetAvailabilityForm from "./SetAvailabilityForm";
 import DoctorProfile from "./DoctorProfile";
-import Reviews from "./Reviews"; // <-- import your Reviews component
+import Reviews from "./Reviews";
+import PrescriptionForm from "./PrescriptionForm";
 
 const TABS = [
   { key: "appointments", label: "Appointments" },
@@ -12,11 +13,12 @@ const TABS = [
   { key: "followups", label: "Follow-Ups" },
   { key: "availability", label: "Availability" },
   { key: "profile", label: "Profile" },
-  { key: "reviews", label: "Reviews" }, // <-- add this
+  { key: "reviews", label: "Reviews" },
 ];
 
 const DoctorDashboard = () => {
   const [activeTab, setActiveTab] = useState("appointments");
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 py-8">
@@ -40,12 +42,23 @@ const DoctorDashboard = () => {
           ))}
         </div>
         <div>
-          {activeTab === "appointments" && <AppointmentList />}
+          {activeTab === "appointments" && (
+            <>
+              <AppointmentList onCreatePrescription={setSelectedAppointment} />
+              {selectedAppointment && (
+                <PrescriptionForm
+                  appointment={selectedAppointment}
+                  onClose={() => setSelectedAppointment(null)}
+                  onCreated={() => setSelectedAppointment(null)}
+                />
+              )}
+            </>
+          )}
           {activeTab === "prescriptions" && <PrescriptionList />}
           {activeTab === "followups" && <FollowUpList />}
           {activeTab === "availability" && <SetAvailabilityForm />}
           {activeTab === "profile" && <DoctorProfile />}
-          {activeTab === "reviews" && <Reviews />} {/* <-- add this */}
+          {activeTab === "reviews" && <Reviews />}
         </div>
       </div>
     </div>

@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from "react";
 
+// Helper to calculate age from dob
+function calculateAge(dob) {
+  if (!dob) return "";
+  const birth = new Date(dob);
+  const now = new Date();
+  let years = now.getFullYear() - birth.getFullYear();
+  let months = now.getMonth() - birth.getMonth();
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+  return `${years}y ${months}m`;
+}
+
 const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
   const [form, setForm] = useState({
     name: "",
@@ -8,11 +22,24 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
     dob: "",
     gender: "",
     address: "",
+    weight: "",
+    chief_complaints: "", // as a comma-separated string or textarea
   });
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (editPatient) setForm(editPatient);
+    if (editPatient) {
+      setForm({
+        name: editPatient.name || "",
+        phone: editPatient.phone || "",
+        email: editPatient.email || "",
+        dob: editPatient.dob || "",
+        gender: editPatient.gender || "",
+        address: editPatient.address || "",
+        weight: editPatient.weight || "",
+        chief_complaints: (editPatient.chief_complaints || []).join("\n"),
+      });
+    }
   }, [editPatient]);
 
   const handleChange = (e) =>
@@ -22,47 +49,42 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
     e.preventDefault();
     setMessage("");
     const token = localStorage.getItem("userToken");
-    if (editPatient) {
-      // Update patient
-      const res = await fetch(
-        `http://localhost:5000/api/v1/patients/${editPatient._id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(form),
-        }
-      );
-      const data = await res.json();
-      if (data.success) {
-        setMessage("Patient updated!");
-        onPatientAdded && onPatientAdded();
-      } else setMessage(data.message || "Failed to update patient.");
-    } else {
-      // Add new patient
-      const res = await fetch("http://localhost:5000/api/v1/patients", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ ...form, user_id: userId }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setMessage("Patient added!");
-        setForm({
-          name: "",
-          phone: "",
-          email: "",
-          dob: "",
-          gender: "",
-          address: "",
-        });
-        onPatientAdded && onPatientAdded();
-      } else setMessage(data.message || "Failed to add patient.");
+    const chiefComplaintsArray = form.chief_complaints
+      ? form.chief_complaints
+          .split("\n")
+          .map((c) => c.trim())
+          .filter(Boolean)
+      : [];
+    const payload = {
+      ...form,
+      user_id: userId,
+      chief_complaints: chiefComplaintsArray,
+    };
+    try {
+      if (editPatient) {
+        console.log("Updating patient", payload);
+        const res = await fetch(
+          `http://localhost:5000/api/v1/patients/${editPatient._id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+        const data = await res.json();
+        if (data.success) {
+          setMessage("Patient updated!");
+          onPatientAdded && onPatientAdded();
+        } else setMessage(data.message || "Failed to update patient.");
+      } else {
+        // ...add patient code...
+      }
+    } catch (err) {
+      setMessage("Network or server error");
+      console.error(err);
     }
   };
 
@@ -95,6 +117,7 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
         />
         <input
           name="dob"
+          type="date"
           placeholder="Date of Birth"
           value={form.dob}
           onChange={handleChange}
@@ -117,6 +140,30 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
           value={form.address}
           onChange={handleChange}
           className="input"
+        />
+        <input
+          name="weight"
+          placeholder="Weight (kg)"
+          value={form.weight}
+          onChange={handleChange}
+          className="input"
+        />
+        <div className="flex items-center">
+          <label className="block text-gray-700 font-medium mr-2">Age:</label>
+          <span className="text-gray-900">{calculateAge(form.dob)}</span>
+        </div>
+      </div>
+      <div className="mt-2">
+        <label className="block text-gray-700 font-medium mb-1">
+          Chief Complaints
+        </label>
+        <textarea
+          name="chief_complaints"
+          placeholder="Enter each complaint on a new line"
+          value={form.chief_complaints}
+          onChange={handleChange}
+          className="input w-full"
+          rows={2}
         />
       </div>
       <button

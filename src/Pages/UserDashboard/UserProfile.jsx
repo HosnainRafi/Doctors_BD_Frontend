@@ -76,7 +76,8 @@ const UserProfile = () => {
     setNotifPrefs({ ...notifPrefs, [e.target.name]: e.target.checked });
   };
 
-  if (!user) return null;
+  if (!user)
+    return <div className="text-gray-500">Loading user profile...</div>;
 
   return (
     <div className="mb-6">

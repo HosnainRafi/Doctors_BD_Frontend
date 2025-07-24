@@ -3,7 +3,7 @@ import UserLoginForm from '../../components/Auth/UserLoginForm';
 
 const UserLogin = () => (
   <div
-    className="flex items-center justify-center bg-gray-100 px-4 py-10"
+    className="flex items-center justify-center bg-gray-50 px-4 py-10"
     style={{ minHeight: 'calc(100vh - 65px)' }}
   >
     <div className="w-full  max-w-lg bg-white rounded-2xl shadow-2xl p-10  ring-1 ring-purple-300 ring-opacity-30 hover:shadow-purple-500/40 transition-shadow duration-300">

@@ -28,7 +28,7 @@ const UserLoginForm = () => {
       toast.success('Login successful!');
       navigate('/user/dashboard');
     } else {
-      toast.error(data.message || 'Login failed.');
+      toast.error(data.error || 'Login failed.');
     }
   };
 

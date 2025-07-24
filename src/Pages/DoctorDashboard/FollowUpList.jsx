@@ -9,9 +9,12 @@ const FollowUpList = () => {
 
   useEffect(() => {
     if (!doctorId) return;
-    fetch(`/api/v1/followups/registered-doctor/${doctorId}`, {
-      headers: { Authorization: `Bearer ${doctorToken}` },
-    })
+    fetch(
+      `http://localhost:5000/api/v1/followups/registered-doctor/${doctorId}`,
+      {
+        headers: { Authorization: `Bearer ${doctorToken}` },
+      }
+    )
       .then((res) => res.json())
       .then((data) => setFollowUps(data.data || []));
   }, [doctorId, doctorToken]);

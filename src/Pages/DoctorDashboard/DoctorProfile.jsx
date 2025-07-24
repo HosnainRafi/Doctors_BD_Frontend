@@ -9,7 +9,7 @@ const DoctorProfile = () => {
 
   useEffect(() => {
     if (!doctorId) return;
-    fetch(`/api/v1/registered-doctors/${doctorId}`, {
+    fetch(`http://localhost:5000/api/v1/registered-doctors/${doctorId}`, {
       headers: { Authorization: `Bearer ${doctorToken}` },
     })
       .then((res) => res.json())

@@ -20,14 +20,17 @@ const SetAvailabilityForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-    const res = await fetch(`/api/v1/registered-doctors/${doctorId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${doctorToken}`,
-      },
-      body: JSON.stringify({ availableSlots: slots }),
-    });
+    const res = await fetch(
+      `http://localhost:5000/api/v1/registered-doctors/${doctorId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${doctorToken}`,
+        },
+        body: JSON.stringify({ availableSlots: slots }),
+      }
+    );
     const data = await res.json();
     if (data.success) setMessage("Availability updated!");
     else setMessage(data.message || "Failed to update.");

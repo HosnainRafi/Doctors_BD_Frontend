@@ -9,9 +9,12 @@ const AppointmentList = () => {
 
   useEffect(() => {
     if (!doctorId) return;
-    fetch(`/api/v1/appointments/registered-doctor/${doctorId}`, {
-      headers: { Authorization: `Bearer ${doctorToken}` },
-    })
+    fetch(
+      `http://localhost:5000/api/v1/appointments/registered-doctor/${doctorId}`,
+      {
+        headers: { Authorization: `Bearer ${doctorToken}` },
+      }
+    )
       .then((res) => res.json())
       .then((data) => setAppointments(data.data || []));
   }, [doctorId, doctorToken]);

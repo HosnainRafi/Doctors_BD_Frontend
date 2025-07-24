@@ -6,7 +6,7 @@ const AppointmentList = () => {
   useEffect(() => {
     const token = localStorage.getItem("userToken");
     const userId = JSON.parse(atob(token.split(".")[1])).id;
-    fetch(`/api/v1/appointments?user_id=${userId}`, {
+    fetch(`http://localhost:5000/api/v1/appointments?user_id=${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

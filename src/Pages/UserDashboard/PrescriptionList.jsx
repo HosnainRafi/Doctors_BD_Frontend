@@ -6,7 +6,7 @@ const PrescriptionList = () => {
   useEffect(() => {
     const token = localStorage.getItem("userToken");
     const userId = JSON.parse(atob(token.split(".")[1])).id;
-    fetch(`/api/v1/prescriptions?user_id=${userId}`, {
+    fetch(`http://localhost:5000/api/v1/prescriptions?user_id=${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -24,7 +24,7 @@ const PrescriptionList = () => {
               {p.doctor_id?.name || p.registered_doctor_id?.name}
             </span>
             <a
-              href={`/api/v1/prescriptions/${p._id}/pdf`}
+              href={`http://localhost:5000/api/v1/prescriptions/${p._id}/pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="ml-2 text-purple-700 underline"

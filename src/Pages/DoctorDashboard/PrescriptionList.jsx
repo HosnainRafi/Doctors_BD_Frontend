@@ -9,9 +9,12 @@ const PrescriptionList = () => {
 
   useEffect(() => {
     if (!doctorId) return;
-    fetch(`/api/v1/prescriptions/registered-doctor/${doctorId}`, {
-      headers: { Authorization: `Bearer ${doctorToken}` },
-    })
+    fetch(
+      `http://localhost:5000/api/v1/prescriptions/registered-doctor/${doctorId}`,
+      {
+        headers: { Authorization: `Bearer ${doctorToken}` },
+      }
+    )
       .then((res) => res.json())
       .then((data) => setPrescriptions(data.data || []));
   }, [doctorId, doctorToken]);
@@ -27,7 +30,7 @@ const PrescriptionList = () => {
               {p.patient_id?.name}
             </span>
             <a
-              href={`/api/v1/prescriptions/${p._id}/pdf`}
+              href={`http://localhost:5000/api/v1/prescriptions/${p._id}/pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="ml-2 text-purple-700 underline"

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useRef, useCallback } from "react";
-import DoctorCard from "../../components/DoctorCard";
-import CircleSpinner from "../../components/Spinner/CircleSpinner";
+import { useEffect, useState, useRef, useCallback } from 'react';
+import DoctorCard from '../../components/DoctorCard';
+import CircleSpinner from '../../components/Spinner/CircleSpinner';
 
 const AllDoctors = () => {
   const [doctorsList, setDoctorsList] = useState([]);
@@ -26,11 +26,11 @@ const AllDoctors = () => {
         `https://doctors-bd-backend.vercel.app/api/v1/doctors?page=${pageNumber}&limit=10`
       );
       const data = await response.json();
-      setDoctorsList((prev) => (append ? [...prev, ...data.data] : data.data));
+      setDoctorsList(prev => (append ? [...prev, ...data.data] : data.data));
       setMeta(data.meta);
       setPage(data.meta.page);
     } catch (error) {
-      console.error("Failed to fetch doctors:", error);
+      console.error('Failed to fetch doctors:', error);
     } finally {
       if (append) setLoadingMore(false);
       else setLoading(false);
@@ -42,11 +42,11 @@ const AllDoctors = () => {
   }, []);
 
   const lastDoctorRef = useCallback(
-    (node) => {
+    node => {
       if (loadingMore) return;
       if (observerRef.current) observerRef.current.disconnect();
 
-      observerRef.current = new IntersectionObserver((entries) => {
+      observerRef.current = new IntersectionObserver(entries => {
         if (entries[0].isIntersecting && page < meta.totalPages) {
           fetchDoctors(page + 1, true);
         }
@@ -66,8 +66,21 @@ const AllDoctors = () => {
 
         {loading ? (
           <CircleSpinner />
-        ) : doctorsList.length === 0 ? (
-          <p className="text-center text-gray-600">No doctors found.</p>
+        ) : !doctorsList.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/6134/6134065.png"
+              alt="No results"
+              className="w-24 h-24 mb-6 opacity-60"
+            />
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              No Doctors Found
+            </h2>
+            <p className="text-sm text-gray-500 text-center max-w-sm">
+              Try adjusting your filters or search terms to find the right
+              doctor.
+            </p>
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

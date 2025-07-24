@@ -39,6 +39,7 @@ const DoctorSearchBar = () => {
 
   const handleDoctorClick = slug => {
     setShowDropdown(false);
+    setQuery('');
     navigate(`/doctor/${slug}`);
   };
 

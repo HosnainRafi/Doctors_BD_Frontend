@@ -19,7 +19,7 @@ const DoctorCard = ({ doctor }) => {
               alt=""
             />
           </div>
-          <div className="absolute bottom-[47px] w-full">
+          <div className="absolute bottom-0  md:bottom-[47px] w-full">
             <p className="flex items-center gap-1 bg-white px-2 py-1 w-full opacity-70 ">
               <FaStar className="text-[#f7b033]" />
               <span className="text-black font-bold">

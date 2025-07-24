@@ -39,7 +39,7 @@ const Navbar = () => {
       navigate('/login');
     } else if (isDoctorLoggedIn) {
       localStorage.removeItem('doctorToken');
-      navigate('/doctor/login');
+      navigate('/login/doctor');
     }
   };
 
@@ -121,7 +121,7 @@ const Navbar = () => {
                       User
                     </NavLink>
                     <NavLink
-                      to="/doctor/login"
+                      to="/login/doctor"
                       onClick={() => setLoginOpen(false)}
                       className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 text-sm md:text-lg text-gray-800 hover:bg-purple-100 transition rounded-md"
                     >
@@ -161,7 +161,7 @@ const Navbar = () => {
                       User
                     </NavLink>
                     <NavLink
-                      to="/doctor/register"
+                      to="/register/doctor"
                       onClick={() => setRegisterOpen(false)}
                       className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 text-sm md:text-lg text-gray-800 hover:bg-blue-100 transition rounded-md"
                     >

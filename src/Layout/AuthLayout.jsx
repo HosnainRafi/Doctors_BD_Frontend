@@ -1,18 +1,16 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from '../Shared/Navbar/Navbar';
 import Footer from '../Shared/Footer/Footer';
-import ChatBot from '../Pages/ChatBot/ChatBot';
-import DoctorSearchBar from './../Pages/serachBar/DoctorSearchBar';
+import AuthNavbar from '../Shared/Navbar/AuthNavbar';
 
 const AuthLayout = () => {
   return (
     <div>
-      <div className="mb-6">
-        <Navbar />
+      <div className="mb-16">
+        <AuthNavbar />
       </div>
       <Outlet />
       <Footer />
-      <ChatBot />
     </div>
   );
 };

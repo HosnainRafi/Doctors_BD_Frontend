@@ -12,6 +12,12 @@ import FindDoctorByCategory from "../Pages/FindDoctorByCategory/FindDoctorByCate
 import ArticleDetailPage from "../components/ArticleDetailPage";
 import DevTeam from "../Pages/Team/Team";
 import AboutUs from "../Pages/AboutUs/AboutUs";
+import UserLogin from "../Pages/Login/UserLogin";
+import UserRegister from "../Pages/Login/UserRegister";
+import DoctorLogin from "../Pages/Login/DoctorLogin";
+import DoctorRegister from "../Pages/Login/DoctorRegister";
+import UserDashboard from "../Pages/UserDashboard/UserDashboard";
+import DoctorDashboard from "../Pages/DoctorDashboard/DoctorDashboard";
 
 export const router = createBrowserRouter([
   {
@@ -62,6 +68,30 @@ export const router = createBrowserRouter([
       {
         path: "/article/:id",
         element: <ArticleDetailPage />,
+      },
+      {
+        path: "/login",
+        element: <UserLogin />,
+      },
+      {
+        path: "/register",
+        element: <UserRegister />,
+      },
+      {
+        path: "/doctor/login",
+        element: <DoctorLogin />,
+      },
+      {
+        path: "/doctor/register",
+        element: <DoctorRegister />,
+      },
+      {
+        path: "/user/dashboard",
+        element: <UserDashboard />,
+      },
+      {
+        path: "/doctor/dashboard",
+        element: <DoctorDashboard />,
       },
     ],
   },

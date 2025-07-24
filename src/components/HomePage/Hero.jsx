@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-r from-purple-100 via-white to-purple-100 py-28">
+    <section className="relative overflow-hidden bg-gradient-to-r from-purple-100 via-white to-purple-100 py-10 md:py-20 ">
       {/* Background Blur Circles */}
       <div
         aria-hidden="true"

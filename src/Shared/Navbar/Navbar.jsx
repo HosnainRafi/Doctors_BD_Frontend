@@ -1,20 +1,19 @@
-import { NavLink } from "react-router-dom";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { useState } from "react";
-import DoctorSearchBar from "../../Pages/serachBar/DoctorSearchBar";
+import { NavLink } from 'react-router-dom';
+import { GiHamburgerMenu } from 'react-icons/gi';
+import { useState } from 'react';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navItem = [
-    { key: "home", label: "Home", path: "/" },
+    { key: 'home', label: 'Home', path: '/' },
     {
-      key: "find-doctor",
-      label: "Find Doctors",
-      path: "/find-doctor-by-district",
+      key: 'find-doctor',
+      label: 'Find Doctors',
+      path: '/find-doctor-by-district',
     },
-    { key: "chat", label: "Chat With Assistant", path: "/chat-with-assistant" },
-    { key: "contact", label: "Contact", path: "/contact" },
-    { key: "about-us", label: "About Us", path: "/about-us" },
+    { key: 'chat', label: 'Chat With Assistant', path: '/chat-with-assistant' },
+    { key: 'contact', label: 'Contact', path: '/contact' },
+    { key: 'about-us', label: 'About Us', path: '/about-us' },
   ];
 
   return (
@@ -28,9 +27,6 @@ const Navbar = () => {
               alt=""
             />
           </NavLink>
-          <div className="hidden lg:block flex-1 mx-8">
-            <DoctorSearchBar />
-          </div>
 
           <div className="flex items-center lg:order-2">
             <div className="hidden mt-2 mr-4 sm:inline-block">
@@ -52,23 +48,20 @@ const Navbar = () => {
 
           <div
             className={`${
-              menuOpen ? "block" : "hidden"
+              menuOpen ? 'block' : 'hidden'
             } items-center justify-between w-full lg:flex lg:w-auto lg:order-1`}
             id="mobile-menu-2"
           >
-            <div className="block lg:hidden my-2">
-              <DoctorSearchBar />
-            </div>
             <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-              {navItem.map((item) => (
+              {navItem.map(item => (
                 <li key={item.key}>
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
                       `block py-2 pl-3 pr-4 rounded lg:p-0 ${
                         isActive
-                          ? "text-white bg-purple-700 lg:bg-transparent lg:text-purple-700"
-                          : "text-white lg:text-gray-300 hover:text-purple-500"
+                          ? 'text-white bg-purple-700 lg:bg-transparent lg:text-purple-700'
+                          : 'text-white lg:text-gray-300 hover:text-purple-500'
                       }`
                     }
                   >

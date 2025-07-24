@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const AddPatientForm = ({ onPatientAdded }) => {
+const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -11,6 +11,10 @@ const AddPatientForm = ({ onPatientAdded }) => {
   });
   const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    if (editPatient) setForm(editPatient);
+  }, [editPatient]);
+
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -18,28 +22,48 @@ const AddPatientForm = ({ onPatientAdded }) => {
     e.preventDefault();
     setMessage("");
     const token = localStorage.getItem("userToken");
-    const userId = JSON.parse(atob(token.split(".")[1])).id;
-    const res = await fetch("http://localhost:5000/api/v1/patients", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ ...form, user_id: userId }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      setMessage("Patient added!");
-      setForm({
-        name: "",
-        phone: "",
-        email: "",
-        dob: "",
-        gender: "",
-        address: "",
+    if (editPatient) {
+      // Update patient
+      const res = await fetch(
+        `http://localhost:5000/api/v1/patients/${editPatient._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(form),
+        }
+      );
+      const data = await res.json();
+      if (data.success) {
+        setMessage("Patient updated!");
+        onPatientAdded && onPatientAdded();
+      } else setMessage(data.message || "Failed to update patient.");
+    } else {
+      // Add new patient
+      const res = await fetch("http://localhost:5000/api/v1/patients", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ...form, user_id: userId }),
       });
-      onPatientAdded && onPatientAdded();
-    } else setMessage(data.message || "Failed to add patient.");
+      const data = await res.json();
+      if (data.success) {
+        setMessage("Patient added!");
+        setForm({
+          name: "",
+          phone: "",
+          email: "",
+          dob: "",
+          gender: "",
+          address: "",
+        });
+        onPatientAdded && onPatientAdded();
+      } else setMessage(data.message || "Failed to add patient.");
+    }
   };
 
   return (
@@ -99,7 +123,7 @@ const AddPatientForm = ({ onPatientAdded }) => {
         type="submit"
         className="mt-2 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
       >
-        Add Patient
+        {editPatient ? "Update Patient" : "Add Patient"}
       </button>
       {message && <div className="mt-2 text-sm">{message}</div>}
     </form>

@@ -18,6 +18,7 @@ import DoctorLogin from "../Pages/Login/DoctorLogin";
 import DoctorRegister from "../Pages/Login/DoctorRegister";
 import UserDashboard from "../Pages/UserDashboard/UserDashboard";
 import DoctorDashboard from "../Pages/DoctorDashboard/DoctorDashboard";
+import BookAppointment from "../Pages/UserDashboard/BookAppointment";
 
 export const router = createBrowserRouter([
   {
@@ -92,6 +93,10 @@ export const router = createBrowserRouter([
       {
         path: "/doctor/dashboard",
         element: <DoctorDashboard />,
+      },
+      {
+        path: "/book-appointment",
+        element: <BookAppointment />,
       },
     ],
   },

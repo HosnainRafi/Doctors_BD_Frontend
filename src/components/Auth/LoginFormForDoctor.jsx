@@ -1,21 +1,23 @@
-import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
-import { auth } from "./firebase";
+import React, { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { auth } from './firebase';
+import { ImSpinner9 } from 'react-icons/im';
 
 const DoctorLoginForm = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState("");
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e) =>
+  const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    setMessage("");
+    setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -23,7 +25,7 @@ const DoctorLoginForm = () => {
         form.password
       );
       const token = await userCredential.user.getIdToken();
-      localStorage.setItem("doctorToken", token);
+      localStorage.setItem('doctorToken', token);
 
       // Fetch doctor profile from your backend using email
       const res = await fetch(
@@ -33,47 +35,83 @@ const DoctorLoginForm = () => {
       const data = await res.json();
       if (data.data && (!data.data.bmdc_number || !data.data.specialty)) {
         // Profile incomplete, redirect to complete profile
-        localStorage.setItem("doctorId", data.data._id);
-        toast("Please complete your profile.");
-        navigate("/doctor/complete-profile");
+        localStorage.setItem('doctorId', data.data._id);
+        toast('Please complete your profile.');
+        navigate('/doctor/complete-profile');
       } else {
-        localStorage.setItem("doctorId", data.data._id);
-        toast.success("Login successful!");
-        navigate("/doctor/dashboard");
+        localStorage.setItem('doctorId', data.data._id);
+        toast.success('Login successful!');
+        navigate('/doctor/dashboard');
       }
     } catch (err) {
-      setMessage(err.message || "Login failed.");
+      toast.error(err.message || 'Login failed.');
     }
+    setLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Doctor Login</h2>
-      <input
-        name="email"
-        type="email"
-        placeholder="Email"
-        value={form.email}
-        onChange={handleChange}
-        required
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition placeholder-gray-400 bg-gray-50"
-      />
-      <input
-        name="password"
-        type="password"
-        placeholder="Password"
-        value={form.password}
-        onChange={handleChange}
-        required
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition placeholder-gray-400 bg-gray-50"
-      />
+      <div className="mb-4">
+        <label htmlFor="email" className="block mb-2 text-gray-700 font-medium">
+          Email Address
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="Enter your email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-1 focus:ring-purple-700 focus:border-purple-700
+                     transition placeholder-gray-400 bg-gray-50"
+        />
+      </div>
+
+      <div className="mb-6 relative">
+        <label
+          htmlFor="password"
+          className="block mb-2 text-gray-700 font-medium"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type={showPassword ? 'text' : 'password'}
+          placeholder="Enter your password"
+          value={form.password}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-1 focus:ring-purple-700 focus:border-purple-700
+                     transition placeholder-gray-400 bg-gray-50 pr-12"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute top-[48px] right-4 text-gray-600 hover:text-purple-700 focus:outline-none"
+          tabIndex={-1}
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
+        >
+          {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+        </button>
+      </div>
+
       <button
         type="submit"
+        disabled={loading}
         className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-lg transition"
       >
-        Login
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <ImSpinner9 className="animate-spin text-xl" />
+          </div>
+        ) : (
+          'Login as Doctor'
+        )}
       </button>
-      {message && <div className="mt-2 text-sm">{message}</div>}
     </form>
   );
 };

@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
+import { ImSpinner9 } from 'react-icons/im';
 
 const UserLoginForm = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = e =>
@@ -13,6 +15,7 @@ const UserLoginForm = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setLoading(true);
     const res = await fetch(
       'https://doctors-bd-backend.vercel.app/api/v1/users/login',
       {
@@ -30,14 +33,13 @@ const UserLoginForm = () => {
     } else {
       toast.error(data.error || 'Login failed.');
     }
+    setLoading(false);
   };
 
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
       <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
-        <h2 className="text-xl font-bold mb-6 text-center">User Login</h2>
-
         <div className="mb-5">
           <label
             htmlFor="email"
@@ -91,10 +93,16 @@ const UserLoginForm = () => {
 
         <button
           type="submit"
-          className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold
-                     py-3 rounded-lg transition"
+          disabled={loading}
+          className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold  py-3 rounded-lg transition"
         >
-          Login
+          {loading ? (
+            <div className='flex items-center justify-center'>
+              <ImSpinner9 className="animate-spin text-xl" />
+            </div>
+          ) : (
+            'Login as User'
+          )}
         </button>
       </form>
     </>

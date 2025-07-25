@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const UserRegisterForm = () => {
   const [form, setForm] = useState({
@@ -8,12 +9,14 @@ const UserRegisterForm = () => {
     phone: '',
     password: '',
   });
-
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setLoading(true);
     const res = await fetch(
       'https://doctors-bd-backend.vercel.app/api/v1/users/register',
       {
@@ -25,10 +28,12 @@ const UserRegisterForm = () => {
     const data = await res.json();
 
     if (data.success) {
+      navigate('/login');
       toast.success('Registration successful! Please login.');
     } else {
       toast.error(data.message || 'Registration failed.');
     }
+    setLoading(false);
   };
 
   return (
@@ -121,7 +126,13 @@ const UserRegisterForm = () => {
           type="submit"
           className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition"
         >
-          Register
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <ImSpinner9 className="animate-spin text-xl" />
+            </div>
+          ) : (
+            'Register as User'
+          )}
         </button>
       </form>
     </>

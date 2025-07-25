@@ -21,95 +21,107 @@ import DoctorDashboard from '../Pages/DoctorDashboard/DoctorDashboard';
 import BookAppointment from '../Pages/UserDashboard/BookAppointment';
 import AuthLayout from '../Layout/AuthLayout';
 import DashboardUserLayout from '../Layout/DashboardUserLayout';
-
+import CompleteProfilePage from '../Pages/DoctorDashboard/CompleteProfilePage';
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <Home />,
       },
       {
-        path: "/chat-with-assistant",
+        path: '/chat-with-assistant',
         element: <ChatWithAssistant />,
       },
       {
-        path: "/find-doctor-by-district",
+        path: '/find-doctor-by-district',
         element: <FindDoctorByDistrict />,
       },
       {
-        path: "/find-doctor-by-hospital",
+        path: '/find-doctor-by-hospital',
         element: <FindDoctorByHospital />,
       },
       {
-        path: "/find-doctor-by-category",
+        path: '/find-doctor-by-category',
         element: <FindDoctorByCategory />,
       },
       {
-        path: "/doctor/:slug",
+        path: '/doctor/:slug',
         element: <DoctorDetails />,
       },
       {
-        path: "/all-doctors",
+        path: '/all-doctors',
         element: <AllDoctors />,
       },
       {
-        path: "/contact",
+        path: '/contact',
         element: <Contact />,
       },
       {
-        path: "/about-us",
+        path: '/about-us',
         element: <AboutUs />,
       },
       {
-        path: "/team",
+        path: '/team',
         element: <DevTeam />,
       },
       {
-        path: "/article/:id",
+        path: '/article/:id',
         element: <ArticleDetailPage />,
       },
       {
-        path: "/doctor/dashboard",
+        path: '/doctor/dashboard',
         element: <DoctorDashboard />,
       },
       {
-        path: "/book-appointment",
+        path: '/book-appointment',
         element: <BookAppointment />,
       },
     ],
   },
   {
-    path: "/login",
+    path: '/login',
     element: <AuthLayout />,
     children: [
-      { index: true, element: <UserLogin /> },
-      { path: "doctor", element: <DoctorLogin /> },
+      {
+        index: true,
+        element: <UserLogin />,
+      },
+      {
+        path: 'doctor',
+        element: <DoctorLogin />,
+      },
     ],
   },
   {
-    path: "/register",
+    path: '/register',
     element: <AuthLayout />,
     children: [
-      { index: true, element: <UserRegister /> },
-      { path: "doctor", element: <DoctorRegister /> },
+      {
+        index: true,
+        element: <UserRegister />,
+      },
+      {
+        path: 'doctor',
+        element: <DoctorRegister />,
+      },
     ],
   },
   {
-    path: "/dashboard",
+    path: '/dashboard',
     element: <DashboardUserLayout />,
     children: [
       {
-        path: "user",
+        path: 'user',
         element: <UserDashboard />,
       },
     ],
   },
   {
-    path: "/doctor/complete-profile",
+    path: '/doctor/complete-profile',
     element: <CompleteProfilePage />,
   },
 ]);

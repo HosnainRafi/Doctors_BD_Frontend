@@ -1,8 +1,13 @@
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
 import React, { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { auth } from "./firebase";
+import { ImSpinner9 } from "react-icons/im";
 
 const UserRegisterForm = () => {
   const [form, setForm] = useState({
@@ -18,8 +23,8 @@ const UserRegisterForm = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
-    setLoading(true);
     e.preventDefault();
+    setLoading(true);
     try {
       // 1. Register with Firebase
       const userCredential = await createUserWithEmailAndPassword(
@@ -27,34 +32,28 @@ const UserRegisterForm = () => {
         form.email,
         form.password
       );
-      await updateProfile(userCredential.user, { displayName: form.name });
-      const token = await userCredential.user.getIdToken();
 
-      // 2. Register user in your backend
-      const res = await fetch("http://localhost:5000/api/v1/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          phone: form.phone,
-          password: form.password || "firebase", // always send a password
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success("Registration successful! Please login.");
-        navigate("/login");
-      } else {
-        toast.error(data.message || "Registration failed.");
-      }
+      // 2. Update user profile
+      await updateProfile(userCredential.user, { displayName: form.name });
+
+      // 3. Send email verification
+      await sendEmailVerification(userCredential.user);
+
+      // 4. Save session data
+      sessionStorage.setItem("pendingUserEmail", form.email);
+      sessionStorage.setItem("needsVerification", "true");
+
+      toast.success(
+        "Verification email sent! Please check your inbox before continuing."
+      );
+      setLoading(false);
+
+      // 5. Navigate to verification page
+      navigate("/verify-email-for-user");
     } catch (err) {
       toast.error(err.message || "Registration failed.");
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

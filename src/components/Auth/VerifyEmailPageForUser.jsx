@@ -13,6 +13,7 @@ const VerifyEmailPageForUser = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // eslint-disable-next-line no-unused-vars
   const [email, setEmail] = useState(
     sessionStorage.getItem("pendingUserEmail") || ""
   );

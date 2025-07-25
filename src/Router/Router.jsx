@@ -18,9 +18,9 @@ import DoctorLogin from "../Pages/Login/DoctorLogin";
 import DoctorRegister from "../Pages/Login/DoctorRegister";
 import UserDashboard from "../Pages/UserDashboard/UserDashboard";
 import DoctorDashboard from "../Pages/DoctorDashboard/DoctorDashboard";
-import BookAppointment from "../Pages/UserDashboard/BookAppointment";
+import BookAppointment from "../Pages/UserDashboard/BookAppo intment";
 import AuthLayout from "../Layout/AuthLayout";
-import CompleteProfilePage from "../Pages/DoctorDashboard/CompleteProfilePage";
+import DashboardUserLayout from "../Layout/DashboardUserLayout";
 
 export const router = createBrowserRouter([
   {
@@ -73,10 +73,6 @@ export const router = createBrowserRouter([
         element: <ArticleDetailPage />,
       },
       {
-        path: "/user/dashboard",
-        element: <UserDashboard />,
-      },
-      {
         path: "/doctor/dashboard",
         element: <DoctorDashboard />,
       },
@@ -102,9 +98,14 @@ export const router = createBrowserRouter([
       { path: "doctor", element: <DoctorRegister /> },
     ],
   },
-  // Add this outside MainLayout so it's not in the public nav
   {
-    path: "/doctor/complete-profile",
-    element: <CompleteProfilePage />,
+    path: "/dashboard",
+    element: <DashboardUserLayout />,
+    children: [
+      {
+        path: "user",
+        element: <UserDashboard />,
+      },
+    ],
   },
 ]);

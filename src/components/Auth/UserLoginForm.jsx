@@ -26,7 +26,7 @@ const UserLoginForm = () => {
     if (data.success && data.data.token) {
       localStorage.setItem('userToken', data.data.token);
       toast.success('Login successful!');
-      navigate('/user/dashboard');
+      navigate('/dashboard/user');
     } else {
       toast.error(data.error || 'Login failed.');
     }

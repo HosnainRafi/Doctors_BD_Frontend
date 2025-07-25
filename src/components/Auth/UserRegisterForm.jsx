@@ -16,11 +16,14 @@ const UserRegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-    const res = await fetch("http://localhost:5000/api/v1/users/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    const res = await fetch(
+      'https://doctors-bd-backend.vercel.app/api/v1/users/register',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      }
+    );
     const data = await res.json();
     if (data.success) setMessage("Registration successful! Please login.");
     else setMessage(data.message || "Registration failed.");

@@ -1,12 +1,23 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaHome, FaUser, FaSignOutAlt, FaTimes } from 'react-icons/fa';
 
 const UserDashboardSidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
 
   const isActive = path => location.pathname === path;
-
+  const isUserLoggedIn = !!localStorage.getItem('userToken');
+  const isDoctorLoggedIn = !!localStorage.getItem('doctorToken');
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    if (isUserLoggedIn) {
+      localStorage.removeItem('userToken');
+      navigate('/login');
+    } else if (isDoctorLoggedIn) {
+      localStorage.removeItem('doctorToken');
+      navigate('/login/doctor');
+    }
+  };
   return (
     <>
       {isOpen && (
@@ -23,14 +34,16 @@ const UserDashboardSidebar = ({ isOpen, onClose }) => {
         } md:translate-x-0 md:static md:shadow-none`}
       >
         <div className="flex items-center px-4 h-[60px] border-b">
-          <span className="text-purple-700 text-lg font-bold">MyApp</span>
+          <span className="text-purple-700 text-lg md:text-2xl  font-bold">
+            CarePoint
+          </span>
         </div>
 
         <div className="flex-1 overflow-y-auto">
           <Link
-            to="/dashboard/home"
+            to="/"
             className={`flex items-center gap-3 px-6 py-3 font-semibold ${
-              isActive('/dashboard/home')
+              isActive('/')
                 ? 'text-purple-700'
                 : 'text-gray-700 hover:text-purple-700'
             }`}
@@ -53,13 +66,13 @@ const UserDashboardSidebar = ({ isOpen, onClose }) => {
         </div>
 
         <div className="mt-auto border-t px-6 py-4">
-          <Link
-            to="/logout"
+          <button
+            onClick={handleLogout}
             className="flex items-center gap-3 text-gray-700 font-semibold hover:text-red-600"
           >
             <FaSignOutAlt />
             Logout
-          </Link>
+          </button>
         </div>
       </div>
     </>

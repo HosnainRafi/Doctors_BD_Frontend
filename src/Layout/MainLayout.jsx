@@ -7,13 +7,17 @@ import DoctorSearchBar from '../Pages/Main/serachBar/DoctorSearchBar';
 const MainLayout = () => {
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-2 relative">
         <Navbar />
-        <DoctorSearchBar />
+        <div className="fixed top-0 w-full left-0 z-20 pb-3 bg-white">
+          <DoctorSearchBar />
+        </div>
       </div>
-      <Outlet />
-      <Footer />
-      <ChatBot />
+      <div className='mt-[150px]'>
+        <Outlet />
+        <Footer />
+        <ChatBot />
+      </div>
     </div>
   );
 };

@@ -59,7 +59,7 @@ const DoctorSearchBar = () => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full max-w-4xl mx-auto mt-28 px-4"
+      className="relative w-full max-w-7xl mx-auto mt-[90px] px-4"
     >
       <div className="relative">
         <input

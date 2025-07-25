@@ -23,7 +23,11 @@ const NotificationList = () => {
   const handleMarkAsRead = async (id) => {
     await fetch(`http://localhost:5000/api/v1/notifications/${id}/read`, {
       method: "PATCH",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}), // <-- send an empty object
     });
     setNotifications((prev) =>
       prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))

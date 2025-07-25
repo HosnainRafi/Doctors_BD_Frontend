@@ -1,4 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+
+// Example specialties and degrees (you can fetch from backend if you want)
+const SPECIALTIES = [
+  "General Physician",
+  "Cardiology",
+  "Dermatology",
+  "Pediatrics",
+  "Neurology",
+  "Orthopedics",
+  "Psychiatry",
+  "Urology",
+  "Gastroenterology",
+  "Oncology",
+  "Other",
+];
+const DEGREES = [
+  "MBBS",
+  "FCPS",
+  "MD",
+  "MS",
+  "MRCP",
+  "FRCS",
+  "BCS (Health)",
+  "DGO",
+  "DLO",
+  "Other",
+];
 
 const DoctorProfile = () => {
   const [doctor, setDoctor] = useState(null);
@@ -6,34 +33,68 @@ const DoctorProfile = () => {
   const [form, setForm] = useState({});
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split(".")[1])).id
-    : null;
+  const doctorId = localStorage.getItem("doctorId"); // <-- FIXED
 
   useEffect(() => {
-    if (!doctorId) return;
+    if (!doctorId) {
+      setError("Doctor ID not found. Please login again.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     fetch(`http://localhost:5000/api/v1/registered-doctors/${doctorId}`, {
       headers: { Authorization: `Bearer ${doctorToken}` },
     })
       .then((res) => res.json())
       .then((data) => {
-        setDoctor(data.data);
-        setForm(data.data);
+        if (data.data) {
+          setDoctor(data.data);
+          setForm({
+            ...data.data,
+            specialties: data.data.specialties || [],
+            degree_names: data.data.degree_names || [],
+          });
+        } else {
+          setError("Doctor not found.");
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to fetch doctor profile.");
+        setLoading(false);
       });
   }, [doctorId, doctorToken]);
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // For multi-select specialties and degrees
+  const handleSpecialtiesChange = (e) => {
+    const options = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    setForm({ ...form, specialties: options });
+  };
+  const handleDegreesChange = (e) => {
+    const options = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    setForm({ ...form, degree_names: options });
+  };
 
   // Handle profile photo upload
   const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    // You can use a real file upload API here (e.g. S3, Cloudinary, or your backend)
-    // For demo, we'll just use a local URL
+    // For demo, use local URL. In production, upload to S3/Cloudinary/backend and set the returned URL.
     setForm({ ...form, photo: URL.createObjectURL(file) });
-    // In production, upload the file and set the returned URL
   };
 
   const handleSave = async (e) => {
@@ -59,7 +120,6 @@ const DoctorProfile = () => {
   };
 
   // Change password
-  const [password, setPassword] = useState("");
   const handleChangePassword = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -81,6 +141,8 @@ const DoctorProfile = () => {
     } else setMessage(data.message || "Failed to change password.");
   };
 
+  if (loading) return <div>Loading profile...</div>;
+  if (error) return <div className="text-red-600">{error}</div>;
   if (!doctor) return null;
 
   return (
@@ -114,7 +176,13 @@ const DoctorProfile = () => {
               <span className="font-medium">Phone:</span> {doctor.phone}
             </div>
             <div>
-              <span className="font-medium">Specialty:</span> {doctor.specialty}
+              <span className="font-medium">Specialty:</span>{" "}
+              {doctor.specialty ||
+                (doctor.specialties && doctor.specialties.join(", "))}
+            </div>
+            <div>
+              <span className="font-medium">Degrees:</span>{" "}
+              {doctor.degree_names && doctor.degree_names.join(", ")}
             </div>
             <div>
               <span className="font-medium">BMDC No:</span> {doctor.bmdc_number}
@@ -191,13 +259,51 @@ const DoctorProfile = () => {
               placeholder="Phone"
               required
             />
-            <input
+            <select
               name="specialty"
-              value={form.specialty}
+              value={form.specialty || ""}
               onChange={handleChange}
               className="w-full mb-2 px-3 py-2 border rounded"
-              placeholder="Specialty"
-            />
+            >
+              <option value="">Select Main Specialty</option>
+              {SPECIALTIES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <label className="block text-gray-700 font-medium mb-1">
+              Other Specialties (hold Ctrl/Cmd to select multiple)
+            </label>
+            <select
+              multiple
+              name="specialties"
+              value={form.specialties || []}
+              onChange={handleSpecialtiesChange}
+              className="w-full mb-2 px-3 py-2 border rounded"
+            >
+              {SPECIALTIES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <label className="block text-gray-700 font-medium mb-1">
+              Degrees (hold Ctrl/Cmd to select multiple)
+            </label>
+            <select
+              multiple
+              name="degree_names"
+              value={form.degree_names || []}
+              onChange={handleDegreesChange}
+              className="w-full mb-2 px-3 py-2 border rounded"
+            >
+              {DEGREES.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
             <input
               name="bmdc_number"
               value={form.bmdc_number}

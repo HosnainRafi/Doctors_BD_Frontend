@@ -5,9 +5,7 @@ const Reviews = () => {
   const [reply, setReply] = useState("");
   const [replyId, setReplyId] = useState(null);
   const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split(".")[1])).id
-    : null;
+  const doctorId = localStorage.getItem("doctorId"); // <-- FIXED
 
   useEffect(() => {
     if (!doctorId) return;
@@ -36,6 +34,9 @@ const Reviews = () => {
     <div className="mb-6">
       <h3 className="text-lg font-semibold mb-2">Patient Reviews</h3>
       <ul className="divide-y">
+        {reviews.length === 0 && (
+          <li className="text-gray-400 py-2">No reviews found.</li>
+        )}
         {reviews.map((r) => (
           <li key={r._id} className="py-2">
             <div className="font-medium">{r.patient_id?.name}</div>

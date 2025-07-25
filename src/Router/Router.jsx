@@ -20,6 +20,7 @@ import UserDashboard from '../Pages/UserDashboard/UserDashboard';
 import DoctorDashboard from '../Pages/DoctorDashboard/DoctorDashboard';
 import BookAppointment from '../Pages/UserDashboard/BookAppointment';
 import AuthLayout from '../Layout/AuthLayout';
+import DashboardUserLayout from '../Layout/DashboardUserLayout';
 
 export const router = createBrowserRouter([
   {
@@ -72,10 +73,6 @@ export const router = createBrowserRouter([
         element: <ArticleDetailPage />,
       },
       {
-        path: '/user/dashboard',
-        element: <UserDashboard />,
-      },
-      {
         path: '/doctor/dashboard',
         element: <DoctorDashboard />,
       },
@@ -113,4 +110,14 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: '/dashboard',
+    element: <DashboardUserLayout />,
+    children: [
+      {
+        path: 'user',
+        element:<UserDashboard/>
+      }
+    ]
+  }
 ]);

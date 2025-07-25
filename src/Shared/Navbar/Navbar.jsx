@@ -75,7 +75,7 @@ const Navbar = () => {
                   {isDoctorLoggedIn && doctorName && `Dr. ${doctorName}`}
                 </span>
                 <NavLink
-                  to={isUserLoggedIn ? '/user/dashboard' : '/doctor/dashboard'}
+                  to={isUserLoggedIn ? '/dashboard/user' : '/doctor/dashboard'}
                   className="ml-4 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-md transition"
                 >
                   Dashboard

@@ -6,14 +6,20 @@ import SetAvailabilityForm from "./SetAvailabilityForm";
 import DoctorProfile from "./DoctorProfile";
 import Reviews from "./Reviews";
 import PrescriptionForm from "./PrescriptionForm";
+import Earnings from "./Earnings";
+import PatientHistory from "./PatientHistory";
+import CompletedAppointments from "./CompletedAppointments";
 
 const TABS = [
   { key: "appointments", label: "Appointments" },
   { key: "prescriptions", label: "Prescriptions" },
   { key: "followups", label: "Follow-Ups" },
+  { key: "completedAppointmens", label: "Completed-Appointments" },
   { key: "availability", label: "Availability" },
   { key: "profile", label: "Profile" },
   { key: "reviews", label: "Reviews" },
+  { key: "patientHistory", label: "Patient History" },
+  { key: "earnings", label: "Earnings" },
 ];
 
 const DoctorDashboard = () => {
@@ -57,8 +63,11 @@ const DoctorDashboard = () => {
           {activeTab === "prescriptions" && <PrescriptionList />}
           {activeTab === "followups" && <FollowUpList />}
           {activeTab === "availability" && <SetAvailabilityForm />}
+          {activeTab === "completedAppointmens" && <CompletedAppointments />}
           {activeTab === "profile" && <DoctorProfile />}
           {activeTab === "reviews" && <Reviews />}
+          {activeTab === "patientHistory" && <PatientHistory />}
+          {activeTab === "earnings" && <Earnings />}
         </div>
       </div>
     </div>

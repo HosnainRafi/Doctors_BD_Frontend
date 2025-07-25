@@ -66,8 +66,17 @@ const FollowUpList = () => {
     alert(`Reminder sent to ${patientPhone}!\nAdvice: ${notes}`);
   };
 
-  if (loading) return <div>Loading follow-ups...</div>;
-
+  //if (loading) return <div>Loading follow-ups...</div>;
+  if (!loading && (!followUps || followUps.length === 0)) {
+    return (
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-2">Follow-Ups</h3>
+        <div className="text-center text-gray-400 py-8 text-lg font-semibold">
+          No follow-ups scheduled.
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="mb-6">
       <h3 className="text-lg font-semibold mb-2">Follow-Ups</h3>

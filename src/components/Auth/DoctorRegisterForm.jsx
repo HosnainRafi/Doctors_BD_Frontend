@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { auth } from "./firebase";
 
 const DoctorRegisterForm = () => {
   const [form, setForm] = useState({
@@ -10,6 +14,7 @@ const DoctorRegisterForm = () => {
     specialty: "",
   });
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,14 +22,47 @@ const DoctorRegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-    const res = await fetch("http://localhost:5000/api/v1/registered-doctors", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    const data = await res.json();
-    if (data.success) setMessage("Registration successful! Please login.");
-    else setMessage(data.message || "Registration failed.");
+    try {
+      // 1. Register with Firebase
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        form.email,
+        form.password
+      );
+      await updateProfile(userCredential.user, { displayName: form.name });
+      const token = await userCredential.user.getIdToken();
+
+      // 2. Create doctor in your backend (minimal info)
+      const res = await fetch(
+        "http://localhost:5000/api/v1/registered-doctors",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            bmdc_number: form.bmdc_number,
+            specialty: form.specialty,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Registration successful! Please complete your profile.");
+        // Save token and doctor id for profile completion
+        localStorage.setItem("doctorToken", token);
+        localStorage.setItem("doctorId", data.data._id);
+        navigate("/doctor/complete-profile");
+      } else {
+        setMessage(data.message || "Registration failed.");
+      }
+    } catch (err) {
+      setMessage(err.message || "Registration failed.");
+    }
   };
 
   return (

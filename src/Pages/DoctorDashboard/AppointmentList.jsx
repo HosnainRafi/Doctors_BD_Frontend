@@ -73,8 +73,9 @@ const DoctorAppointmentList = ({ onCreatePrescription }) => {
     window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, "_blank");
   };
 
-  if (loading) return <div>Loading appointments...</div>;
-
+  //if (loading) return <div>Loading appointments...</div>;
+  const hasAnyAppointments =
+    todayList.length > 0 || upcoming.length > 0 || past.length > 0;
   return (
     <div className="mb-6">
       <h3 className="text-lg font-semibold mb-2">Today's Appointments</h3>
@@ -101,6 +102,12 @@ const DoctorAppointmentList = ({ onCreatePrescription }) => {
         onCreatePrescription={onCreatePrescription}
         isPast
       />
+
+      {!hasAnyAppointments && (
+        <div className="text-center text-gray-400 py-8 text-lg font-semibold">
+          No appointments found.
+        </div>
+      )}
     </div>
   );
 };

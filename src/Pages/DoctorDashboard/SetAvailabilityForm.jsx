@@ -6,11 +6,8 @@ const SetAvailabilityForm = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [message, setMessage] = useState("");
   const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split(".")[1])).id
-    : null;
+  const doctorId = localStorage.getItem("doctorId");
 
-  // Fetch current availability and online status
   useEffect(() => {
     if (!doctorId) return;
     fetch(`http://localhost:5000/api/v1/registered-doctors/${doctorId}`, {
@@ -24,7 +21,6 @@ const SetAvailabilityForm = () => {
       });
   }, [doctorId, doctorToken]);
 
-  // Handle slot changes
   const handleSlotChange = (i, e) => {
     const newSlots = [...slots];
     newSlots[i][e.target.name] = e.target.value;
@@ -33,7 +29,6 @@ const SetAvailabilityForm = () => {
   const addSlot = () => setSlots([...slots, { date: "", time: "" }]);
   const removeSlot = (i) => setSlots(slots.filter((_, idx) => idx !== i));
 
-  // Handle blocked slot changes
   const handleBlockedSlotChange = (i, e) => {
     const newBlocked = [...blockedSlots];
     newBlocked[i][e.target.name] = e.target.value;
@@ -44,8 +39,11 @@ const SetAvailabilityForm = () => {
   const removeBlockedSlot = (i) =>
     setBlockedSlots(blockedSlots.filter((_, idx) => idx !== i));
 
-  // Handle online status toggle
   const handleOnlineToggle = async () => {
+    if (!doctorId) {
+      setMessage("Doctor ID not found. Please login again.");
+      return;
+    }
     setIsOnline(!isOnline);
     await fetch(`http://localhost:5000/api/v1/registered-doctors/${doctorId}`, {
       method: "PATCH",
@@ -57,10 +55,13 @@ const SetAvailabilityForm = () => {
     });
   };
 
-  // Save availability and blocked slots
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+    if (!doctorId) {
+      setMessage("Doctor ID not found. Please login again.");
+      return;
+    }
     const res = await fetch(
       `http://localhost:5000/api/v1/registered-doctors/${doctorId}`,
       {

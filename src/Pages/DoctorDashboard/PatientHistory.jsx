@@ -6,9 +6,7 @@ const PatientHistory = () => {
   const [appointments, setAppointments] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
   const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split(".")[1])).id
-    : null;
+  const doctorId = localStorage.getItem("doctorId"); // Use backend doctorId
 
   // Fetch all patients the doctor has seen (from appointments)
   useEffect(() => {
@@ -21,7 +19,6 @@ const PatientHistory = () => {
     )
       .then((res) => res.json())
       .then((data) => {
-        // Get unique patients from appointments
         const uniquePatients = {};
         (data.data || []).forEach((a) => {
           if (a.patient_id && a.patient_id._id) {
@@ -55,8 +52,13 @@ const PatientHistory = () => {
 
   return (
     <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-2">Patient History</h3>
+      <h3 className="text-2xl font-bold text-purple-700 mb-4">
+        Patient History
+      </h3>
       <div className="flex flex-wrap gap-2 mb-4">
+        {patients.length === 0 && (
+          <span className="text-gray-400">No patients found.</span>
+        )}
         {patients.map((p) => (
           <button
             key={p._id}
@@ -72,35 +74,44 @@ const PatientHistory = () => {
         ))}
       </div>
       {selectedPatient && (
-        <div className="bg-white rounded shadow p-4">
-          <h4 className="text-md font-bold mb-2">
+        <div className="bg-white rounded-xl shadow p-6">
+          <h4 className="text-lg font-bold mb-2 text-purple-700">
             {selectedPatient.name}'s Medical History
           </h4>
-          <div>
-            <h5 className="font-semibold mt-2 mb-1">Appointments</h5>
+          <div className="mb-4">
+            <h5 className="font-semibold mt-2 mb-1 text-blue-700">
+              Appointments
+            </h5>
             <ul className="mb-2">
               {appointments.length === 0 && (
                 <li className="text-gray-400">No appointments found.</li>
               )}
               {appointments.map((a) => (
                 <li key={a._id} className="text-sm mb-1">
-                  {a.date} {a.time} — Status: {a.status}
+                  <span className="font-medium">
+                    {a.date} {a.time}
+                  </span>
+                  <span className="ml-2 text-xs text-gray-500">
+                    Status: {a.status}
+                  </span>
                 </li>
               ))}
             </ul>
-            <h5 className="font-semibold mt-2 mb-1">Prescriptions</h5>
+            <h5 className="font-semibold mt-2 mb-1 text-green-700">
+              Prescriptions
+            </h5>
             <ul>
               {prescriptions.length === 0 && (
                 <li className="text-gray-400">No prescriptions found.</li>
               )}
               {prescriptions.map((p) => (
                 <li key={p._id} className="text-sm mb-1">
-                  {p.date} —{" "}
+                  <span className="font-medium">{p.date}</span>
                   <a
                     href={`http://localhost:5000/api/v1/prescriptions/${p._id}/pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-purple-700 underline"
+                    className="ml-2 text-purple-700 underline"
                   >
                     Download PDF
                   </a>

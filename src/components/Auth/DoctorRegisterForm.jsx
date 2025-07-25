@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { auth } from './firebase';
+import { ImSpinner9 } from 'react-icons/im';
 
 const DoctorRegisterForm = () => {
   const [form, setForm] = useState({

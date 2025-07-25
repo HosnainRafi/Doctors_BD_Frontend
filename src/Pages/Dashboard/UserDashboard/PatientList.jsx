@@ -16,7 +16,7 @@ const PatientList = () => {
   // Fetch patients
   useEffect(() => {
     if (!userId) return;
-    fetch(`http://localhost:5000/api/v1/patients?user_id=${userId}`, {
+    fetch(`https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -35,7 +35,7 @@ const PatientList = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this patient?"))
       return;
-    await fetch(`http://localhost:5000/api/v1/patients/${id}`, {
+    await fetch(`https://doctors-bd-backend.vercel.app/api/v1/patients/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -47,7 +47,7 @@ const PatientList = () => {
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold">Patients</h3>
         <button

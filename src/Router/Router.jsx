@@ -22,6 +22,7 @@ import AuthLayout from '../Layout/AuthLayout';
 import DashboardUserLayout from '../Layout/DashboardUserLayout';
 import CompleteProfilePage from '../Pages/Dashboard/DoctorDashboard/CompleteProfilePage';
 import Home from '../Pages/Main/Home/Home';
+import PatientList from '../Pages/Dashboard/UserDashboard/PatientList';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -111,12 +112,16 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: '/dashboard',
+    path: '/dashboard/user',
     element: <DashboardUserLayout />,
     children: [
       {
-        path: 'user',
+       index: true,
         element: <UserDashboard />,
+      },
+      {
+       path:'patients',
+        element: <PatientList/>
       },
     ],
   },

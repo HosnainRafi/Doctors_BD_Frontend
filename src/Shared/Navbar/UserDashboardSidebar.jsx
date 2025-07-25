@@ -53,15 +53,15 @@ const UserDashboardSidebar = ({ isOpen, onClose }) => {
           </Link>
 
           <Link
-            to="/dashboard/profile"
+            to="/dashboard/user/patients"
             className={`flex items-center gap-3 px-6 py-3 font-semibold ${
-              isActive('/dashboard/profile')
+              isActive('/dashboard/patients')
                 ? 'text-purple-700'
                 : 'text-gray-700 hover:text-purple-700'
             }`}
           >
             <FaUser />
-            Profile
+            Patients
           </Link>
         </div>
 

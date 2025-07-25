@@ -1,37 +1,58 @@
-import React, { useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import React, { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { auth } from "./firebase";
 
 const UserRegisterForm = () => {
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const handleChange = e =>
+
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async e => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
     setLoading(true);
-    const res = await fetch(
-      'https://doctors-bd-backend.vercel.app/api/v1/users/register',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      }
-    );
-    const data = await res.json();
+    e.preventDefault();
+    try {
+      // 1. Register with Firebase
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        form.email,
+        form.password
+      );
+      await updateProfile(userCredential.user, { displayName: form.name });
+      const token = await userCredential.user.getIdToken();
 
-    if (data.success) {
-      navigate('/login');
-      toast.success('Registration successful! Please login.');
-    } else {
-      toast.error(data.message || 'Registration failed.');
+      // 2. Register user in your backend
+      const res = await fetch("http://localhost:5000/api/v1/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          password: form.password || "firebase", // always send a password
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Registration successful! Please login.");
+        navigate("/login");
+      } else {
+        toast.error(data.message || "Registration failed.");
+      }
+    } catch (err) {
+      toast.error(err.message || "Registration failed.");
     }
     setLoading(false);
   };
@@ -131,7 +152,7 @@ const UserRegisterForm = () => {
               <ImSpinner9 className="animate-spin text-xl" />
             </div>
           ) : (
-            'Register as User'
+            "Register as User"
           )}
         </button>
       </form>

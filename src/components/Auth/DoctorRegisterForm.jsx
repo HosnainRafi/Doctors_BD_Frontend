@@ -24,6 +24,7 @@ const DoctorRegisterForm = () => {
     setLoading(true);
     e.preventDefault();
     try {
+      // 1. Register with Firebase
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         form.email,
@@ -32,6 +33,7 @@ const DoctorRegisterForm = () => {
       await updateProfile(userCredential.user, { displayName: form.name });
       const token = await userCredential.user.getIdToken();
 
+      // 2. Register doctor in your backend
       const res = await fetch(
         "http://localhost:5000/api/v1/registered-doctors",
         {
@@ -46,7 +48,7 @@ const DoctorRegisterForm = () => {
             phone: form.phone,
             bmdc_number: form.bmdc_number,
             specialty: form.specialty,
-            password: form.password || "doctorpassword",
+            password: form.password || "firebase", // always send a password
           }),
         }
       );

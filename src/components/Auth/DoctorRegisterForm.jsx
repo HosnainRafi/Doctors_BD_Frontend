@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { auth } from './firebase';
-import { ImSpinner9 } from 'react-icons/im';
+import React, { useState } from "react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { auth } from "./firebase";
+import { ImSpinner9 } from "react-icons/im";
 
 const DoctorRegisterForm = () => {
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    bmdc_number: '',
-    specialty: '',
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    bmdc_number: "",
+    specialty: "",
   });
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = e =>
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
     try {
@@ -33,11 +33,11 @@ const DoctorRegisterForm = () => {
       const token = await userCredential.user.getIdToken();
 
       const res = await fetch(
-        'http://localhost:5000/api/v1/registered-doctors',
+        "http://localhost:5000/api/v1/registered-doctors",
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -46,20 +46,21 @@ const DoctorRegisterForm = () => {
             phone: form.phone,
             bmdc_number: form.bmdc_number,
             specialty: form.specialty,
+            password: form.password || "doctorpassword",
           }),
         }
       );
       const data = await res.json();
       if (data.success) {
-        toast.success('Registration successful! Please complete your profile.');
-        localStorage.setItem('doctorToken', token);
-        localStorage.setItem('doctorId', data.data._id);
-        navigate('/doctor/complete-profile');
+        toast.success("Registration successful! Please complete your profile.");
+        localStorage.setItem("doctorToken", token);
+        localStorage.setItem("doctorId", data.data._id);
+        navigate("/doctor/complete-profile");
       } else {
-        toast.error(data.message || 'Registration failed.');
+        toast.error(data.message || "Registration failed.");
       }
     } catch (err) {
-      toast.error(err.message || 'Registration failed.');
+      toast.error(err.message || "Registration failed.");
     }
     setLoading(false);
   };
@@ -186,7 +187,7 @@ const DoctorRegisterForm = () => {
             <ImSpinner9 className="animate-spin text-xl" />
           </div>
         ) : (
-          'Register as Doctor'
+          "Register as Doctor"
         )}
       </button>
     </form>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { auth } from "./firebase";
 import {
   sendEmailVerification,
@@ -13,20 +13,14 @@ const VerifyEmailPageForUser = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // eslint-disable-next-line no-unused-vars
   const [email, setEmail] = useState(
-    localStorage.getItem("pendingUserEmail") || ""
+    sessionStorage.getItem("pendingUserEmail") || ""
   );
   const [password, setPassword] = useState(
     sessionStorage.getItem("pendingUserPassword") || ""
   );
-
-  useEffect(() => {
-    if (!email || !password) {
-      toast.error("Missing session. Please register again.");
-      navigate("/register");
-    }
-  }, [email, password, navigate]);
+  const name = sessionStorage.getItem("pendingUserName") || "";
+  const phone = sessionStorage.getItem("pendingUserPhone") || "";
 
   const handleResend = async () => {
     if (!email || !password) {
@@ -59,13 +53,34 @@ const VerifyEmailPageForUser = () => {
       await userCredential.user.reload();
 
       if (userCredential.user.emailVerified) {
-        toast.success("Email verified! You can now login.");
+        toast.success("Email verified! Completing registration...");
 
-        localStorage.removeItem("pendingUserEmail");
-        localStorage.removeItem("pendingUserName");
-        sessionStorage.removeItem("pendingUserPassword");
-
-        navigate("/login");
+        // Now call your backend to save the user
+        const token = await userCredential.user.getIdToken();
+        const res = await fetch("http://localhost:5000/api/v1/users/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            phone,
+            password: password || "firebase", // always send a password
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          toast.success("Registration complete! Please login.");
+          sessionStorage.removeItem("pendingUserEmail");
+          sessionStorage.removeItem("pendingUserPassword");
+          sessionStorage.removeItem("pendingUserName");
+          sessionStorage.removeItem("pendingUserPhone");
+          navigate("/login");
+        } else {
+          toast.error(data.message || "Backend registration failed.");
+        }
       } else {
         toast.error("Email not verified yet. Please check your inbox.");
       }
@@ -82,9 +97,10 @@ const VerifyEmailPageForUser = () => {
         "Are you sure you want to reset and re-enter your email and registration info?"
       )
     ) {
-      localStorage.removeItem("pendingUserEmail");
-      localStorage.removeItem("pendingUserName");
+      sessionStorage.removeItem("pendingUserEmail");
       sessionStorage.removeItem("pendingUserPassword");
+      sessionStorage.removeItem("pendingUserName");
+      sessionStorage.removeItem("pendingUserPhone");
       toast("Form cleared. Please re-register.");
       navigate("/register");
     }

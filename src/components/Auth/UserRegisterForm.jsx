@@ -1,11 +1,11 @@
+import React, { useState } from "react";
 import {
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   updateProfile,
+  sendEmailVerification,
 } from "firebase/auth";
-import React, { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { toast, Toaster } from "react-hot-toast";
 import { auth } from "./firebase";
 import { ImSpinner9 } from "react-icons/im";
 
@@ -32,23 +32,19 @@ const UserRegisterForm = () => {
         form.email,
         form.password
       );
-
-      // 2. Update user profile
       await updateProfile(userCredential.user, { displayName: form.name });
-
-      // 3. Send email verification
       await sendEmailVerification(userCredential.user);
-
-      // 4. Save session data
-      sessionStorage.setItem("pendingUserEmail", form.email);
-      sessionStorage.setItem("needsVerification", "true");
 
       toast.success(
         "Verification email sent! Please check your inbox before continuing."
       );
-      setLoading(false);
+      // Save registration info for verification page
+      sessionStorage.setItem("pendingUserEmail", form.email);
+      sessionStorage.setItem("pendingUserPassword", form.password);
+      sessionStorage.setItem("pendingUserName", form.name);
+      sessionStorage.setItem("pendingUserPhone", form.phone);
 
-      // 5. Navigate to verification page
+      setLoading(false);
       navigate("/verify-email-for-user");
     } catch (err) {
       toast.error(err.message || "Registration failed.");
@@ -74,12 +70,9 @@ const UserRegisterForm = () => {
             value={form.name}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg
-                     focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700
-                     transition placeholder-gray-400 bg-gray-50"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700 transition placeholder-gray-400 bg-gray-50"
           />
         </div>
-
         <div className="mb-4">
           <label
             htmlFor="email"
@@ -95,12 +88,9 @@ const UserRegisterForm = () => {
             value={form.email}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg
-                     focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700
-                     transition placeholder-gray-400 bg-gray-50"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700 transition placeholder-gray-400 bg-gray-50"
           />
         </div>
-
         <div className="mb-4">
           <label
             htmlFor="phone"
@@ -115,12 +105,9 @@ const UserRegisterForm = () => {
             value={form.phone}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg
-                     focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700
-                     transition placeholder-gray-400 bg-gray-50"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700 transition placeholder-gray-400 bg-gray-50"
           />
         </div>
-
         <div className="mb-6">
           <label
             htmlFor="password"
@@ -136,15 +123,13 @@ const UserRegisterForm = () => {
             value={form.password}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg
-                     focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700
-                     transition placeholder-gray-400 bg-gray-50"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700 transition placeholder-gray-400 bg-gray-50"
           />
         </div>
-
         <button
           type="submit"
           className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition"
+          disabled={loading}
         >
           {loading ? (
             <div className="flex items-center justify-center">

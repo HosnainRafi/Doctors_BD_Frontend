@@ -18,9 +18,10 @@ import DoctorLogin from "../Pages/Login/DoctorLogin";
 import DoctorRegister from "../Pages/Login/DoctorRegister";
 import UserDashboard from "../Pages/UserDashboard/UserDashboard";
 import DoctorDashboard from "../Pages/DoctorDashboard/DoctorDashboard";
-import BookAppointment from "../Pages/UserDashboard/BookAppo intment";
+import BookAppointment from "../Pages/UserDashboard/BookAppointment";
 import AuthLayout from "../Layout/AuthLayout";
 import DashboardUserLayout from "../Layout/DashboardUserLayout";
+import CompleteProfilePage from "../Pages/DoctorDashboard/CompleteProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -107,5 +108,9 @@ export const router = createBrowserRouter([
         element: <UserDashboard />,
       },
     ],
+  },
+  {
+    path: "/doctor/complete-profile",
+    element: <CompleteProfilePage />,
   },
 ]);

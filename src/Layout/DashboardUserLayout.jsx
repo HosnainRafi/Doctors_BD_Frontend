@@ -19,7 +19,7 @@ const DashboardUserLayout = () => {
 
       <div className="flex-1 flex flex-col">
         <div className="md:hidden flex justify-between items-center p-4 bg-white shadow z-10">
-          <h1 className="text-purple-700 font-bold text-xl">Dashboard</h1>
+          <h1 className="text-purple-700 font-bold text-xl">CarePoint</h1>
           <button onClick={toggleSidebar} className="text-2xl text-purple-700">
             {sidebarOpen ? <FaTimes /> : <FaBars />}
           </button>

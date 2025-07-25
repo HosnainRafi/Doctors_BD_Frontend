@@ -1,21 +1,19 @@
-// components/Auth/UserRegisterForm.jsx
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 
 const UserRegisterForm = () => {
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
   });
-  const [message, setMessage] = useState("");
 
-  const handleChange = (e) =>
+  const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    setMessage("");
     const res = await fetch(
       'https://doctors-bd-backend.vercel.app/api/v1/users/register',
       {
@@ -25,52 +23,108 @@ const UserRegisterForm = () => {
       }
     );
     const data = await res.json();
-    if (data.success) setMessage("Registration successful! Please login.");
-    else setMessage(data.message || "Registration failed.");
+
+    if (data.success) {
+      toast.success('Registration successful! Please login.');
+    } else {
+      toast.error(data.message || 'Registration failed.');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">User Registration</h2>
-      <input
-        name="name"
-        placeholder="Name"
-        value={form.name}
-        onChange={handleChange}
-        required
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition placeholder-gray-400 bg-gray-50"
-      />
-      <input
-        name="email"
-        type="email"
-        placeholder="Email"
-        value={form.email}
-        onChange={handleChange}
-        required
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition placeholder-gray-400 bg-gray-50"
-      />
-      <input
-        name="phone"
-        placeholder="Phone"
-        value={form.phone}
-        onChange={handleChange}
-        required
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition placeholder-gray-400 bg-gray-50"
-      />
-      <input
-        name="password"
-        type="password"
-        placeholder="Password"
-        value={form.password}
-        onChange={handleChange}
-        required
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition placeholder-gray-400 bg-gray-50"
-      />
-      <button type="submit" className="btn-primary mt-2">
-        Register
-      </button>
-      {message && <div className="mt-2 text-sm">{message}</div>}
-    </form>
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
+        <div className="mb-4">
+          <label
+            htmlFor="name"
+            className="block mb-2 text-gray-700 font-medium"
+          >
+            Full Name
+          </label>
+          <input
+            id="name"
+            name="name"
+            placeholder="Enter your name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700
+                     transition placeholder-gray-400 bg-gray-50"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="block mb-2 text-gray-700 font-medium"
+          >
+            Email Address
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Enter your email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700
+                     transition placeholder-gray-400 bg-gray-50"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="phone"
+            className="block mb-2 text-gray-700 font-medium"
+          >
+            Phone Number
+          </label>
+          <input
+            id="phone"
+            name="phone"
+            placeholder="Enter your phone"
+            value={form.phone}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700
+                     transition placeholder-gray-400 bg-gray-50"
+          />
+        </div>
+
+        <div className="mb-6">
+          <label
+            htmlFor="password"
+            className="block mb-2 text-gray-700 font-medium"
+          >
+            Password
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg
+                     focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700
+                     transition placeholder-gray-400 bg-gray-50"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition"
+        >
+          Register
+        </button>
+      </form>
+    </>
   );
 };
 

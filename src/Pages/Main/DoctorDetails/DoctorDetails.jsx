@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import CircleSpinner from "../../components/Spinner/CircleSpinner";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
-import DoctorAbout from "../../components/DoctorAbout";
-import ChamberDetails from "../../components/ChamberDetails";
-import "./DoctorDetails.css";
-import { FaStar } from "react-icons/fa";
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import CircleSpinner from '../../../components/Spinner/CircleSpinner';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import DoctorAbout from '../../../components/DoctorAbout';
+import ChamberDetails from '../../../components/ChamberDetails';
+import './DoctorDetails.css';
+import { FaStar } from 'react-icons/fa';
 const DoctorDetails = () => {
   const [doctorDetails, setDoctorDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +58,7 @@ const DoctorDetails = () => {
                 {doctorDetails?.specialty}
               </p>
               <svg
-                style={{ marginLeft: "-2px" }}
+                style={{ marginLeft: '-2px' }}
                 height="44"
                 width="30"
                 viewBox="0 0 11 18"
@@ -76,7 +76,7 @@ const DoctorDetails = () => {
                 Hospital Name: {doctorDetails?.hospital_name}
               </p>
               <p className="text-black-600 font-medium rounded-full bg-gray-100 text-gray-600">
-                District:{" "}
+                District:{' '}
                 {doctorDetails?.district?.charAt(0).toUpperCase() +
                   doctorDetails?.district?.slice(1)}
               </p>

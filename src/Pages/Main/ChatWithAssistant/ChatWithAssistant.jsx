@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { SendHorizonal } from 'lucide-react';
 import { getNearestDistrict } from './UserDistrict';
-import DoctorCard from '../../components/DoctorCard';
 import { Helmet } from 'react-helmet';
 import { ColorRing } from 'react-loader-spinner';
-import CircleSpinner from '../../components/Spinner/CircleSpinner';
+import DoctorCard from '../../../components/DoctorCard';
+import CircleSpinner from '../../../components/Spinner/CircleSpinner';
 
 export default function ChatWithAssistant() {
   const SUPPORTED_DISTRICTS = [

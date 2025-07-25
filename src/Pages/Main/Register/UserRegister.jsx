@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import UserRegisterForm from '../../components/Auth/UserRegisterForm';
+import UserRegisterForm from '../../../components/Auth/UserRegisterForm';
 
 const UserRegister = () => (
   <div

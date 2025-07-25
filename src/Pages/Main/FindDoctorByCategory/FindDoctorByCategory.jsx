@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DoctorCard from '../../components/DoctorCard';
+import DoctorCard from '../../../components/DoctorCard';
 import { ColorRing } from 'react-loader-spinner';
 
 const FindDoctorByCategory = () => {

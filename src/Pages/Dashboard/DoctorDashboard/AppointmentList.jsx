@@ -17,7 +17,7 @@ const getStatusColor = (status) => {
 
 const DoctorAppointmentList = ({ onCreatePrescription }) => {
   const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const doctorToken = localStorage.getItem("doctorToken");
   const doctorId = doctorToken
     ? JSON.parse(atob(doctorToken.split(".")[1])).id

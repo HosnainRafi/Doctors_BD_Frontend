@@ -13,6 +13,7 @@ const PatientList = () => {
   const [patients, setPatients] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
   const [editPatient, setEditPatient] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [defaultPatientId, setDefaultPatientId] = useState(
     localStorage.getItem('defaultPatientId') || ''
   );
@@ -21,6 +22,7 @@ const PatientList = () => {
   const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
 
   useEffect(() => {
+    setLoading(true);
     if (!userId) return;
     fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`,
@@ -29,7 +31,7 @@ const PatientList = () => {
       }
     )
       .then(res => res.json())
-      .then(data => setPatients(data.data || []));
+      .then(data => setPatients(data.data || [], setLoading(false)));
   }, [showAdd, editPatient, userId, token]);
 
   const handleSetDefault = id => {
@@ -104,57 +106,68 @@ const PatientList = () => {
         </div>
       )}
 
-      <div className="space-y-4">
-        {patients.map(p => (
-          <div
-            key={p._id}
-            className="bg-gray-50 border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow transition"
-          >
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-              <div className="mb-3 sm:mb-0">
-                <p className="text-lg font-medium text-gray-800">{p.name}</p>
-                <p className="text-sm text-gray-600">{p.phone}</p>
-                {p.email && <p className="text-sm text-gray-400">{p.email}</p>}
-                {defaultPatientId === p._id && (
-                  <span className="inline-block mt-2 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
-                    <FaCheck className="inline-block mr-1" />
-                    Default
-                  </span>
-                )}
-              </div>
+      {loading && patients.length === 0 ? (
+        <div className="flex justify-center items-center h-64">
+          <ImSpinner10 size={40} className="animate-spin text-purple-600" />
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {patients.length === 0 && (
+            <div className="text-gray-400">No patients found.</div>
+          )}
+          {patients.map(p => (
+            <div
+              key={p._id}
+              className="bg-gray-50 border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow transition"
+            >
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                <div className="mb-3 sm:mb-0">
+                  <p className="text-lg font-medium text-gray-800">{p.name}</p>
+                  <p className="text-sm text-gray-600">{p.phone}</p>
+                  {p.email && (
+                    <p className="text-sm text-gray-400">{p.email}</p>
+                  )}
+                  {defaultPatientId === p._id && (
+                    <span className="inline-block mt-2 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
+                      <FaCheck className="inline-block mr-1" />
+                      Default
+                    </span>
+                  )}
+                </div>
 
-              <div className="flex gap-2 flex-wrap">
-                <button
-                  onClick={() => handleSetDefault(p._id)}
-                  className={`px-4 py-2 text-sm rounded-lg transition flex items-center gap-2 ${
-                    defaultPatientId === p._id
-                      ? 'bg-green-600 text-white cursor-not-allowed'
-                      : 'bg-gray-200 text-gray-700 hover:bg-green-200'
-                  }`}
-                  disabled={defaultPatientId === p._id}
-                >
-                  <FaCheck />
-                  Set Default
-                </button>
-                <button
-                  onClick={() => setEditPatient(p)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
-                >
-                  <FaUserEdit />
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(p._id)}
-                  className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
-                >
-                  <FaTrash />
-                  Delete
-                </button>
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => handleSetDefault(p._id)}
+                    className={`px-4 py-2 text-sm rounded-lg transition flex items-center gap-2 ${
+                      defaultPatientId === p._id
+                        ? 'bg-green-600 text-white cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-700 hover:bg-green-200'
+                    }`}
+                    disabled={defaultPatientId === p._id}
+                  >
+                    <FaCheck />
+                    Set Default
+                  </button>
+                  <button
+                    onClick={() => setEditPatient(p)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
+                  >
+                    <FaUserEdit />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(p._id)}
+                    className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
+                  >
+                    <FaTrash />
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

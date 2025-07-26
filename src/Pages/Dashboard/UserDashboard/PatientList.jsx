@@ -23,16 +23,33 @@ const PatientList = () => {
   const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
 
   useEffect(() => {
-    setLoading(true);
-    if (!userId) return;
-    fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+    const fetchPatients = async () => {
+      setLoading(true);
+      if (!userId) {
+        setLoading(false);
+        return;
       }
-    )
-      .then(res => res.json())
-      .then(data => setPatients(data.data || [], setLoading(false)));
+
+      try {
+        const res = await fetch(
+          `https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+        setPatients(data.data || []);
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
   }, [showAdd, editPatient, userId, token]);
 
   const handleSetDefault = id => {

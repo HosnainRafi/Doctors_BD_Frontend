@@ -20,8 +20,12 @@ const AppointmentList = () => {
   const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
 
   useEffect(() => {
-    if (!userId) return;
     setLoading(true);
+    setLoading(true);
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
     fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/appointments?user_id=${userId}`,
       {

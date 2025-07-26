@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaHome, FaUser, FaSignOutAlt, FaTimes } from 'react-icons/fa';
+import { FaHome, FaUser, FaSignOutAlt, FaTimes, FaBookMedical } from 'react-icons/fa';
+import { MdSpaceDashboard } from 'react-icons/md';
 
 const UserDashboardSidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
@@ -51,6 +52,17 @@ const UserDashboardSidebar = ({ isOpen, onClose }) => {
             <FaHome />
             Home
           </Link>
+          <Link
+            to="/dashboard/user"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold ${
+              isActive('/')
+                ? 'text-purple-700'
+                : 'text-gray-700 hover:text-purple-700'
+            }`}
+          >
+            <MdSpaceDashboard />
+            Dashboard
+          </Link>
 
           <Link
             to="/dashboard/user/patients"
@@ -62,6 +74,17 @@ const UserDashboardSidebar = ({ isOpen, onClose }) => {
           >
             <FaUser />
             Patients
+          </Link>
+          <Link
+            to="/dashboard/user/appointment"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold ${
+              isActive('/dashboard/patients')
+                ? 'text-purple-700'
+                : 'text-gray-700 hover:text-purple-700'
+            }`}
+          >
+            <FaBookMedical />
+            Appointment
           </Link>
         </div>
 

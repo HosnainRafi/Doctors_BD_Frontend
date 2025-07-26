@@ -42,7 +42,7 @@ const DoctorLoginForm = () => {
       } else {
         localStorage.setItem('doctorId', data.data._id); // <-- Save backend doctorId
         toast.success('Login successful!');
-        navigate('/doctor/dashboard');
+        navigate('/dashboard/doctor');
       }
     } catch (err) {
       toast.error(err.message || 'Login failed.');

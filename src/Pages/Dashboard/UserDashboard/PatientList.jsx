@@ -8,6 +8,7 @@ import {
   FaUserShield,
 } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
+import { ImSpinner10 } from 'react-icons/im';
 
 const PatientList = () => {
   const [patients, setPatients] = useState([]);

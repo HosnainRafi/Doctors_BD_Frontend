@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const Earnings = () => {
   const [earnings, setEarnings] = useState({
@@ -6,16 +6,19 @@ const Earnings = () => {
     count: 0,
     appointments: [],
   });
-  const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = localStorage.getItem("doctorId"); // Use backend doctorId
+  const doctorToken = localStorage.getItem('doctorToken');
+  const doctorId = localStorage.getItem('doctorId'); // Use backend doctorId
 
   useEffect(() => {
     if (!doctorId) return;
-    fetch(`http://localhost:5000/api/v1/appointments/earnings/${doctorId}`, {
-      headers: { Authorization: `Bearer ${doctorToken}` },
-    })
-      .then((res) => res.json())
-      .then((data) =>
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments/earnings/${doctorId}`,
+      {
+        headers: { Authorization: `Bearer ${doctorToken}` },
+      }
+    )
+      .then(res => res.json())
+      .then(data =>
         setEarnings(data.data || { total: 0, count: 0, appointments: [] })
       );
   }, [doctorId, doctorToken]);
@@ -56,7 +59,7 @@ const Earnings = () => {
                 </td>
               </tr>
             )}
-            {earnings.appointments.map((a) => (
+            {earnings.appointments.map(a => (
               <tr key={a._id} className="border-t">
                 <td className="px-3 py-2">{a.date}</td>
                 <td className="px-3 py-2">{a.time}</td>

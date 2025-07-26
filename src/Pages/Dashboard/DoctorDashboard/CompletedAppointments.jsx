@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const CompletedAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [search, setSearch] = useState("");
-  const [date, setDate] = useState("");
+  const [search, setSearch] = useState('');
+  const [date, setDate] = useState('');
   const [selected, setSelected] = useState(null);
-  const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = localStorage.getItem("doctorId");
+  const doctorToken = localStorage.getItem('doctorToken');
+  const doctorId = localStorage.getItem('doctorId');
 
   useEffect(() => {
     if (!doctorId) return;
     fetch(
-      `http://localhost:5000/api/v1/appointments/registered-doctor/${doctorId}`,
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments/registered-doctor/${doctorId}`,
       {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         const completed = (data.data || []).filter(
-          (a) => a.status === "completed"
+          a => a.status === 'completed'
         );
         setAppointments(completed);
         setFiltered(completed);
@@ -31,36 +31,36 @@ const CompletedAppointments = () => {
   useEffect(() => {
     let result = appointments;
     if (search) {
-      result = result.filter((a) =>
+      result = result.filter(a =>
         a.patient_id?.name?.toLowerCase().includes(search.toLowerCase())
       );
     }
     if (date) {
-      result = result.filter((a) => a.date === date);
+      result = result.filter(a => a.date === date);
     }
     setFiltered(result);
   }, [search, date, appointments]);
 
   // Example: Send reminder (demo)
-  const handleSendReminder = (patient) => {
+  const handleSendReminder = patient => {
     alert(`Reminder sent to ${patient?.name} (${patient?.phone})`);
   };
 
   // Example: Schedule follow-up (demo)
-  const handleScheduleFollowUp = (appointment) => {
+  const handleScheduleFollowUp = appointment => {
     alert(`Schedule follow-up for ${appointment.patient_id?.name}`);
     // Open a modal or redirect to follow-up form
   };
 
   // Example: Add/Edit notes (demo)
-  const handleAddNote = (appointment) => {
+  const handleAddNote = appointment => {
     const note = prompt(
-      "Enter note for this appointment:",
-      appointment.note || ""
+      'Enter note for this appointment:',
+      appointment.note || ''
     );
     if (note !== null) {
-      setAppointments((prev) =>
-        prev.map((a) => (a._id === appointment._id ? { ...a, note } : a))
+      setAppointments(prev =>
+        prev.map(a => (a._id === appointment._id ? { ...a, note } : a))
       );
     }
   };
@@ -75,19 +75,19 @@ const CompletedAppointments = () => {
           type="text"
           placeholder="Search by patient name"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={e => setSearch(e.target.value)}
           className="px-3 py-2 border rounded w-full md:w-1/3"
         />
         <input
           type="date"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={e => setDate(e.target.value)}
           className="px-3 py-2 border rounded w-full md:w-1/4"
         />
         <button
           onClick={() => {
-            setSearch("");
-            setDate("");
+            setSearch('');
+            setDate('');
           }}
           className="bg-gray-300 text-gray-700 px-3 py-2 rounded"
         >
@@ -98,7 +98,7 @@ const CompletedAppointments = () => {
         {filtered.length === 0 && (
           <li className="text-gray-400 py-2">No completed appointments.</li>
         )}
-        {filtered.map((a) => (
+        {filtered.map(a => (
           <li
             key={a._id}
             className="py-2 flex flex-col md:flex-row md:items-center md:gap-4"
@@ -125,7 +125,7 @@ const CompletedAppointments = () => {
               {/* Download Prescription */}
               {a.prescription_id && (
                 <a
-                  href={`http://localhost:5000/api/v1/prescriptions/${a.prescription_id}/pdf`}
+                  href={`https://doctors-bd-backend.vercel.app/api/v1/prescriptions/${a.prescription_id}/pdf`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-purple-700 text-white px-2 py-1 rounded text-xs hover:bg-purple-800"
@@ -136,7 +136,7 @@ const CompletedAppointments = () => {
               {/* Write/Update Prescription */}
               {!a.prescription_id && (
                 <button
-                  onClick={() => alert("Open prescription form")}
+                  onClick={() => alert('Open prescription form')}
                   className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
                 >
                   Write Prescription
@@ -161,7 +161,7 @@ const CompletedAppointments = () => {
                 onClick={() => handleAddNote(a)}
                 className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-300"
               >
-                {a.note ? "Edit Note" : "Add Note"}
+                {a.note ? 'Edit Note' : 'Add Note'}
               </button>
             </div>
           </li>
@@ -179,18 +179,18 @@ const CompletedAppointments = () => {
             </button>
             <h4 className="text-lg font-bold mb-2">Appointment Details</h4>
             <div className="mb-2">
-              <span className="font-medium">Patient:</span>{" "}
+              <span className="font-medium">Patient:</span>{' '}
               {selected.patient_id?.name}
             </div>
             <div className="mb-2">
-              <span className="font-medium">Date:</span> {selected.date}{" "}
+              <span className="font-medium">Date:</span> {selected.date}{' '}
               {selected.time}
             </div>
             <div className="mb-2">
               <span className="font-medium">Status:</span> {selected.status}
             </div>
             <div className="mb-2">
-              <span className="font-medium">Note:</span>{" "}
+              <span className="font-medium">Note:</span>{' '}
               {selected.note || <span className="text-gray-400">None</span>}
             </div>
             {/* Add more details as needed */}

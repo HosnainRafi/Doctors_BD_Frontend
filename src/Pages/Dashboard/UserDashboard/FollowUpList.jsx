@@ -1,43 +1,46 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const FollowUpList = () => {
   const [followUps, setFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [reminderMsg, setReminderMsg] = useState("");
-  const token = localStorage.getItem("userToken");
-  const userId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+  const [reminderMsg, setReminderMsg] = useState('');
+  const token = localStorage.getItem('userToken');
+  const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!userId) return;
     setLoading(true);
-    fetch(`http://localhost:5000/api/v1/followups?user_id=${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/followups?user_id=${userId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then(res => res.json())
+      .then(data => {
         setFollowUps(data.data || []);
         setLoading(false);
       });
   }, [userId, token]);
 
   // Send reminder
-  const handleSendReminder = async (followUp) => {
-    setReminderMsg("");
+  const handleSendReminder = async followUp => {
+    setReminderMsg('');
     // You can call your backend to send WhatsApp/SMS/email here
     // For demo, just show an alert
     alert(
       `Reminder sent to ${followUp.patient_id?.name} (${followUp.patient_id?.phone}) for follow-up on ${followUp.scheduled_date}.`
     );
-    setReminderMsg("Reminder sent!");
-    setTimeout(() => setReminderMsg(""), 2000);
+    setReminderMsg('Reminder sent!');
+    setTimeout(() => setReminderMsg(''), 2000);
   };
 
   // Book follow-up appointment
-  const handleBookFollowUp = (followUp) => {
+  const handleBookFollowUp = followUp => {
     // You can redirect to your appointment booking page with pre-filled info
-    navigate("/book-appointment", {
+    navigate('/book-appointment', {
       state: {
         patient_id: followUp.patient_id?._id,
         doctor_id:
@@ -56,7 +59,7 @@ const FollowUpList = () => {
         {followUps.length === 0 && (
           <li className="text-gray-400 py-2">No follow-ups scheduled.</li>
         )}
-        {followUps.map((f) => (
+        {followUps.map(f => (
           <li
             key={f._id}
             className="py-2 flex flex-col md:flex-row md:items-center md:gap-4"
@@ -73,7 +76,7 @@ const FollowUpList = () => {
                 </span>
               </div>
               <div className="text-xs text-gray-500">
-                Advice:{" "}
+                Advice:{' '}
                 {f.notes || <span className="text-gray-400">No advice</span>}
               </div>
             </div>

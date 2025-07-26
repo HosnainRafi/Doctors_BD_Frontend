@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
   console.log(appointment);
   const [medicines, setMedicines] = useState([
-    { name: "", dose: "", instructions: "" },
+    { name: '', dose: '', instructions: '' },
   ]);
-  const [advice, setAdvice] = useState("");
-  const [followUpDate, setFollowUpDate] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const doctorToken = localStorage.getItem("doctorToken");
+  const [advice, setAdvice] = useState('');
+  const [followUpDate, setFollowUpDate] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const doctorToken = localStorage.getItem('doctorToken');
 
   const handleMedChange = (i, e) => {
     const newMeds = [...medicines];
@@ -18,14 +18,14 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
   };
 
   const addMedicine = () =>
-    setMedicines([...medicines, { name: "", dose: "", instructions: "" }]);
-  const removeMedicine = (i) =>
+    setMedicines([...medicines, { name: '', dose: '', instructions: '' }]);
+  const removeMedicine = i =>
     setMedicines(medicines.filter((_, idx) => idx !== i));
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    setMessage("");
-    setError("");
+    setMessage('');
+    setError('');
 
     // Build the POST body
     const postBody = {
@@ -45,7 +45,7 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
       postBody.doctor_id = appointment.doctor_id;
     } else {
       setError(
-        "No doctor found for this appointment. Cannot create prescription."
+        'No doctor found for this appointment. Cannot create prescription.'
       );
       return;
     }
@@ -53,20 +53,23 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
     // Debug: log the postBody
     // console.log("POST BODY:", postBody);
 
-    const res = await fetch("http://localhost:5000/api/v1/prescriptions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${doctorToken}`,
-      },
-      body: JSON.stringify(postBody),
-    });
+    const res = await fetch(
+      'https://doctors-bd-backend.vercel.app/api/v1/prescriptions',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${doctorToken}`,
+        },
+        body: JSON.stringify(postBody),
+      }
+    );
     const data = await res.json();
     if (data.success) {
-      setMessage("Prescription created and sent!");
+      setMessage('Prescription created and sent!');
       onCreated && onCreated();
       onClose();
-    } else setMessage(data.message || "Failed to create prescription.");
+    } else setMessage(data.message || 'Failed to create prescription.');
   };
 
   return (
@@ -74,7 +77,7 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full relative max-h-[90vh] overflow-y-auto"
-        style={{ margin: "40px 0" }}
+        style={{ margin: '40px 0' }}
       >
         <button
           type="button"
@@ -117,7 +120,7 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
                 name="name"
                 placeholder="Medicine"
                 value={med.name}
-                onChange={(e) => handleMedChange(i, e)}
+                onChange={e => handleMedChange(i, e)}
                 required
                 className="w-1/3 px-3 py-2 border border-gray-300 rounded"
               />
@@ -125,7 +128,7 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
                 name="dose"
                 placeholder="Dose"
                 value={med.dose}
-                onChange={(e) => handleMedChange(i, e)}
+                onChange={e => handleMedChange(i, e)}
                 required
                 className="w-1/4 px-3 py-2 border border-gray-300 rounded"
               />
@@ -133,7 +136,7 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
                 name="timing"
                 placeholder="Timing (e.g. ১+০+১)"
                 value={med.timing}
-                onChange={(e) => handleMedChange(i, e)}
+                onChange={e => handleMedChange(i, e)}
                 required
                 className="w-1/4 px-3 py-2 border border-gray-300 rounded"
               />
@@ -141,7 +144,7 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
                 name="duration"
                 placeholder="Duration (e.g. 10 days)"
                 value={med.duration}
-                onChange={(e) => handleMedChange(i, e)}
+                onChange={e => handleMedChange(i, e)}
                 required
                 className="w-1/4 px-3 py-2 border border-gray-300 rounded"
               />
@@ -149,7 +152,7 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
                 name="instructions"
                 placeholder="Instructions"
                 value={med.instructions}
-                onChange={(e) => handleMedChange(i, e)}
+                onChange={e => handleMedChange(i, e)}
                 className="w-full px-3 py-2 border border-gray-300 rounded"
               />
               <button
@@ -175,7 +178,7 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
           <textarea
             placeholder="Advice"
             value={advice}
-            onChange={(e) => setAdvice(e.target.value)}
+            onChange={e => setAdvice(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
             rows={2}
           />
@@ -188,7 +191,7 @@ const PrescriptionForm = ({ appointment, onClose, onCreated }) => {
             type="date"
             placeholder="Follow-up Date"
             value={followUpDate}
-            onChange={(e) => setFollowUpDate(e.target.value)}
+            onChange={e => setFollowUpDate(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>

@@ -1,49 +1,55 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const NotificationList = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("userToken");
-  const userId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+  const token = localStorage.getItem('userToken');
+  const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
 
   useEffect(() => {
     if (!userId) return;
     setLoading(true);
-    fetch(`http://localhost:5000/api/v1/notifications?user_id=${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/notifications?user_id=${userId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then(res => res.json())
+      .then(data => {
         setNotifications(data.data || []);
         setLoading(false);
       });
   }, [userId, token]);
 
   // Mark as read
-  const handleMarkAsRead = async (id) => {
-    await fetch(`http://localhost:5000/api/v1/notifications/${id}/read`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({}), // <-- send an empty object
-    });
-    setNotifications((prev) =>
-      prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+  const handleMarkAsRead = async id => {
+    await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/notifications/${id}/read`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}), // <-- send an empty object
+      }
+    );
+    setNotifications(prev =>
+      prev.map(n => (n._id === id ? { ...n, isRead: true } : n))
     );
   };
 
   // Mark all as read
   const handleMarkAllAsRead = async () => {
     await fetch(
-      `http://localhost:5000/api/v1/notifications/mark-all-read?user_id=${userId}`,
+      `https://doctors-bd-backend.vercel.app/api/v1/notifications/mark-all-read?user_id=${userId}`,
       {
-        method: "PATCH",
+        method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
   };
 
   if (loading) return <div>Loading notifications...</div>;
@@ -63,11 +69,11 @@ const NotificationList = () => {
         {notifications.length === 0 && (
           <li className="text-gray-400 py-2">No notifications.</li>
         )}
-        {notifications.map((n) => (
+        {notifications.map(n => (
           <li
             key={n._id}
             className={`py-2 px-2 flex items-center justify-between ${
-              n.isRead ? "bg-gray-50" : "bg-yellow-50"
+              n.isRead ? 'bg-gray-50' : 'bg-yellow-50'
             }`}
           >
             <div>

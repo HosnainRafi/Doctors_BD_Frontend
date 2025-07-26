@@ -1,122 +1,160 @@
-import React, { useEffect, useState } from "react";
-import AddPatientForm from "./AddPatientForm";
+import React, { useEffect, useState } from 'react';
+import AddPatientForm from './AddPatientForm';
+import {
+  FaUserEdit,
+  FaTrash,
+  FaCheck,
+  FaPlus,
+  FaUserShield,
+} from 'react-icons/fa';
+import toast, { Toaster } from 'react-hot-toast';
 
 const PatientList = () => {
   const [patients, setPatients] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
   const [editPatient, setEditPatient] = useState(null);
   const [defaultPatientId, setDefaultPatientId] = useState(
-    localStorage.getItem("defaultPatientId") || ""
+    localStorage.getItem('defaultPatientId') || ''
   );
-  const [message, setMessage] = useState("");
 
-  const token = localStorage.getItem("userToken");
-  const userId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+  const token = localStorage.getItem('userToken');
+  const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
 
-  // Fetch patients
   useEffect(() => {
     if (!userId) return;
-    fetch(`https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setPatients(data.data || []));
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then(res => res.json())
+      .then(data => setPatients(data.data || []));
   }, [showAdd, editPatient, userId, token]);
 
-  // Set default patient
-  const handleSetDefault = (id) => {
+  const handleSetDefault = id => {
     setDefaultPatientId(id);
-    localStorage.setItem("defaultPatientId", id);
-    setMessage("Default patient set!");
-    setTimeout(() => setMessage(""), 1500);
+    localStorage.setItem('defaultPatientId', id);
+    toast.success('✅ Default patient set!');
   };
 
-  // Delete patient
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this patient?"))
+  const handleDelete = async id => {
+    if (!window.confirm('Are you sure you want to delete this patient?'))
       return;
-    await fetch(`https://doctors-bd-backend.vercel.app/api/v1/patients/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setPatients((prev) => prev.filter((p) => p._id !== id));
-    if (defaultPatientId === id) {
-      setDefaultPatientId("");
-      localStorage.removeItem("defaultPatientId");
+
+    try {
+      await fetch(
+        `https://doctors-bd-backend.vercel.app/api/v1/patients/${id}`,
+        {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setPatients(prev => prev.filter(p => p._id !== id));
+      if (defaultPatientId === id) {
+        setDefaultPatientId('');
+        localStorage.removeItem('defaultPatientId');
+      }
+      toast.success('🗑️ Patient deleted successfully');
+    } catch (error) {
+      toast.error(error.message || 'Failed to delete patient');
     }
   };
 
   return (
-    <div className="mb-6 max-w-5xl mx-auto">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold">Patients</h3>
+    <div className="max-w-5xl mx-auto px-4 py-6">
+      <Toaster position="top-right" />
+
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+          <FaUserShield className="text-purple-600" /> My Patients
+        </h3>
         <button
-          className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg transition flex items-center gap-2"
           onClick={() => {
-            setShowAdd((v) => !v);
+            setShowAdd(v => !v);
             setEditPatient(null);
           }}
         >
-          {showAdd ? "Close" : "Add Patient"}
+          {showAdd ? (
+            'Close'
+          ) : (
+            <>
+              <FaPlus /> Add Patient
+            </>
+          )}
         </button>
       </div>
+
       {showAdd && (
-        <AddPatientForm
-          onPatientAdded={() => setShowAdd(false)}
-          userId={userId}
-        />
+        <div className="mb-4">
+          <AddPatientForm
+            onPatientAdded={() => setShowAdd(false)}
+            userId={userId}
+          />
+        </div>
       )}
       {editPatient && (
-        <AddPatientForm
-          editPatient={editPatient}
-          onPatientAdded={() => setEditPatient(null)}
-          userId={userId}
-        />
+        <div className="mb-4">
+          <AddPatientForm
+            editPatient={editPatient}
+            onPatientAdded={() => setEditPatient(null)}
+            userId={userId}
+          />
+        </div>
       )}
-      <ul className="divide-y">
-        {patients.map((p) => (
-          <li key={p._id} className="py-2 flex items-center justify-between">
-            <div>
-              <span className="font-medium">{p.name}</span>
-              <span className="ml-2 text-gray-500 text-sm">{p.phone}</span>
-              {p.email && (
-                <span className="ml-2 text-gray-400 text-xs">{p.email}</span>
-              )}
-              {defaultPatientId === p._id && (
-                <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
-                  Default
-                </span>
-              )}
+
+      <div className="space-y-4">
+        {patients.map(p => (
+          <div
+            key={p._id}
+            className="bg-gray-50 border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow transition"
+          >
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+              <div className="mb-3 sm:mb-0">
+                <p className="text-lg font-medium text-gray-800">{p.name}</p>
+                <p className="text-sm text-gray-600">{p.phone}</p>
+                {p.email && <p className="text-sm text-gray-400">{p.email}</p>}
+                {defaultPatientId === p._id && (
+                  <span className="inline-block mt-2 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
+                    <FaCheck className="inline-block mr-1" />
+                    Default
+                  </span>
+                )}
+              </div>
+
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => handleSetDefault(p._id)}
+                  className={`px-4 py-2 text-sm rounded-lg transition flex items-center gap-2 ${
+                    defaultPatientId === p._id
+                      ? 'bg-green-600 text-white cursor-not-allowed'
+                      : 'bg-gray-200 text-gray-700 hover:bg-green-200'
+                  }`}
+                  disabled={defaultPatientId === p._id}
+                >
+                  <FaCheck />
+                  Set Default
+                </button>
+                <button
+                  onClick={() => setEditPatient(p)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
+                >
+                  <FaUserEdit />
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(p._id)}
+                  className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
+                >
+                  <FaTrash />
+                  Delete
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleSetDefault(p._id)}
-                className={`px-2 py-1 rounded text-xs ${
-                  defaultPatientId === p._id
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-green-100"
-                }`}
-                disabled={defaultPatientId === p._id}
-              >
-                Set Default
-              </button>
-              <button
-                onClick={() => setEditPatient(p)}
-                className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(p._id)}
-                className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
-              >
-                Delete
-              </button>
-            </div>
-          </li>
+          </div>
         ))}
-      </ul>
-      {message && <div className="mt-2 text-sm text-green-700">{message}</div>}
+      </div>
     </div>
   );
 };

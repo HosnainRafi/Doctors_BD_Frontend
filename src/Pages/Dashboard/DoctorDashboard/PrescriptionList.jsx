@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const PrescriptionList = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [selected, setSelected] = useState(null);
-  const doctorToken = localStorage.getItem("doctorToken");
+  const doctorToken = localStorage.getItem('doctorToken');
   const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split(".")[1])).id
+    ? JSON.parse(atob(doctorToken.split('.')[1])).id
     : null;
 
   useEffect(() => {
     if (!doctorId) return;
     fetch(
-      `http://localhost:5000/api/v1/prescriptions/registered-doctor/${doctorId}`,
+      `https://doctors-bd-backend.vercel.app/api/v1/prescriptions/registered-doctor/${doctorId}`,
       {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then((res) => res.json())
-      .then((data) => setPrescriptions(data.data || []));
+      .then(res => res.json())
+      .then(data => setPrescriptions(data.data || []));
   }, [doctorId, doctorToken]);
 
   return (
@@ -29,7 +29,7 @@ const PrescriptionList = () => {
             No prescriptions found.
           </div>
         )}
-        {prescriptions.map((p) => (
+        {prescriptions.map(p => (
           <div
             key={p._id}
             className="bg-white rounded-xl shadow p-4 flex flex-col justify-between"
@@ -47,7 +47,7 @@ const PrescriptionList = () => {
                 <span className="font-medium">Date:</span> {p.date}
               </div>
               <div className="text-sm text-gray-600 mb-1">
-                <span className="font-medium">Appointment:</span>{" "}
+                <span className="font-medium">Appointment:</span>{' '}
                 {p.appointment_id?.date} {p.appointment_id?.time}
               </div>
             </div>
@@ -59,7 +59,7 @@ const PrescriptionList = () => {
                 View Details
               </button>
               <a
-                href={`http://localhost:5000/api/v1/prescriptions/${p._id}/pdf`}
+                href={`https://doctors-bd-backend.vercel.app/api/v1/prescriptions/${p._id}/pdf`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-purple-700 text-white px-3 py-1 rounded text-xs hover:bg-purple-800"
@@ -81,7 +81,7 @@ const PrescriptionList = () => {
             </button>
             <h4 className="text-lg font-bold mb-2">Prescription Details</h4>
             <div className="mb-2">
-              <span className="font-medium">Patient:</span>{" "}
+              <span className="font-medium">Patient:</span>{' '}
               {selected.patient_id?.name}
             </div>
             <div className="mb-2">
@@ -93,25 +93,25 @@ const PrescriptionList = () => {
                 {selected.medicines.map((med, i) => (
                   <li key={i}>
                     <span className="font-semibold">{med.name}</span> (
-                    {med.dose}){" "}
+                    {med.dose}){' '}
                     {med.instructions && <span>- {med.instructions}</span>}
                   </li>
                 ))}
               </ul>
             </div>
             <div className="mb-2">
-              <span className="font-medium">Advice:</span>{" "}
+              <span className="font-medium">Advice:</span>{' '}
               {selected.advice || <span className="text-gray-400">None</span>}
             </div>
             <div className="mb-2">
-              <span className="font-medium">Follow-up Date:</span>{" "}
+              <span className="font-medium">Follow-up Date:</span>{' '}
               {selected.follow_up_date || (
                 <span className="text-gray-400">None</span>
               )}
             </div>
             <div className="mt-2">
               <a
-                href={`http://localhost:5000/api/v1/prescriptions/${selected._id}/pdf`}
+                href={`https://doctors-bd-backend.vercel.app/api/v1/prescriptions/${selected._id}/pdf`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-purple-700 underline"

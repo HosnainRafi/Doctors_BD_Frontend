@@ -1,78 +1,84 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({});
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   const [notifPrefs, setNotifPrefs] = useState({
     sms: true,
     whatsapp: true,
     email: true,
   });
 
-  const token = localStorage.getItem("userToken");
-  const userId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+  const token = localStorage.getItem('userToken');
+  const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
 
   useEffect(() => {
     if (!userId) return;
-    fetch(`http://localhost:5000/api/v1/users/${userId}`, {
+    fetch(`https://doctors-bd-backend.vercel.app/api/v1/users/${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         setUser(data.data);
         setForm(data.data);
         setNotifPrefs(data.data?.notificationPrefs || notifPrefs);
       });
   }, [userId, token]);
 
-  const handleChange = (e) =>
+  const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   // Save profile changes
-  const handleSave = async (e) => {
+  const handleSave = async e => {
     e.preventDefault();
-    setMessage("");
-    const res = await fetch(`http://localhost:5000/api/v1/users/${userId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ ...form, notificationPrefs: notifPrefs }),
-    });
+    setMessage('');
+    const res = await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/users/${userId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ...form, notificationPrefs: notifPrefs }),
+      }
+    );
     const data = await res.json();
     if (data.success) {
       setUser(data.data);
       setEditMode(false);
-      setMessage("Profile updated!");
-    } else setMessage(data.message || "Failed to update profile.");
+      setMessage('Profile updated!');
+    } else setMessage(data.message || 'Failed to update profile.');
   };
 
   // Change password
-  const handleChangePassword = async (e) => {
+  const handleChangePassword = async e => {
     e.preventDefault();
-    setMessage("");
-    const res = await fetch(`http://localhost:5000/api/v1/users/${userId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ password }),
-    });
+    setMessage('');
+    const res = await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/users/${userId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ password }),
+      }
+    );
     const data = await res.json();
     if (data.success) {
-      setPassword("");
-      setMessage("Password changed!");
-    } else setMessage(data.message || "Failed to change password.");
+      setPassword('');
+      setMessage('Password changed!');
+    } else setMessage(data.message || 'Failed to change password.');
   };
 
   // Notification preferences
-  const handleNotifChange = (e) => {
+  const handleNotifChange = e => {
     setNotifPrefs({ ...notifPrefs, [e.target.name]: e.target.checked });
   };
 
@@ -97,9 +103,9 @@ const UserProfile = () => {
             <div className="mb-2">
               <span className="font-medium">Notifications:</span>
               <span className="ml-2 text-xs">
-                {notifPrefs.sms && "SMS "}
-                {notifPrefs.whatsapp && "WhatsApp "}
-                {notifPrefs.email && "Email"}
+                {notifPrefs.sms && 'SMS '}
+                {notifPrefs.whatsapp && 'WhatsApp '}
+                {notifPrefs.email && 'Email'}
               </span>
             </div>
             <button
@@ -113,20 +119,20 @@ const UserProfile = () => {
               className="flex items-center gap-2 mt-4"
             >
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="New Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
                 className="px-3 py-2 border rounded"
                 minLength={6}
                 required
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((v) => !v)}
+                onClick={() => setShowPassword(v => !v)}
                 className="text-xs text-gray-500"
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? 'Hide' : 'Show'}
               </button>
               <button
                 type="submit"

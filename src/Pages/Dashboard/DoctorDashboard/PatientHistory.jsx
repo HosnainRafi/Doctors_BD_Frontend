@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const PatientHistory = () => {
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
-  const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = localStorage.getItem("doctorId"); // Use backend doctorId
+  const doctorToken = localStorage.getItem('doctorToken');
+  const doctorId = localStorage.getItem('doctorId'); // Use backend doctorId
 
   // Fetch all patients the doctor has seen (from appointments)
   useEffect(() => {
     if (!doctorId) return;
     fetch(
-      `http://localhost:5000/api/v1/appointments/registered-doctor/${doctorId}`,
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments/registered-doctor/${doctorId}`,
       {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         const uniquePatients = {};
-        (data.data || []).forEach((a) => {
+        (data.data || []).forEach(a => {
           if (a.patient_id && a.patient_id._id) {
             uniquePatients[a.patient_id._id] = a.patient_id;
           }
@@ -33,21 +33,21 @@ const PatientHistory = () => {
   useEffect(() => {
     if (!selectedPatient) return;
     fetch(
-      `http://localhost:5000/api/v1/appointments?patient_id=${selectedPatient._id}`,
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments?patient_id=${selectedPatient._id}`,
       {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then((res) => res.json())
-      .then((data) => setAppointments(data.data || []));
+      .then(res => res.json())
+      .then(data => setAppointments(data.data || []));
     fetch(
-      `http://localhost:5000/api/v1/prescriptions?patient_id=${selectedPatient._id}`,
+      `https://doctors-bd-backend.vercel.app/api/v1/prescriptions?patient_id=${selectedPatient._id}`,
       {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then((res) => res.json())
-      .then((data) => setPrescriptions(data.data || []));
+      .then(res => res.json())
+      .then(data => setPrescriptions(data.data || []));
   }, [selectedPatient, doctorToken]);
 
   return (
@@ -59,14 +59,14 @@ const PatientHistory = () => {
         {patients.length === 0 && (
           <span className="text-gray-400">No patients found.</span>
         )}
-        {patients.map((p) => (
+        {patients.map(p => (
           <button
             key={p._id}
             onClick={() => setSelectedPatient(p)}
             className={`px-3 py-1 rounded ${
               selectedPatient && selectedPatient._id === p._id
-                ? "bg-purple-700 text-white"
-                : "bg-gray-200 text-gray-700"
+                ? 'bg-purple-700 text-white'
+                : 'bg-gray-200 text-gray-700'
             }`}
           >
             {p.name}
@@ -86,7 +86,7 @@ const PatientHistory = () => {
               {appointments.length === 0 && (
                 <li className="text-gray-400">No appointments found.</li>
               )}
-              {appointments.map((a) => (
+              {appointments.map(a => (
                 <li key={a._id} className="text-sm mb-1">
                   <span className="font-medium">
                     {a.date} {a.time}
@@ -104,11 +104,11 @@ const PatientHistory = () => {
               {prescriptions.length === 0 && (
                 <li className="text-gray-400">No prescriptions found.</li>
               )}
-              {prescriptions.map((p) => (
+              {prescriptions.map(p => (
                 <li key={p._id} className="text-sm mb-1">
                   <span className="font-medium">{p.date}</span>
                   <a
-                    href={`http://localhost:5000/api/v1/prescriptions/${p._id}/pdf`}
+                    href={`https://doctors-bd-backend.vercel.app/api/v1/prescriptions/${p._id}/pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="ml-2 text-purple-700 underline"

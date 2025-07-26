@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { auth } from "./firebase";
-import { ImSpinner9 } from "react-icons/im";
+import React, { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { auth } from './firebase';
+import { ImSpinner9 } from 'react-icons/im';
 
 const UserLoginForm = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e) =>
+  const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -26,22 +26,22 @@ const UserLoginForm = () => {
         form.password
       );
       const token = await userCredential.user.getIdToken();
-      localStorage.setItem("userToken", token);
+      localStorage.setItem('userToken', token);
 
       // 2. Optionally, fetch user profile from your backend
       const res = await fetch(
-        `http://localhost:5000/api/v1/users?email=${form.email}`,
+        `https://doctors-bd-backend.vercel.app/api/v1/users?email=${form.email}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       const data = await res.json();
-      localStorage.setItem("userId", data.data._id);
+      localStorage.setItem('userId', data.data._id);
 
-      toast.success("Login successful!");
-      navigate("/dashboard/user");
+      toast.success('Login successful!');
+      navigate('/dashboard/user');
     } catch (err) {
-      toast.error(err.message || "Login failed.");
+      toast.error(err.message || 'Login failed.');
     }
     setLoading(false);
   };
@@ -79,7 +79,7 @@ const UserLoginForm = () => {
           <input
             id="password"
             name="password"
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             placeholder="Enter your password"
             value={form.password}
             onChange={handleChange}
@@ -93,7 +93,7 @@ const UserLoginForm = () => {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute top-[48px] right-4 text-gray-600 hover:text-purple-700 focus:outline-none"
             tabIndex={-1}
-            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
           >
             {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
           </button>
@@ -108,7 +108,7 @@ const UserLoginForm = () => {
               <ImSpinner9 className="animate-spin text-xl" />
             </div>
           ) : (
-            "Login as User"
+            'Login as User'
           )}
         </button>
       </form>

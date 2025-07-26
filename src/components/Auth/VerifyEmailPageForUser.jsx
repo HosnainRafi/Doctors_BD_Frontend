@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { auth } from "./firebase";
+import React, { useState } from 'react';
+import { auth } from './firebase';
 import {
   sendEmailVerification,
   signInWithEmailAndPassword,
-} from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
-import { ImSpinner9 } from "react-icons/im";
+} from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { ImSpinner9 } from 'react-icons/im';
 
 const VerifyEmailPageForUser = () => {
   const [checking, setChecking] = useState(false);
@@ -15,17 +15,17 @@ const VerifyEmailPageForUser = () => {
 
   // eslint-disable-next-line no-unused-vars
   const [email, setEmail] = useState(
-    sessionStorage.getItem("pendingUserEmail") || ""
+    sessionStorage.getItem('pendingUserEmail') || ''
   );
   const [password, setPassword] = useState(
-    sessionStorage.getItem("pendingUserPassword") || ""
+    sessionStorage.getItem('pendingUserPassword') || ''
   );
-  const name = sessionStorage.getItem("pendingUserName") || "";
-  const phone = sessionStorage.getItem("pendingUserPhone") || "";
+  const name = sessionStorage.getItem('pendingUserName') || '';
+  const phone = sessionStorage.getItem('pendingUserPhone') || '';
 
   const handleResend = async () => {
     if (!email || !password) {
-      toast.error("Missing credentials.");
+      toast.error('Missing credentials.');
       return;
     }
     try {
@@ -36,9 +36,9 @@ const VerifyEmailPageForUser = () => {
         password
       );
       await sendEmailVerification(userCredential.user);
-      toast.success("Verification email resent!");
+      toast.success('Verification email resent!');
     } catch (err) {
-      toast.error(err.message || "Failed to resend verification.");
+      toast.error(err.message || 'Failed to resend verification.');
     }
     setLoading(false);
   };
@@ -54,39 +54,42 @@ const VerifyEmailPageForUser = () => {
       await userCredential.user.reload();
 
       if (userCredential.user.emailVerified) {
-        toast.success("Email verified! Completing registration...");
+        toast.success('Email verified! Completing registration...');
 
         // Now call your backend to save the user
         const token = await userCredential.user.getIdToken();
-        const res = await fetch("http://localhost:5000/api/v1/users/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            phone,
-            password: password || "firebase", // always send a password
-          }),
-        });
+        const res = await fetch(
+          'https://doctors-bd-backend.vercel.app/api/v1/users/register',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              name,
+              email,
+              phone,
+              password: password || 'firebase', // always send a password
+            }),
+          }
+        );
         const data = await res.json();
         if (data.success) {
-          toast.success("Registration complete! Please login.");
-          sessionStorage.removeItem("pendingUserEmail");
-          sessionStorage.removeItem("pendingUserPassword");
-          sessionStorage.removeItem("pendingUserName");
-          sessionStorage.removeItem("pendingUserPhone");
-          navigate("/login");
+          toast.success('Registration complete! Please login.');
+          sessionStorage.removeItem('pendingUserEmail');
+          sessionStorage.removeItem('pendingUserPassword');
+          sessionStorage.removeItem('pendingUserName');
+          sessionStorage.removeItem('pendingUserPhone');
+          navigate('/login');
         } else {
-          toast.error(data.message || "Backend registration failed.");
+          toast.error(data.message || 'Backend registration failed.');
         }
       } else {
-        toast.error("Email not verified yet. Please check your inbox.");
+        toast.error('Email not verified yet. Please check your inbox.');
       }
     } catch (err) {
-      toast.error(err.message || "Failed to check verification.");
+      toast.error(err.message || 'Failed to check verification.');
     } finally {
       setChecking(false);
     }
@@ -95,15 +98,15 @@ const VerifyEmailPageForUser = () => {
   const handleReset = () => {
     if (
       window.confirm(
-        "Are you sure you want to reset and re-enter your email and registration info?"
+        'Are you sure you want to reset and re-enter your email and registration info?'
       )
     ) {
-      sessionStorage.removeItem("pendingUserEmail");
-      sessionStorage.removeItem("pendingUserPassword");
-      sessionStorage.removeItem("pendingUserName");
-      sessionStorage.removeItem("pendingUserPhone");
-      toast("Form cleared. Please re-register.");
-      navigate("/register");
+      sessionStorage.removeItem('pendingUserEmail');
+      sessionStorage.removeItem('pendingUserPassword');
+      sessionStorage.removeItem('pendingUserName');
+      sessionStorage.removeItem('pendingUserPhone');
+      toast('Form cleared. Please re-register.');
+      navigate('/register');
     }
   };
 
@@ -130,7 +133,7 @@ const VerifyEmailPageForUser = () => {
         <input
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg"
           placeholder="Enter your password to check verification"
         />
@@ -145,7 +148,7 @@ const VerifyEmailPageForUser = () => {
           {loading ? (
             <ImSpinner9 className="animate-spin text-xl" />
           ) : (
-            "Resend Verification Email"
+            'Resend Verification Email'
           )}
         </button>
         <button
@@ -153,7 +156,7 @@ const VerifyEmailPageForUser = () => {
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           disabled={checking}
         >
-          {checking ? "Checking..." : "I've Verified"}
+          {checking ? 'Checking...' : "I've Verified"}
         </button>
         <button
           onClick={handleReset}

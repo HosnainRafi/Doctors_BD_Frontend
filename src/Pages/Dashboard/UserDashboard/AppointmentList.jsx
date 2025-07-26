@@ -1,55 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-const getStatusColor = (status) => {
+const getStatusColor = status => {
   switch (status) {
-    case "pending":
-      return "bg-yellow-100 text-yellow-800";
-    case "confirmed":
-      return "bg-green-100 text-green-800";
-    case "completed":
-      return "bg-blue-100 text-blue-800";
-    case "cancelled":
-      return "bg-red-100 text-red-800";
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'confirmed':
+      return 'bg-green-100 text-green-800';
+    case 'completed':
+      return 'bg-blue-100 text-blue-800';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800';
     default:
-      return "bg-gray-100 text-gray-800";
+      return 'bg-gray-100 text-gray-800';
   }
 };
 
 const AppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [reminderMsg, setReminderMsg] = useState("");
+  const [reminderMsg, setReminderMsg] = useState('');
   const [rescheduleId, setRescheduleId] = useState(null);
-  const [newDate, setNewDate] = useState("");
-  const [newTime, setNewTime] = useState("");
-  const token = localStorage.getItem("userToken");
-  const userId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+  const [newDate, setNewDate] = useState('');
+  const [newTime, setNewTime] = useState('');
+  const token = localStorage.getItem('userToken');
+  const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
 
   useEffect(() => {
     if (!userId) return;
     setLoading(true);
-    fetch(`http://localhost:5000/api/v1/appointments?user_id=${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments?user_id=${userId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then(res => res.json())
+      .then(data => {
         setAppointments(data.data || []);
         setLoading(false);
       });
   }, [userId, token]);
 
   // Cancel appointment
-  const handleCancel = async (id) => {
-    await fetch(`http://localhost:5000/api/v1/appointments/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status: "cancelled" }),
-    });
-    setAppointments((prev) =>
-      prev.map((a) => (a._id === id ? { ...a, status: "cancelled" } : a))
+  const handleCancel = async id => {
+    await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments/${id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: 'cancelled' }),
+      }
+    );
+    setAppointments(prev =>
+      prev.map(a => (a._id === id ? { ...a, status: 'cancelled' } : a))
     );
   };
 
@@ -60,43 +66,44 @@ const AppointmentList = () => {
   };
 
   // Start video call
-  const handleStartVideoCall = (appointment) => {
-    window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, "_blank");
+  const handleStartVideoCall = appointment => {
+    window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, '_blank');
   };
 
-  const handleSubmitReschedule = async (id) => {
-    await fetch(`http://localhost:5000/api/v1/appointments/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ date: newDate, time: newTime }),
-    });
-    setAppointments((prev) =>
-      prev.map((a) =>
-        a._id === id ? { ...a, date: newDate, time: newTime } : a
-      )
+  const handleSubmitReschedule = async id => {
+    await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments/${id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ date: newDate, time: newTime }),
+      }
+    );
+    setAppointments(prev =>
+      prev.map(a => (a._id === id ? { ...a, date: newDate, time: newTime } : a))
     );
     setRescheduleId(null);
-    setNewDate("");
-    setNewTime("");
+    setNewDate('');
+    setNewTime('');
   };
 
   // Send reminder
-  const handleSendReminder = async (appointment) => {
-    setReminderMsg("");
+  const handleSendReminder = async appointment => {
+    setReminderMsg('');
     const res = await fetch(
-      `http://localhost:5000/api/v1/appointments/${appointment._id}/reminder`,
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments/${appointment._id}/reminder`,
       {
-        method: "POST",
+        method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       }
     );
     const data = await res.json();
-    if (data.success) setReminderMsg("Reminder sent!");
-    else setReminderMsg(data.message || "Failed to send reminder.");
-    setTimeout(() => setReminderMsg(""), 2000);
+    if (data.success) setReminderMsg('Reminder sent!');
+    else setReminderMsg(data.message || 'Failed to send reminder.');
+    setTimeout(() => setReminderMsg(''), 2000);
   };
 
   if (loading) return <div>Loading appointments...</div>;
@@ -116,7 +123,7 @@ const AppointmentList = () => {
         {appointments.length === 0 && (
           <li className="text-gray-400 py-2">No appointments found.</li>
         )}
-        {appointments.map((a) => (
+        {appointments.map(a => (
           <li
             key={a._id}
             className="py-2 flex flex-col md:flex-row md:items-center md:gap-4"
@@ -148,7 +155,7 @@ const AppointmentList = () => {
             </div>
             <div className="flex flex-col gap-2 mt-2 md:mt-0">
               <div className="flex gap-2">
-                {a.status !== "cancelled" && a.status !== "completed" && (
+                {a.status !== 'cancelled' && a.status !== 'completed' && (
                   <>
                     <button
                       onClick={() => handleCancel(a._id)}
@@ -165,7 +172,7 @@ const AppointmentList = () => {
                   </>
                 )}
                 {a.registered_doctor_id?.isOnline &&
-                  a.status === "confirmed" && (
+                  a.status === 'confirmed' && (
                     <button
                       onClick={() => handleStartVideoCall(a)}
                       className="bg-purple-600 text-white px-2 py-1 rounded text-xs hover:bg-purple-700"
@@ -196,7 +203,7 @@ const AppointmentList = () => {
               </div>
               {rescheduleId === a._id && (
                 <form
-                  onSubmit={(e) => {
+                  onSubmit={e => {
                     e.preventDefault();
                     handleSubmitReschedule(a._id);
                   }}
@@ -205,14 +212,14 @@ const AppointmentList = () => {
                   <input
                     type="date"
                     value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
+                    onChange={e => setNewDate(e.target.value)}
                     className="border px-2 py-1 rounded"
                     required
                   />
                   <input
                     type="time"
                     value={newTime}
-                    onChange={(e) => setNewTime(e.target.value)}
+                    onChange={e => setNewTime(e.target.value)}
                     className="border px-2 py-1 rounded"
                     required
                   />

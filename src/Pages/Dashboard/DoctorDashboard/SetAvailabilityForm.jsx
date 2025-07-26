@@ -1,23 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const SetAvailabilityForm = () => {
-  const [slots, setSlots] = useState([{ date: "", time: "" }]);
-  const [blockedSlots, setBlockedSlots] = useState([{ date: "", time: "" }]);
+  const [slots, setSlots] = useState([{ date: '', time: '' }]);
+  const [blockedSlots, setBlockedSlots] = useState([{ date: '', time: '' }]);
   const [isOnline, setIsOnline] = useState(false);
-  const [message, setMessage] = useState("");
-  const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = localStorage.getItem("doctorId");
+  const [message, setMessage] = useState('');
+  const doctorToken = localStorage.getItem('doctorToken');
+  const doctorId = localStorage.getItem('doctorId');
 
   useEffect(() => {
     if (!doctorId) return;
-    fetch(`http://localhost:5000/api/v1/registered-doctors/${doctorId}`, {
-      headers: { Authorization: `Bearer ${doctorToken}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setSlots(data.data?.availableSlots || [{ date: "", time: "" }]);
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
+      {
+        headers: { Authorization: `Bearer ${doctorToken}` },
+      }
+    )
+      .then(res => res.json())
+      .then(data => {
+        setSlots(data.data?.availableSlots || [{ date: '', time: '' }]);
         setIsOnline(data.data?.isOnline || false);
-        setBlockedSlots(data.data?.blockedSlots || [{ date: "", time: "" }]);
+        setBlockedSlots(data.data?.blockedSlots || [{ date: '', time: '' }]);
       });
   }, [doctorId, doctorToken]);
 
@@ -26,8 +29,8 @@ const SetAvailabilityForm = () => {
     newSlots[i][e.target.name] = e.target.value;
     setSlots(newSlots);
   };
-  const addSlot = () => setSlots([...slots, { date: "", time: "" }]);
-  const removeSlot = (i) => setSlots(slots.filter((_, idx) => idx !== i));
+  const addSlot = () => setSlots([...slots, { date: '', time: '' }]);
+  const removeSlot = i => setSlots(slots.filter((_, idx) => idx !== i));
 
   const handleBlockedSlotChange = (i, e) => {
     const newBlocked = [...blockedSlots];
@@ -35,47 +38,50 @@ const SetAvailabilityForm = () => {
     setBlockedSlots(newBlocked);
   };
   const addBlockedSlot = () =>
-    setBlockedSlots([...blockedSlots, { date: "", time: "" }]);
-  const removeBlockedSlot = (i) =>
+    setBlockedSlots([...blockedSlots, { date: '', time: '' }]);
+  const removeBlockedSlot = i =>
     setBlockedSlots(blockedSlots.filter((_, idx) => idx !== i));
 
   const handleOnlineToggle = async () => {
     if (!doctorId) {
-      setMessage("Doctor ID not found. Please login again.");
+      setMessage('Doctor ID not found. Please login again.');
       return;
     }
     setIsOnline(!isOnline);
-    await fetch(`http://localhost:5000/api/v1/registered-doctors/${doctorId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${doctorToken}`,
-      },
-      body: JSON.stringify({ isOnline: !isOnline }),
-    });
+    await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${doctorToken}`,
+        },
+        body: JSON.stringify({ isOnline: !isOnline }),
+      }
+    );
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    setMessage("");
+    setMessage('');
     if (!doctorId) {
-      setMessage("Doctor ID not found. Please login again.");
+      setMessage('Doctor ID not found. Please login again.');
       return;
     }
     const res = await fetch(
-      `http://localhost:5000/api/v1/registered-doctors/${doctorId}`,
+      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
       {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${doctorToken}`,
         },
         body: JSON.stringify({ availableSlots: slots, blockedSlots }),
       }
     );
     const data = await res.json();
-    if (data.success) setMessage("Availability updated!");
-    else setMessage(data.message || "Failed to update.");
+    if (data.success) setMessage('Availability updated!');
+    else setMessage(data.message || 'Failed to update.');
   };
 
   return (
@@ -86,10 +92,10 @@ const SetAvailabilityForm = () => {
           type="button"
           onClick={handleOnlineToggle}
           className={`px-4 py-1 rounded font-bold ${
-            isOnline ? "bg-green-600 text-white" : "bg-gray-300 text-gray-700"
+            isOnline ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-700'
           }`}
         >
-          {isOnline ? "Online" : "Offline"}
+          {isOnline ? 'Online' : 'Offline'}
         </button>
       </div>
       <h3 className="text-lg font-semibold mb-2">Available Slots</h3>
@@ -99,7 +105,7 @@ const SetAvailabilityForm = () => {
             name="date"
             type="date"
             value={slot.date}
-            onChange={(e) => handleSlotChange(i, e)}
+            onChange={e => handleSlotChange(i, e)}
             className="w-32 px-2 py-1 border rounded"
             required
           />
@@ -107,7 +113,7 @@ const SetAvailabilityForm = () => {
             name="time"
             type="time"
             value={slot.time}
-            onChange={(e) => handleSlotChange(i, e)}
+            onChange={e => handleSlotChange(i, e)}
             className="w-24 px-2 py-1 border rounded"
             required
           />
@@ -137,7 +143,7 @@ const SetAvailabilityForm = () => {
             name="date"
             type="date"
             value={slot.date}
-            onChange={(e) => handleBlockedSlotChange(i, e)}
+            onChange={e => handleBlockedSlotChange(i, e)}
             className="w-32 px-2 py-1 border rounded"
             required
           />
@@ -145,7 +151,7 @@ const SetAvailabilityForm = () => {
             name="time"
             type="time"
             value={slot.time}
-            onChange={(e) => handleBlockedSlotChange(i, e)}
+            onChange={e => handleBlockedSlotChange(i, e)}
             className="w-24 px-2 py-1 border rounded"
             required
           />

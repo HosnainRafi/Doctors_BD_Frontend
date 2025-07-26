@@ -1,64 +1,70 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const FollowUpList = () => {
   const [followUps, setFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState(null);
-  const [advice, setAdvice] = useState("");
-  const doctorToken = localStorage.getItem("doctorToken");
+  const [advice, setAdvice] = useState('');
+  const doctorToken = localStorage.getItem('doctorToken');
   const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split(".")[1])).id
+    ? JSON.parse(atob(doctorToken.split('.')[1])).id
     : null;
 
   useEffect(() => {
     if (!doctorId) return;
     setLoading(true);
     fetch(
-      `http://localhost:5000/api/v1/followups/registered-doctor/${doctorId}`,
+      `https://doctors-bd-backend.vercel.app/api/v1/followups/registered-doctor/${doctorId}`,
       {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         setFollowUps(data.data || []);
         setLoading(false);
       });
   }, [doctorId, doctorToken]);
 
-  const handleComplete = async (id) => {
-    await fetch(`http://localhost:5000/api/v1/followups/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${doctorToken}`,
-      },
-      body: JSON.stringify({ status: "completed" }),
-    });
-    setFollowUps((prev) =>
-      prev.map((f) => (f._id === id ? { ...f, status: "completed" } : f))
+  const handleComplete = async id => {
+    await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/followups/${id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${doctorToken}`,
+        },
+        body: JSON.stringify({ status: 'completed' }),
+      }
+    );
+    setFollowUps(prev =>
+      prev.map(f => (f._id === id ? { ...f, status: 'completed' } : f))
     );
   };
 
   const handleEditAdvice = (id, currentAdvice) => {
     setEditId(id);
-    setAdvice(currentAdvice || "");
+    setAdvice(currentAdvice || '');
   };
 
-  const handleSaveAdvice = async (id) => {
-    await fetch(`http://localhost:5000/api/v1/followups/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${doctorToken}`,
-      },
-      body: JSON.stringify({ notes: advice }),
-    });
-    setFollowUps((prev) =>
-      prev.map((f) => (f._id === id ? { ...f, notes: advice } : f))
+  const handleSaveAdvice = async id => {
+    await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/followups/${id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${doctorToken}`,
+        },
+        body: JSON.stringify({ notes: advice }),
+      }
+    );
+    setFollowUps(prev =>
+      prev.map(f => (f._id === id ? { ...f, notes: advice } : f))
     );
     setEditId(null);
-    setAdvice("");
+    setAdvice('');
   };
 
   const handleSendReminder = (patientPhone, notes) => {
@@ -84,7 +90,7 @@ const FollowUpList = () => {
         {followUps.length === 0 && (
           <li className="text-gray-400 py-2">No follow-ups scheduled.</li>
         )}
-        {followUps.map((f) => (
+        {followUps.map(f => (
           <li
             key={f._id}
             className="py-2 flex flex-col md:flex-row md:items-center md:gap-4"
@@ -101,7 +107,7 @@ const FollowUpList = () => {
                 {editId === f._id ? (
                   <input
                     value={advice}
-                    onChange={(e) => setAdvice(e.target.value)}
+                    onChange={e => setAdvice(e.target.value)}
                     className="border px-2 py-1 rounded w-64"
                   />
                 ) : (
@@ -112,7 +118,7 @@ const FollowUpList = () => {
               </div>
             </div>
             <div className="flex gap-2 mt-2 md:mt-0">
-              {f.status !== "completed" && (
+              {f.status !== 'completed' && (
                 <button
                   onClick={() => handleComplete(f._id)}
                   className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
@@ -132,7 +138,7 @@ const FollowUpList = () => {
                   onClick={() => handleEditAdvice(f._id, f.notes)}
                   className="bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-400"
                 >
-                  {f.notes ? "Edit Advice" : "Add Advice"}
+                  {f.notes ? 'Edit Advice' : 'Add Advice'}
                 </button>
               )}
               <button

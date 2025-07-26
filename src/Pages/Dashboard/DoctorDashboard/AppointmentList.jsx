@@ -1,39 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-const getStatusColor = (status) => {
+const getStatusColor = status => {
   switch (status) {
-    case "pending":
-      return "bg-yellow-100 text-yellow-800";
-    case "confirmed":
-      return "bg-green-100 text-green-800";
-    case "completed":
-      return "bg-blue-100 text-blue-800";
-    case "cancelled":
-      return "bg-red-100 text-red-800";
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'confirmed':
+      return 'bg-green-100 text-green-800';
+    case 'completed':
+      return 'bg-blue-100 text-blue-800';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800';
     default:
-      return "bg-gray-100 text-gray-800";
+      return 'bg-gray-100 text-gray-800';
   }
 };
 
 const DoctorAppointmentList = ({ onCreatePrescription }) => {
   const [appointments, setAppointments] = useState([]);
   const [, setLoading] = useState(true);
-  const doctorToken = localStorage.getItem("doctorToken");
+  const doctorToken = localStorage.getItem('doctorToken');
   const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split(".")[1])).id
+    ? JSON.parse(atob(doctorToken.split('.')[1])).id
     : null;
 
   useEffect(() => {
     if (!doctorId) return;
     setLoading(true);
     fetch(
-      `http://localhost:5000/api/v1/appointments/registered-doctor/${doctorId}`,
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments/registered-doctor/${doctorId}`,
       {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         setAppointments(data.data || []);
         setLoading(false);
       });
@@ -42,35 +42,37 @@ const DoctorAppointmentList = ({ onCreatePrescription }) => {
   // Helper to filter appointments
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = appointments.filter(
-    (a) => a.date > today && a.status !== "cancelled"
+    a => a.date > today && a.status !== 'cancelled'
   );
   const todayList = appointments.filter(
-    (a) => a.date === today && a.status !== "cancelled"
+    a => a.date === today && a.status !== 'cancelled'
   );
   const past = appointments.filter(
-    (a) =>
-      a.date < today || a.status === "completed" || a.status === "cancelled"
+    a => a.date < today || a.status === 'completed' || a.status === 'cancelled'
   );
 
   // Action handlers (replace with real API calls)
   const handleStatusChange = async (id, status) => {
-    await fetch(`http://localhost:5000/api/v1/appointments/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${doctorToken}`,
-      },
-      body: JSON.stringify({ status }),
-    });
+    await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/appointments/${id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${doctorToken}`,
+        },
+        body: JSON.stringify({ status }),
+      }
+    );
     // Refresh list
-    setAppointments((prev) =>
-      prev.map((a) => (a._id === id ? { ...a, status } : a))
+    setAppointments(prev =>
+      prev.map(a => (a._id === id ? { ...a, status } : a))
     );
   };
 
-  const handleStartVideoCall = (appointment) => {
+  const handleStartVideoCall = appointment => {
     // Replace with your video call logic (e.g. open Jitsi/Zoom)
-    window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, "_blank");
+    window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, '_blank');
   };
 
   //if (loading) return <div>Loading appointments...</div>;
@@ -138,7 +140,7 @@ const AppointmentTable = ({
             </td>
           </tr>
         )}
-        {appointments.map((a) => (
+        {appointments.map(a => (
           <tr key={a._id} className="border-t">
             <td className="px-3 py-2">{a.date}</td>
             <td className="px-3 py-2">{a.time}</td>
@@ -156,26 +158,26 @@ const AppointmentTable = ({
               </span>
             </td>
             <td className="px-3 py-2 flex flex-wrap gap-2">
-              {!isPast && a.status === "pending" && (
+              {!isPast && a.status === 'pending' && (
                 <>
                   <button
-                    onClick={() => onStatusChange(a._id, "confirmed")}
+                    onClick={() => onStatusChange(a._id, 'confirmed')}
                     className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
                   >
                     Accept
                   </button>
                   <button
-                    onClick={() => onStatusChange(a._id, "cancelled")}
+                    onClick={() => onStatusChange(a._id, 'cancelled')}
                     className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
                   >
                     Cancel
                   </button>
                 </>
               )}
-              {!isPast && a.status === "confirmed" && (
+              {!isPast && a.status === 'confirmed' && (
                 <>
                   <button
-                    onClick={() => onStatusChange(a._id, "completed")}
+                    onClick={() => onStatusChange(a._id, 'completed')}
                     className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
                   >
                     Mark Completed
@@ -188,7 +190,7 @@ const AppointmentTable = ({
                   </button>
                 </>
               )}
-              {a.status === "completed" && onCreatePrescription && (
+              {a.status === 'completed' && onCreatePrescription && (
                 <button
                   onClick={() => onCreatePrescription(a)}
                   className="bg-indigo-600 text-white px-2 py-1 rounded text-xs hover:bg-indigo-700"

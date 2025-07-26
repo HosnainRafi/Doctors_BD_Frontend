@@ -1,32 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
-  const [reply, setReply] = useState("");
+  const [reply, setReply] = useState('');
   const [replyId, setReplyId] = useState(null);
-  const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = localStorage.getItem("doctorId"); // <-- FIXED
+  const doctorToken = localStorage.getItem('doctorToken');
+  const doctorId = localStorage.getItem('doctorId'); // <-- FIXED
 
   useEffect(() => {
     if (!doctorId) return;
-    fetch(`http://localhost:5000/api/v1/reviews/doctor/${doctorId}`, {
-      headers: { Authorization: `Bearer ${doctorToken}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setReviews(data.data || []));
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/reviews/doctor/${doctorId}`,
+      {
+        headers: { Authorization: `Bearer ${doctorToken}` },
+      }
+    )
+      .then(res => res.json())
+      .then(data => setReviews(data.data || []));
   }, [doctorId, doctorToken]);
 
-  const handleReply = async (id) => {
-    await fetch(`http://localhost:5000/api/v1/reviews/${id}/reply`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${doctorToken}`,
-      },
-      body: JSON.stringify({ reply }),
-    });
-    setReviews(reviews.map((r) => (r._id === id ? { ...r, reply } : r)));
-    setReply("");
+  const handleReply = async id => {
+    await fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/reviews/${id}/reply`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${doctorToken}`,
+        },
+        body: JSON.stringify({ reply }),
+      }
+    );
+    setReviews(reviews.map(r => (r._id === id ? { ...r, reply } : r)));
+    setReply('');
     setReplyId(null);
   };
 
@@ -37,12 +43,12 @@ const Reviews = () => {
         {reviews.length === 0 && (
           <li className="text-gray-400 py-2">No reviews found.</li>
         )}
-        {reviews.map((r) => (
+        {reviews.map(r => (
           <li key={r._id} className="py-2">
             <div className="font-medium">{r.patient_id?.name}</div>
             <div className="text-yellow-500">
-              {"★".repeat(r.rating)}
-              {"☆".repeat(5 - r.rating)}
+              {'★'.repeat(r.rating)}
+              {'☆'.repeat(5 - r.rating)}
             </div>
             <div className="text-gray-700">{r.comment}</div>
             {r.reply ? (
@@ -53,7 +59,7 @@ const Reviews = () => {
                   <>
                     <input
                       value={reply}
-                      onChange={(e) => setReply(e.target.value)}
+                      onChange={e => setReply(e.target.value)}
                       className="border px-2 py-1 rounded w-64"
                     />
                     <button

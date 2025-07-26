@@ -101,6 +101,72 @@ const DoctorDashboardSidebar = ({ isOpen, onClose }) => {
             <FaBookMedical />
             Follow Up
           </Link>
+          <Link
+            to="/dashboard/doctor/availability"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/appointment')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaBookMedical />
+            Availability
+          </Link>
+          <Link
+            to="/dashboard/doctor/completed-appointments"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/appointment')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaBookMedical />
+            Completed Appointments
+          </Link>
+          <Link
+            to="/dashboard/doctor/patient-history"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/appointment')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaBookMedical />
+            Patient History
+          </Link>
+          <Link
+            to="/dashboard/doctor/reviews"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/appointment')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaBookMedical />
+            Reviews
+          </Link>
+          <Link
+            to="/dashboard/doctor/earnings"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/appointment')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaBookMedical />
+            Earnings
+          </Link>
+          <Link
+            to="/dashboard/doctor/profile"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/appointment')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaBookMedical />
+            Profile
+          </Link>
         </div>
 
         <div className="mt-auto border-t px-6 py-4">

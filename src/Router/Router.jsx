@@ -29,6 +29,12 @@ import AppointmentList from '../Pages/Dashboard/UserDashboard/AppointmentList';
 import DashboardDoctorLayout from '../Layout/DashboardDoctorLayout';
 import PrescriptionList from '../Pages/Dashboard/UserDashboard/PrescriptionList';
 import FollowUpList from '../Pages/Dashboard/UserDashboard/FollowUpList';
+import SetAvailabilityForm from '../Pages/Dashboard/DoctorDashboard/SetAvailabilityForm';
+import CompletedAppointments from '../Pages/Dashboard/DoctorDashboard/CompletedAppointments';
+import PatientHistory from '../Pages/Dashboard/DoctorDashboard/PatientHistory';
+import Reviews from '../Pages/Dashboard/DoctorDashboard/Reviews';
+import Earnings from '../Pages/Dashboard/DoctorDashboard/Earnings';
+import DoctorProfile from '../Pages/Dashboard/DoctorDashboard/DoctorProfile';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -148,8 +154,36 @@ export const router = createBrowserRouter([
         element: <AppointmentList />,
       },
       {
+        path: 'prescriptions',
+        element: <PrescriptionList />,
+      },
+      {
         path: 'followups',
         element: <FollowUpList />,
+      },
+      {
+        path: 'availability',
+        element: <SetAvailabilityForm />,
+      },
+      {
+        path: 'completed-appointments',
+        element: <CompletedAppointments />,
+      },
+      {
+        path: 'patient-history',
+        element: <PatientHistory />,
+      },
+      {
+        path: 'reviews',
+        element: <Reviews />,
+      },
+      {
+        path: 'earnings',
+        element: <Earnings />,
+      },
+      {
+        path: 'profile',
+        element: <DoctorProfile />,
       },
     ],
   },

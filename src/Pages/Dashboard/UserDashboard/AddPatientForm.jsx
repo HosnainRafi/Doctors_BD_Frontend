@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
-import { HiCheckCircle, HiXCircle } from 'react-icons/hi';
+import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 
 // Helper to calculate age from DOB
 function calculateAge(dob) {
-  if (!dob) return '';
+  if (!dob) return "";
   const birthDate = new Date(dob);
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
@@ -19,49 +19,58 @@ function calculateAge(dob) {
 }
 
 const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
+  console.log(onPatientAdded, userId, editPatient);
   const [form, setForm] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    dob: '',
-    gender: '',
-    address: '',
-    weight: '',
-    chief_complaints: '',
+    name: "",
+    phone: "",
+    email: "",
+    dob: "",
+    gender: "",
+    address: "",
+    weight: "",
+    chief_complaints: "",
   });
 
   useEffect(() => {
     if (editPatient) {
       setForm({
-        name: editPatient.name || '',
-        phone: editPatient.phone || '',
-        email: editPatient.email || '',
-        dob: editPatient.dob || '',
-        gender: editPatient.gender || '',
-        address: editPatient.address || '',
-        weight: editPatient.weight || '',
-        chief_complaints: (editPatient.chief_complaints || []).join('\n'),
+        name: editPatient.name || "",
+        phone: editPatient.phone || "",
+        email: editPatient.email || "",
+        dob: editPatient.dob || "",
+        gender: editPatient.gender || "",
+        address: editPatient.address || "",
+        weight: editPatient.weight || "",
+        chief_complaints: (editPatient.chief_complaints || []).join("\n"),
       });
     }
   }, [editPatient]);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('userToken');
+    const token = localStorage.getItem("userToken");
 
     const chiefComplaintsArray = form.chief_complaints
       ? form.chief_complaints
-          .split('\n')
-          .map(c => c.trim())
+          .split("\n")
+          .map((c) => c.trim())
           .filter(Boolean)
       : [];
 
+    // Do not send age in payload, only dob
     const payload = {
-      ...form,
+      name: form.name,
+      phone: form.phone,
+      email: form.email,
+      dob: form.dob,
+      age: calculateAge(form.dob),
+      gender: form.gender,
+      address: form.address,
+      weight: form.weight,
       user_id: userId,
       chief_complaints: chiefComplaintsArray,
     };
@@ -71,9 +80,9 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
         const res = await fetch(
           `https://doctors-bd-backend.vercel.app/api/v1/patients/${editPatient._id}`,
           {
-            method: 'PATCH',
+            method: "PATCH",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(payload),
@@ -92,7 +101,7 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
           toast.error(
             <div className="flex items-center gap-2 text-red-600">
               <HiXCircle className="text-xl" />
-              {data.message || 'Failed to update patient.'}
+              {data.message || "Failed to update patient."}
             </div>
           );
         }
@@ -100,9 +109,9 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
         const res = await fetch(
           `https://doctors-bd-backend.vercel.app/api/v1/patients`,
           {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(payload),
@@ -117,21 +126,21 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
             </div>
           );
           setForm({
-            name: '',
-            phone: '',
-            email: '',
-            dob: '',
-            gender: '',
-            address: '',
-            weight: '',
-            chief_complaints: '',
+            name: "",
+            phone: "",
+            email: "",
+            dob: "",
+            gender: "",
+            address: "",
+            weight: "",
+            chief_complaints: "",
           });
           onPatientAdded && onPatientAdded();
         } else {
           toast.error(
             <div className="flex items-center gap-2 text-red-600">
               <HiXCircle className="text-xl" />
-              {data.message || 'Failed to add patient.'}
+              {data.message || "Failed to add patient."}
             </div>
           );
         }
@@ -241,7 +250,7 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
         type="submit"
         className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
       >
-        {editPatient ? 'Update Patient' : 'Add Patient'}
+        {editPatient ? "Update Patient" : "Add Patient"}
       </button>
     </form>
   );

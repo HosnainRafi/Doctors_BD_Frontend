@@ -1,19 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const BookAppointment = () => {
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("userId");
+
+  // Use userId in your component
+  console.log("User ID:", userId);
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [form, setForm] = useState({
-    patient_id: '',
-    doctor_id: '',
-    registered_doctor_id: '',
-    date: '',
-    time: '',
-    reason: '',
+    patient_id: "",
+    doctor_id: "",
+    registered_doctor_id: "",
+    date: "",
+    time: "",
+    reason: "",
   });
-  const [message, setMessage] = useState('');
-  const token = localStorage.getItem('userToken');
-  const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
+  const [message, setMessage] = useState("");
+  const token = localStorage.getItem("userToken");
+  //const userId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
 
   useEffect(() => {
     fetch(
@@ -22,19 +28,19 @@ const BookAppointment = () => {
         headers: { Authorization: `Bearer ${token}` },
       }
     )
-      .then(res => res.json())
-      .then(data => setPatients(data.data || []));
+      .then((res) => res.json())
+      .then((data) => setPatients(data.data || []));
     fetch(`https://doctors-bd-backend.vercel.app/api/v1/registered-doctors`)
-      .then(res => res.json())
-      .then(data => setDoctors(data.data || []));
+      .then((res) => res.json())
+      .then((data) => setDoctors(data.data || []));
   }, [userId, token]);
 
-  const handleChange = e =>
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
+    setMessage("");
     const body = { ...form, user_id: userId };
 
     // Only send one doctor field
@@ -45,24 +51,24 @@ const BookAppointment = () => {
     }
 
     // Remove empty string fields
-    Object.keys(body).forEach(key => {
-      if (body[key] === '') delete body[key];
+    Object.keys(body).forEach((key) => {
+      if (body[key] === "") delete body[key];
     });
 
     const res = await fetch(
-      'https://doctors-bd-backend.vercel.app/api/v1/appointments',
+      "https://doctors-bd-backend.vercel.app/api/v1/appointments",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body),
       }
     );
     const data = await res.json();
-    if (data.success) setMessage('Appointment booked!');
-    else setMessage(data.message || 'Failed to book appointment.');
+    if (data.success) setMessage("Appointment booked!");
+    else setMessage(data.message || "Failed to book appointment.");
   };
 
   return (
@@ -86,7 +92,7 @@ const BookAppointment = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
           >
             <option value="">Select Patient</option>
-            {patients.map(p => (
+            {patients.map((p) => (
               <option key={p._id} value={p._id}>
                 {p.name}
               </option>
@@ -105,7 +111,7 @@ const BookAppointment = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
           >
             <option value="">Select Doctor</option>
-            {doctors.map(d => (
+            {doctors.map((d) => (
               <option key={d._id} value={d._id}>
                 Dr. {d.name} ({d.specialty})
               </option>

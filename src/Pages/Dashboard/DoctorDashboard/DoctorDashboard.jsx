@@ -9,6 +9,7 @@ import Earnings from "./Earnings";
 import PatientHistory from "./PatientHistory";
 import CompletedAppointments from "./CompletedAppointments";
 import AppointmentList from "../UserDashboard/AppointmentList";
+import DoctorAppointmentList from "./DoctorAppointmentList";
 
 const TABS = [
   { key: "appointments", label: "Appointments" },
@@ -50,7 +51,9 @@ const DoctorDashboard = () => {
         <div>
           {activeTab === "appointments" && (
             <>
-              <AppointmentList onCreatePrescription={setSelectedAppointment} />
+              <DoctorAppointmentList
+                onCreatePrescription={setSelectedAppointment}
+              />
               {selectedAppointment && (
                 <PrescriptionForm
                   appointment={selectedAppointment}

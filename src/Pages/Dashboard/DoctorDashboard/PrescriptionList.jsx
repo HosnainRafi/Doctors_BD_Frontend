@@ -1,35 +1,95 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const PrescriptionList = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [selected, setSelected] = useState(null);
-  const doctorToken = localStorage.getItem('doctorToken');
-  const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split('.')[1])).id
-    : null;
+  const [doctorId, setDoctorId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  const doctorToken = localStorage.getItem("doctorToken");
+  let doctorEmail = null;
+  try {
+    doctorEmail = doctorToken
+      ? JSON.parse(atob(doctorToken.split(".")[1])).email
+      : null;
+  } catch (err) {
+    doctorEmail = null;
+    console.log(err);
+  }
+
+  // 1. Fetch doctor by email to get ID
+  useEffect(() => {
+    if (!doctorEmail) {
+      setError("Doctor email not found in token.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/by-email?email=${doctorEmail}`,
+      {
+        headers: { Authorization: `Bearer ${doctorToken}` },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.data?._id) {
+          setDoctorId(data.data._id);
+        } else {
+          setError("Doctor not found.");
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        setError("Failed to fetch doctor info.");
+        setLoading(false);
+      });
+  }, [doctorEmail, doctorToken]);
+
+  // 2. Fetch prescriptions by doctorId
   useEffect(() => {
     if (!doctorId) return;
+    setLoading(true);
+    setError(null);
     fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/prescriptions/registered-doctor/${doctorId}`,
       {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then(res => res.json())
-      .then(data => setPrescriptions(data.data || []));
+      .then((res) => res.json())
+      .then((data) => {
+        setPrescriptions(data.data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to fetch prescriptions.");
+        setLoading(false);
+      });
   }, [doctorId, doctorToken]);
 
   return (
     <div className="mb-6">
       <h3 className="text-2xl font-bold text-purple-700 mb-4">Prescriptions</h3>
+      {loading && (
+        <div className="text-gray-500 py-2 col-span-2 text-center bg-white rounded shadow">
+          Loading...
+        </div>
+      )}
+      {error && (
+        <div className="text-red-500 py-2 col-span-2 text-center bg-white rounded shadow">
+          {error}
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {prescriptions.length === 0 && (
+        {!loading && !error && prescriptions.length === 0 && (
           <div className="text-gray-400 py-2 col-span-2 text-center bg-white rounded shadow">
             No prescriptions found.
           </div>
         )}
-        {prescriptions.map(p => (
+        {prescriptions.map((p) => (
           <div
             key={p._id}
             className="bg-white rounded-xl shadow p-4 flex flex-col justify-between"
@@ -47,7 +107,7 @@ const PrescriptionList = () => {
                 <span className="font-medium">Date:</span> {p.date}
               </div>
               <div className="text-sm text-gray-600 mb-1">
-                <span className="font-medium">Appointment:</span>{' '}
+                <span className="font-medium">Appointment:</span>{" "}
                 {p.appointment_id?.date} {p.appointment_id?.time}
               </div>
             </div>
@@ -81,7 +141,7 @@ const PrescriptionList = () => {
             </button>
             <h4 className="text-lg font-bold mb-2">Prescription Details</h4>
             <div className="mb-2">
-              <span className="font-medium">Patient:</span>{' '}
+              <span className="font-medium">Patient:</span>{" "}
               {selected.patient_id?.name}
             </div>
             <div className="mb-2">
@@ -93,18 +153,18 @@ const PrescriptionList = () => {
                 {selected.medicines.map((med, i) => (
                   <li key={i}>
                     <span className="font-semibold">{med.name}</span> (
-                    {med.dose}){' '}
+                    {med.dose}){" "}
                     {med.instructions && <span>- {med.instructions}</span>}
                   </li>
                 ))}
               </ul>
             </div>
             <div className="mb-2">
-              <span className="font-medium">Advice:</span>{' '}
+              <span className="font-medium">Advice:</span>{" "}
               {selected.advice || <span className="text-gray-400">None</span>}
             </div>
             <div className="mb-2">
-              <span className="font-medium">Follow-up Date:</span>{' '}
+              <span className="font-medium">Follow-up Date:</span>{" "}
               {selected.follow_up_date || (
                 <span className="text-gray-400">None</span>
               )}

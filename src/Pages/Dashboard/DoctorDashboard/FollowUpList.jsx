@@ -1,70 +1,115 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const FollowUpList = () => {
   const [followUps, setFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState(null);
-  const [advice, setAdvice] = useState('');
-  const doctorToken = localStorage.getItem('doctorToken');
-  const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split('.')[1])).id
-    : null;
+  const [advice, setAdvice] = useState("");
+  const [doctorId, setDoctorId] = useState(null);
+  const [error, setError] = useState(null);
 
+  const doctorToken = localStorage.getItem("doctorToken");
+  let doctorEmail = null;
+  try {
+    doctorEmail = doctorToken
+      ? JSON.parse(atob(doctorToken.split(".")[1])).email
+      : null;
+  } catch (err) {
+    doctorEmail = null;
+    console.log(err);
+  }
+
+  // 1. Fetch doctor by email to get ID
+  useEffect(() => {
+    if (!doctorEmail) {
+      setError("Doctor email not found in token.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/by-email?email=${doctorEmail}`,
+      {
+        headers: { Authorization: `Bearer ${doctorToken}` },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.data?._id) {
+          setDoctorId(data.data._id);
+        } else {
+          setError("Doctor not found.");
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        setError("Failed to fetch doctor info.");
+        setLoading(false);
+      });
+  }, [doctorEmail, doctorToken]);
+
+  // 2. Fetch follow-ups by doctorId
   useEffect(() => {
     if (!doctorId) return;
     setLoading(true);
+    setError(null);
     fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/followups/registered-doctor/${doctorId}`,
       {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setFollowUps(data.data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to fetch follow-ups.");
         setLoading(false);
       });
   }, [doctorId, doctorToken]);
 
-  const handleComplete = async id => {
+  const handleComplete = async (id) => {
     await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/followups/${id}`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${doctorToken}`,
         },
-        body: JSON.stringify({ status: 'completed' }),
+        body: JSON.stringify({ status: "completed" }),
       }
     );
-    setFollowUps(prev =>
-      prev.map(f => (f._id === id ? { ...f, status: 'completed' } : f))
+    setFollowUps((prev) =>
+      prev.map((f) => (f._id === id ? { ...f, status: "completed" } : f))
     );
   };
 
   const handleEditAdvice = (id, currentAdvice) => {
     setEditId(id);
-    setAdvice(currentAdvice || '');
+    setAdvice(currentAdvice || "");
   };
 
-  const handleSaveAdvice = async id => {
+  const handleSaveAdvice = async (id) => {
     await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/followups/${id}`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${doctorToken}`,
         },
         body: JSON.stringify({ notes: advice }),
       }
     );
-    setFollowUps(prev =>
-      prev.map(f => (f._id === id ? { ...f, notes: advice } : f))
+    setFollowUps((prev) =>
+      prev.map((f) => (f._id === id ? { ...f, notes: advice } : f))
     );
     setEditId(null);
-    setAdvice('');
+    setAdvice("");
   };
 
   const handleSendReminder = (patientPhone, notes) => {
@@ -72,7 +117,28 @@ const FollowUpList = () => {
     alert(`Reminder sent to ${patientPhone}!\nAdvice: ${notes}`);
   };
 
-  //if (loading) return <div>Loading follow-ups...</div>;
+  if (loading) {
+    return (
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-2">Follow-Ups</h3>
+        <div className="text-center text-gray-400 py-8 text-lg font-semibold">
+          Loading follow-ups...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-2">Follow-Ups</h3>
+        <div className="text-center text-red-500 py-8 text-lg font-semibold">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
   if (!loading && (!followUps || followUps.length === 0)) {
     return (
       <div className="mb-6">
@@ -83,6 +149,7 @@ const FollowUpList = () => {
       </div>
     );
   }
+
   return (
     <div className="mb-6">
       <h3 className="text-lg font-semibold mb-2">Follow-Ups</h3>
@@ -90,7 +157,7 @@ const FollowUpList = () => {
         {followUps.length === 0 && (
           <li className="text-gray-400 py-2">No follow-ups scheduled.</li>
         )}
-        {followUps.map(f => (
+        {followUps.map((f) => (
           <li
             key={f._id}
             className="py-2 flex flex-col md:flex-row md:items-center md:gap-4"
@@ -107,7 +174,7 @@ const FollowUpList = () => {
                 {editId === f._id ? (
                   <input
                     value={advice}
-                    onChange={e => setAdvice(e.target.value)}
+                    onChange={(e) => setAdvice(e.target.value)}
                     className="border px-2 py-1 rounded w-64"
                   />
                 ) : (
@@ -118,7 +185,7 @@ const FollowUpList = () => {
               </div>
             </div>
             <div className="flex gap-2 mt-2 md:mt-0">
-              {f.status !== 'completed' && (
+              {f.status !== "completed" && (
                 <button
                   onClick={() => handleComplete(f._id)}
                   className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
@@ -138,7 +205,7 @@ const FollowUpList = () => {
                   onClick={() => handleEditAdvice(f._id, f.notes)}
                   className="bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-400"
                 >
-                  {f.notes ? 'Edit Advice' : 'Add Advice'}
+                  {f.notes ? "Edit Advice" : "Add Advice"}
                 </button>
               )}
               <button

@@ -17,15 +17,57 @@ const getStatusColor = (status) => {
 
 const DoctorAppointmentList = ({ onCreatePrescription }) => {
   const [appointments, setAppointments] = useState([]);
-  const [, setLoading] = useState(true);
-  const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = doctorToken
-    ? JSON.parse(atob(doctorToken.split(".")[1])).id
-    : null;
+  const [loading, setLoading] = useState(true);
+  const [doctorId, setDoctorId] = useState(null);
+  const [error, setError] = useState(null);
 
+  // Get token and email from localStorage
+  const doctorToken = localStorage.getItem("doctorToken");
+  let doctorEmail = null;
+  try {
+    doctorEmail = doctorToken
+      ? JSON.parse(atob(doctorToken.split(".")[1])).email
+      : null;
+  } catch (err) {
+    doctorEmail = null;
+    console.log(err);
+  }
+
+  // 1. Fetch doctor by email to get ID
+  useEffect(() => {
+    if (!doctorEmail) {
+      setError("Doctor email not found in token.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    fetch(
+      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/by-email?email=${doctorEmail}`,
+      {
+        headers: { Authorization: `Bearer ${doctorToken}` },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.data?._id) {
+          setDoctorId(data.data._id);
+        } else {
+          setError("Doctor not found.");
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        setError("Failed to fetch doctor info.");
+        setLoading(false);
+      });
+  }, [doctorEmail, doctorToken]);
+
+  // 2. Fetch appointments by doctorId
   useEffect(() => {
     if (!doctorId) return;
     setLoading(true);
+    setError(null);
     fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/appointments/registered-doctor/${doctorId}`,
       {
@@ -35,6 +77,10 @@ const DoctorAppointmentList = ({ onCreatePrescription }) => {
       .then((res) => res.json())
       .then((data) => {
         setAppointments(data.data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to fetch appointments.");
         setLoading(false);
       });
   }, [doctorId, doctorToken]);
@@ -52,7 +98,7 @@ const DoctorAppointmentList = ({ onCreatePrescription }) => {
       a.date < today || a.status === "completed" || a.status === "cancelled"
   );
 
-  // Action handlers (replace with real API calls)
+  // Action handlers
   const handleStatusChange = async (id, status) => {
     await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/appointments/${id}`,
@@ -65,51 +111,63 @@ const DoctorAppointmentList = ({ onCreatePrescription }) => {
         body: JSON.stringify({ status }),
       }
     );
-    // Refresh list
+    // Refresh list locally
     setAppointments((prev) =>
       prev.map((a) => (a._id === id ? { ...a, status } : a))
     );
   };
 
   const handleStartVideoCall = (appointment) => {
-    // Replace with your video call logic (e.g. open Jitsi/Zoom)
     window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, "_blank");
   };
 
-  //if (loading) return <div>Loading appointments...</div>;
   const hasAnyAppointments =
     todayList.length > 0 || upcoming.length > 0 || past.length > 0;
+
   return (
     <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-2">Today's Appointments</h3>
-      <AppointmentTable
-        appointments={todayList}
-        onStatusChange={handleStatusChange}
-        onStartVideoCall={handleStartVideoCall}
-        onCreatePrescription={onCreatePrescription}
-      />
-
-      <h3 className="text-lg font-semibold mb-2 mt-6">Upcoming Appointments</h3>
-      <AppointmentTable
-        appointments={upcoming}
-        onStatusChange={handleStatusChange}
-        onStartVideoCall={handleStartVideoCall}
-        onCreatePrescription={onCreatePrescription}
-      />
-
-      <h3 className="text-lg font-semibold mb-2 mt-6">Past Appointments</h3>
-      <AppointmentTable
-        appointments={past}
-        onStatusChange={handleStatusChange}
-        onStartVideoCall={handleStartVideoCall}
-        onCreatePrescription={onCreatePrescription}
-        isPast
-      />
-
-      {!hasAnyAppointments && (
-        <div className="text-center text-gray-400 py-8 text-lg font-semibold">
-          No appointments found.
+      <h2 className="text-xl font-bold mb-4">Doctor Appointments</h2>
+      {loading && (
+        <div className="text-center text-gray-500 py-8">
+          Loading appointments...
         </div>
+      )}
+      {error && <div className="text-center text-red-500 py-8">{error}</div>}
+      {!loading && !error && (
+        <>
+          <h3 className="text-lg font-semibold mb-2">Today's Appointments</h3>
+          <AppointmentTable
+            appointments={todayList}
+            onStatusChange={handleStatusChange}
+            onStartVideoCall={handleStartVideoCall}
+            onCreatePrescription={onCreatePrescription}
+          />
+
+          <h3 className="text-lg font-semibold mb-2 mt-6">
+            Upcoming Appointments
+          </h3>
+          <AppointmentTable
+            appointments={upcoming}
+            onStatusChange={handleStatusChange}
+            onStartVideoCall={handleStartVideoCall}
+            onCreatePrescription={onCreatePrescription}
+          />
+
+          <h3 className="text-lg font-semibold mb-2 mt-6">Past Appointments</h3>
+          <AppointmentTable
+            appointments={past}
+            onStatusChange={handleStatusChange}
+            onStartVideoCall={handleStartVideoCall}
+            onCreatePrescription={onCreatePrescription}
+            isPast
+          />
+
+          {!hasAnyAppointments && (
+            <div className="text-center text-gray-400 py-8 text-lg font-semibold">
+              No appointments found.
+            </div>
+          )}
+        </>
       )}
     </div>
   );

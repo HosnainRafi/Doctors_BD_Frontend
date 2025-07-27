@@ -59,6 +59,7 @@ const initialForm = {
 
 const MultiStepDoctorProfileForm = ({
   doctorId,
+  // eslint-disable-next-line no-unused-vars
   initialDoctor,
   onComplete,
 }) => {

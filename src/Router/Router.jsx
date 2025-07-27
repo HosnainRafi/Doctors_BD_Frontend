@@ -41,6 +41,8 @@ import ReviewForm from "../Pages/Dashboard/UserDashboard/ReviewForm";
 import UserProfile from "../Pages/Dashboard/UserDashboard/UserProfile";
 import CompleteDoctorProfilePage from "../Pages/Dashboard/DoctorDashboard/CompleteDoctorProfilePage";
 import DoctorProtectedRoute from "../components/Auth/DoctorProtectedRoute";
+import MedexSearch from "../Pages/SearchMedex/MedexSearch";
+import MedexDetails from "../Pages/SearchMedex/MedexDetails";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -78,6 +80,14 @@ export const router = createBrowserRouter([
       {
         path: "/contact",
         element: <Contact />,
+      },
+      {
+        path: "/search-medicine",
+        element: <MedexSearch />,
+      },
+      {
+        path: "/medicine-details",
+        element: <MedexDetails />,
       },
       {
         path: "/about-us",

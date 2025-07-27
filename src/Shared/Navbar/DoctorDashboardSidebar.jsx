@@ -1,6 +1,18 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaHome, FaUser, FaSignOutAlt, FaBookMedical } from 'react-icons/fa';
+import {
+  FaHome,
+  FaUser,
+  FaSignOutAlt,
+  FaFilePrescription,
+  FaRegCalendarCheck,
+  FaRegClock,
+  FaCalendarCheck,
+  FaUserInjured,
+  FaStar,
+  FaMoneyBillWave,
+  FaUserCircle,
+} from 'react-icons/fa';
 import { MdSpaceDashboard } from 'react-icons/md';
 
 const DoctorDashboardSidebar = ({ isOpen, onClose }) => {
@@ -32,14 +44,17 @@ const DoctorDashboardSidebar = ({ isOpen, onClose }) => {
       )}
 
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white z-40 shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out
+        className={`fixed top-0 left-0 h-full w-[300px] bg-white z-40 shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out
         ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0 md:static md:shadow-none`}
       >
-        <div className="flex items-center px-4 h-[60px] border-b">
-          <span className="text-purple-700 text-lg md:text-2xl font-bold">
-            CarePoint
+        <div className="flex items-center gap-1 px-4 h-[60px] border-b bg-gradient-to-r from-purple-100 to-white">
+          <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-md">
+            D
+          </div>
+          <span className="text-purple-700 text-xl font-semibold tracking-wide">
+            Doctor Dashboard
           </span>
         </div>
 
@@ -59,7 +74,7 @@ const DoctorDashboardSidebar = ({ isOpen, onClose }) => {
           <Link
             to="/dashboard/doctor"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user')
+              isActive('/dashboard/doctor')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}
@@ -71,108 +86,116 @@ const DoctorDashboardSidebar = ({ isOpen, onClose }) => {
           <Link
             to="/dashboard/doctor/appointment"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user/appointment')
+              isActive('/dashboard/doctor/appointment')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}
           >
-            <FaBookMedical />
+            <FaUser />
             Appointment
           </Link>
+
           <Link
             to="/dashboard/doctor/prescriptions"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user/appointment')
+              isActive('/dashboard/doctor/prescriptions')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}
           >
-            <FaBookMedical />
+            <FaFilePrescription />
             Prescriptions
           </Link>
+
           <Link
             to="/dashboard/doctor/followups"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user/appointment')
+              isActive('/dashboard/doctor/followups')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}
           >
-            <FaBookMedical />
+            <FaRegCalendarCheck />
             Follow Up
           </Link>
+
           <Link
             to="/dashboard/doctor/availability"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user/appointment')
+              isActive('/dashboard/doctor/availability')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}
           >
-            <FaBookMedical />
+            <FaRegClock />
             Availability
           </Link>
+
           <Link
             to="/dashboard/doctor/completed-appointments"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user/appointment')
+              isActive('/dashboard/doctor/appointments')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}
           >
-            <FaBookMedical />
+            <FaCalendarCheck />
             Completed Appointments
           </Link>
+
           <Link
             to="/dashboard/doctor/patient-history"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user/appointment')
+              isActive('/dashboard/doctor/patient-history')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}
           >
-            <FaBookMedical />
+            <FaUserInjured />
             Patient History
           </Link>
+
           <Link
             to="/dashboard/doctor/reviews"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user/appointment')
+              isActive('/dashboard/doctor/reviews')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}
           >
-            <FaBookMedical />
+            <FaStar />
             Reviews
           </Link>
+
           <Link
             to="/dashboard/doctor/earnings"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user/appointment')
+              isActive('/dashboard/doctor/earnings')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}
           >
-            <FaBookMedical />
+            <FaMoneyBillWave />
             Earnings
-          </Link>
-          <Link
-            to="/dashboard/doctor/profile"
-            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/user/appointment')
-                ? 'bg-purple-100 text-purple-700'
-                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
-            }`}
-          >
-            <FaBookMedical />
-            Profile
           </Link>
         </div>
 
-        <div className="mt-auto border-t px-6 py-4">
+        <div className="border-t py-3">
+          <Link
+            to="/dashboard/doctor/profile"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/doctor/profile')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaUserCircle />
+            Profile
+          </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 text-gray-700 font-semibold hover:text-red-600"
+            className="flex items-center gap-3 w-full px-6 py-3 font-semibold rounded-md transition-all duration-200 text-gray-700 hover:bg-gray-100 hover:pl-8'
+            "
           >
             <FaSignOutAlt />
             Logout
@@ -183,5 +206,4 @@ const DoctorDashboardSidebar = ({ isOpen, onClose }) => {
   );
 };
 
-
-export default DoctorDashboardSidebar
+export default DoctorDashboardSidebar;

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import AppointmentList from "./AppointmentList";
 import PrescriptionList from "./PrescriptionList";
 import FollowUpList from "./FollowUpList";
 import SetAvailabilityForm from "./SetAvailabilityForm";
@@ -9,6 +8,7 @@ import PrescriptionForm from "./PrescriptionForm";
 import Earnings from "./Earnings";
 import PatientHistory from "./PatientHistory";
 import CompletedAppointments from "./CompletedAppointments";
+import AppointmentList from "../UserDashboard/AppointmentList";
 
 const TABS = [
   { key: "appointments", label: "Appointments" },

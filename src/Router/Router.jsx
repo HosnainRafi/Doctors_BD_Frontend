@@ -36,6 +36,8 @@ import Reviews from "../Pages/Dashboard/DoctorDashboard/Reviews";
 import Earnings from "../Pages/Dashboard/DoctorDashboard/Earnings";
 import DoctorProfile from "../Pages/Dashboard/DoctorDashboard/DoctorProfile";
 import DoctorAppointmentList from "../Pages/Dashboard/DoctorDashboard/DoctorAppointmentList";
+import CompleteDoctorProfilePage from "../Pages/Dashboard/DoctorDashboard/CompleteDoctorProfilePage";
+import DoctorProtectedRoute from "../components/Auth/DoctorProtectedRoute";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -144,53 +146,31 @@ export const router = createBrowserRouter([
   },
   {
     path: "/dashboard/doctor",
-    element: <DashboardDoctorLayout />,
+    element: (
+      <DoctorProtectedRoute>
+        <DashboardDoctorLayout />
+      </DoctorProtectedRoute>
+    ),
     children: [
-      {
-        index: true,
-        element: <DoctorDashboard />,
-      },
-      {
-        path: "appointment",
-        element: <DoctorAppointmentList />,
-      },
-      {
-        path: "prescriptions",
-        element: <PrescriptionList />,
-      },
-      {
-        path: "followups",
-        element: <FollowUpList />,
-      },
-      {
-        path: "availability",
-        element: <SetAvailabilityForm />,
-      },
-      {
-        path: "completed-appointments",
-        element: <CompletedAppointments />,
-      },
-      {
-        path: "patient-history",
-        element: <PatientHistory />,
-      },
-      {
-        path: "reviews",
-        element: <Reviews />,
-      },
-      {
-        path: "earnings",
-        element: <Earnings />,
-      },
-      {
-        path: "profile",
-        element: <DoctorProfile />,
-      },
+      { index: true, element: <DoctorDashboard /> },
+      { path: "appointment", element: <DoctorAppointmentList /> },
+      { path: "prescriptions", element: <PrescriptionList /> },
+      { path: "followups", element: <FollowUpList /> },
+      { path: "availability", element: <SetAvailabilityForm /> },
+      { path: "completed-appointments", element: <CompletedAppointments /> },
+      { path: "patient-history", element: <PatientHistory /> },
+      { path: "reviews", element: <Reviews /> },
+      { path: "earnings", element: <Earnings /> },
+      { path: "profile", element: <DoctorProfile /> },
     ],
   },
   {
     path: "/doctor/complete-profile",
     element: <CompleteProfilePage />,
+  },
+  {
+    path: "complete-profile",
+    element: <CompleteDoctorProfilePage />,
   },
   {
     path: "/verify-email-for-user",

@@ -1,59 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const SPECIALTIES = [
-  'General Physician',
-  'Cardiology',
-  'Dermatology',
-  'Pediatrics',
-  'Neurology',
-  'Orthopedics',
-  'Psychiatry',
-  'Urology',
-  'Gastroenterology',
-  'Oncology',
-  'Other',
+  "General Physician",
+  "Cardiology",
+  "Dermatology",
+  "Pediatrics",
+  "Neurology",
+  "Orthopedics",
+  "Psychiatry",
+  "Urology",
+  "Gastroenterology",
+  "Oncology",
+  "Other",
 ];
 const DEGREES = [
-  'MBBS',
-  'FCPS',
-  'MD',
-  'MS',
-  'MRCP',
-  'FRCS',
-  'BCS (Health)',
-  'DGO',
-  'DLO',
-  'Other',
+  "MBBS",
+  "FCPS",
+  "MD",
+  "MS",
+  "MRCP",
+  "FRCS",
+  "BCS (Health)",
+  "DGO",
+  "DLO",
+  "Other",
 ];
 
 const initialForm = {
-  name: '',
-  email: '',
-  phone: '',
-  bmdc_number: '',
-  specialty: '',
+  name: "",
+  email: "",
+  phone: "",
+  bmdc_number: "",
+  specialty: "",
   specialties: [],
   degree_names: [],
   additional_qualifications: [],
-  photo: '',
-  bio: '',
+  photo: "",
+  bio: "",
   experiences: [
     {
-      organization_name: '',
-      designation: '',
-      department: '',
-      from: '',
-      to: '',
+      organization_name: "",
+      designation: "",
+      department: "",
+      from: "",
+      to: "",
       is_current: false,
-      duration_month: '',
+      duration_month: "",
     },
   ],
   consultation: {
-    standard_fee: '',
-    standard_fee_with_vat: '',
-    follow_up_fee: '',
-    follow_up_fee_with_vat: '',
-    average_consultation_minutes: '',
+    standard_fee: "",
+    standard_fee_with_vat: "",
+    follow_up_fee: "",
+    follow_up_fee_with_vat: "",
+    average_consultation_minutes: "",
   },
 };
 
@@ -64,8 +64,8 @@ const MultiStepDoctorProfileForm = ({
 }) => {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(initialForm);
-  const [message, setMessage] = useState('');
-  const doctorToken = localStorage.getItem('doctorToken');
+  const [message, setMessage] = useState("");
+  const doctorToken = localStorage.getItem("doctorToken");
 
   // Pre-fill form with backend data
   useEffect(() => {
@@ -76,10 +76,10 @@ const MultiStepDoctorProfileForm = ({
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.data) {
-          setForm(prev => ({
+          setForm((prev) => ({
             ...prev,
             ...data.data,
             specialties: data.data.specialties || [],
@@ -91,23 +91,22 @@ const MultiStepDoctorProfileForm = ({
           }));
         }
       });
-    // eslint-disable-next-line
   }, [doctorId, doctorToken]);
 
   // Input handlers
-  const handleChange = e =>
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  const handleSpecialtiesChange = e => {
+  const handleSpecialtiesChange = (e) => {
     const options = Array.from(
       e.target.selectedOptions,
-      option => option.value
+      (option) => option.value
     );
     setForm({ ...form, specialties: options });
   };
-  const handleDegreesChange = e => {
+  const handleDegreesChange = (e) => {
     const options = Array.from(
       e.target.selectedOptions,
-      option => option.value
+      (option) => option.value
     );
     setForm({ ...form, degree_names: options });
   };
@@ -124,18 +123,18 @@ const MultiStepDoctorProfileForm = ({
       experiences: [
         ...form.experiences,
         {
-          organization_name: '',
-          designation: '',
-          department: '',
-          from: '',
-          to: '',
+          organization_name: "",
+          designation: "",
+          department: "",
+          from: "",
+          to: "",
           is_current: false,
-          duration_month: '',
+          duration_month: "",
         },
       ],
     });
   };
-  const removeExperience = i => {
+  const removeExperience = (i) => {
     setForm({
       ...form,
       experiences: form.experiences.filter((_, idx) => idx !== i),
@@ -143,7 +142,7 @@ const MultiStepDoctorProfileForm = ({
   };
 
   // Photo upload
-  const handlePhotoChange = e => {
+  const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setForm({ ...form, photo: URL.createObjectURL(file) });
@@ -151,54 +150,63 @@ const MultiStepDoctorProfileForm = ({
   };
 
   // Step navigation
-  const nextStep = () => setStep(s => s + 1);
-  const prevStep = () => setStep(s => s - 1);
+  const nextStep = () => setStep((s) => s + 1);
+  const prevStep = () => setStep((s) => s - 1);
 
   // Convert number fields before submit
-  const convertNumbers = obj => {
+  const convertNumbers = (obj) => {
     const consultation = { ...obj.consultation };
-    if (consultation.standard_fee !== '')
+    if (consultation.standard_fee !== "")
       consultation.standard_fee = Number(consultation.standard_fee);
     else delete consultation.standard_fee;
-    if (consultation.standard_fee_with_vat !== '')
+    if (consultation.standard_fee_with_vat !== "")
       consultation.standard_fee_with_vat = Number(
         consultation.standard_fee_with_vat
       );
     else delete consultation.standard_fee_with_vat;
-    if (consultation.follow_up_fee !== '')
+    if (
+      consultation.follow_up_fee !== "" &&
+      consultation.follow_up_fee !== null &&
+      consultation.follow_up_fee !== undefined
+    )
       consultation.follow_up_fee = Number(consultation.follow_up_fee);
     else delete consultation.follow_up_fee;
-    if (consultation.follow_up_fee_with_vat !== '')
+
+    if (
+      consultation.follow_up_fee_with_vat !== "" &&
+      consultation.follow_up_fee_with_vat !== null &&
+      consultation.follow_up_fee_with_vat !== undefined
+    )
       consultation.follow_up_fee_with_vat = Number(
         consultation.follow_up_fee_with_vat
       );
     else delete consultation.follow_up_fee_with_vat;
-    if (consultation.average_consultation_minutes !== '')
+    if (consultation.average_consultation_minutes !== "")
       consultation.average_consultation_minutes = Number(
         consultation.average_consultation_minutes
       );
     else delete consultation.average_consultation_minutes;
 
-    const experiences = obj.experiences.map(exp => ({
+    const experiences = obj.experiences.map((exp) => ({
       ...exp,
       duration_month:
-        exp.duration_month !== '' ? Number(exp.duration_month) : undefined,
+        exp.duration_month !== "" ? Number(exp.duration_month) : undefined,
     }));
 
     return { ...obj, consultation, experiences };
   };
 
   // Submit
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
-    const payload = convertNumbers(form);
+    setMessage("");
+    const payload = { ...convertNumbers(form), profileCompleted: true };
     const res = await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${doctorToken}`,
         },
         body: JSON.stringify(payload),
@@ -206,9 +214,9 @@ const MultiStepDoctorProfileForm = ({
     );
     const data = await res.json();
     if (data.success) {
-      setMessage('Profile completed!');
+      setMessage("Profile completed!");
       onComplete && onComplete();
-    } else setMessage(data.message || 'Failed to complete profile.');
+    } else setMessage(data.message || "Failed to complete profile.");
   };
 
   // Step 1: Basic Info
@@ -269,13 +277,13 @@ const MultiStepDoctorProfileForm = ({
       <h3 className="text-xl font-bold mb-4">Specialties & Degrees</h3>
       <select
         name="specialty"
-        value={form.specialty || ''}
+        value={form.specialty || ""}
         onChange={handleChange}
         className="w-full mb-2 px-3 py-2 border rounded"
         required
       >
         <option value="">Select Main Specialty</option>
-        {SPECIALTIES.map(s => (
+        {SPECIALTIES.map((s) => (
           <option key={s} value={s}>
             {s}
           </option>
@@ -291,7 +299,7 @@ const MultiStepDoctorProfileForm = ({
         onChange={handleSpecialtiesChange}
         className="w-full mb-2 px-3 py-2 border rounded"
       >
-        {SPECIALTIES.map(s => (
+        {SPECIALTIES.map((s) => (
           <option key={s} value={s}>
             {s}
           </option>
@@ -307,7 +315,7 @@ const MultiStepDoctorProfileForm = ({
         onChange={handleDegreesChange}
         className="w-full mb-2 px-3 py-2 border rounded"
       >
-        {DEGREES.map(d => (
+        {DEGREES.map((d) => (
           <option key={d} value={d}>
             {d}
           </option>
@@ -315,13 +323,13 @@ const MultiStepDoctorProfileForm = ({
       </select>
       <input
         name="additional_qualifications"
-        value={form.additional_qualifications?.join(', ') || ''}
-        onChange={e =>
+        value={form.additional_qualifications?.join(", ") || ""}
+        onChange={(e) =>
           setForm({
             ...form,
             additional_qualifications: e.target.value
-              .split(',')
-              .map(q => q.trim())
+              .split(",")
+              .map((q) => q.trim())
               .filter(Boolean),
           })
         }
@@ -340,7 +348,7 @@ const MultiStepDoctorProfileForm = ({
           <input
             name="organization_name"
             value={exp.organization_name}
-            onChange={e => handleExperienceChange(i, e)}
+            onChange={(e) => handleExperienceChange(i, e)}
             className="w-full mb-2 px-3 py-2 border rounded"
             placeholder="Organization Name"
             required
@@ -348,7 +356,7 @@ const MultiStepDoctorProfileForm = ({
           <input
             name="designation"
             value={exp.designation}
-            onChange={e => handleExperienceChange(i, e)}
+            onChange={(e) => handleExperienceChange(i, e)}
             className="w-full mb-2 px-3 py-2 border rounded"
             placeholder="Designation"
             required
@@ -356,7 +364,7 @@ const MultiStepDoctorProfileForm = ({
           <input
             name="department"
             value={exp.department}
-            onChange={e => handleExperienceChange(i, e)}
+            onChange={(e) => handleExperienceChange(i, e)}
             className="w-full mb-2 px-3 py-2 border rounded"
             placeholder="Department"
           />
@@ -364,7 +372,7 @@ const MultiStepDoctorProfileForm = ({
             name="from"
             type="date"
             value={exp.from}
-            onChange={e => handleExperienceChange(i, e)}
+            onChange={(e) => handleExperienceChange(i, e)}
             className="w-full mb-2 px-3 py-2 border rounded"
             placeholder="From"
             required
@@ -372,8 +380,8 @@ const MultiStepDoctorProfileForm = ({
           <input
             name="to"
             type="date"
-            value={exp.to || ''}
-            onChange={e => handleExperienceChange(i, e)}
+            value={exp.to || ""}
+            onChange={(e) => handleExperienceChange(i, e)}
             className="w-full mb-2 px-3 py-2 border rounded"
             placeholder="To"
           />
@@ -382,9 +390,9 @@ const MultiStepDoctorProfileForm = ({
               type="checkbox"
               name="is_current"
               checked={exp.is_current || false}
-              onChange={e =>
+              onChange={(e) =>
                 handleExperienceChange(i, {
-                  target: { name: 'is_current', value: e.target.checked },
+                  target: { name: "is_current", value: e.target.checked },
                 })
               }
               className="mr-1"
@@ -394,7 +402,7 @@ const MultiStepDoctorProfileForm = ({
           <input
             name="duration_month"
             value={exp.duration_month}
-            onChange={e => handleExperienceChange(i, e)}
+            onChange={(e) => handleExperienceChange(i, e)}
             className="w-full mb-2 px-3 py-2 border rounded"
             placeholder="Duration (months)"
             type="number"
@@ -429,8 +437,8 @@ const MultiStepDoctorProfileForm = ({
         </label>
         <input
           name="standard_fee"
-          value={form.consultation?.standard_fee || ''}
-          onChange={e =>
+          value={form.consultation?.standard_fee || ""}
+          onChange={(e) =>
             setForm({
               ...form,
               consultation: {
@@ -450,8 +458,8 @@ const MultiStepDoctorProfileForm = ({
         </label>
         <input
           name="standard_fee_with_vat"
-          value={form.consultation?.standard_fee_with_vat || ''}
-          onChange={e =>
+          value={form.consultation?.standard_fee_with_vat || ""}
+          onChange={(e) =>
             setForm({
               ...form,
               consultation: {
@@ -472,8 +480,8 @@ const MultiStepDoctorProfileForm = ({
         </label>
         <input
           name="average_consultation_minutes"
-          value={form.consultation?.average_consultation_minutes || ''}
-          onChange={e =>
+          value={form.consultation?.average_consultation_minutes || ""}
+          onChange={(e) =>
             setForm({
               ...form,
               consultation: {

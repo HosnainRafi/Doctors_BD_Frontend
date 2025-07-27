@@ -37,12 +37,12 @@ import Earnings from "../Pages/Dashboard/DoctorDashboard/Earnings";
 import DoctorProfile from "../Pages/Dashboard/DoctorDashboard/DoctorProfile";
 import DoctorAppointmentList from "../Pages/Dashboard/DoctorDashboard/DoctorAppointmentList";
 import NotificationList from "../Pages/Dashboard/UserDashboard/NotificationList";
-import ReviewForm from "../Pages/Dashboard/UserDashboard/ReviewForm";
 import UserProfile from "../Pages/Dashboard/UserDashboard/UserProfile";
 import CompleteDoctorProfilePage from "../Pages/Dashboard/DoctorDashboard/CompleteDoctorProfilePage";
 import DoctorProtectedRoute from "../components/Auth/DoctorProtectedRoute";
 import MedexSearch from "../Pages/SearchMedex/MedexSearch";
 import MedexDetails from "../Pages/SearchMedex/MedexDetails";
+import ReviewForm from "../Pages/Dashboard/UserDashboard/reviewForm";
 export const router = createBrowserRouter([
   {
     path: "/",

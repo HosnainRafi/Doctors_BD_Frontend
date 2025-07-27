@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { FiEdit, FiEye, FiEyeOff, FiPhone, FiMail } from 'react-icons/fi';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -7,32 +9,56 @@ const UserProfile = () => {
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
-  const [notifPrefs, setNotifPrefs] = useState({
-    sms: true,
-    whatsapp: true,
-    email: true,
-  });
+  const [userId, setUserId] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem('userToken');
-  const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
+  const email = token ? JSON.parse(atob(token.split('.')[1])).email : null;
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      if (!email) return;
+      setLoading(true);
+      const res = await fetch(
+        `https://doctors-bd-backend.vercel.app/api/v1/users?email=${encodeURIComponent(
+          email
+        )}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await res.json();
+      if (data?.data?._id) {
+        setUserId(data.data._id);
+      } else {
+        toast.error('User not found.');
+      }
+      setLoading(false);
+    };
+    fetchUserId();
+  }, [email, token]);
 
   useEffect(() => {
     if (!userId) return;
-    fetch(`https://doctors-bd-backend.vercel.app/api/v1/users/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setUser(data.data);
-        setForm(data.data);
-        setNotifPrefs(data.data?.notificationPrefs || notifPrefs);
-      });
+    setLoading(true);
+    const fetchUserData = async () => {
+      const res = await fetch(
+        `https://doctors-bd-backend.vercel.app/api/v1/users/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await res.json();
+      setUser(data.data);
+      setForm(data.data);
+      setLoading(false);
+    };
+    fetchUserData();
   }, [userId, token]);
 
   const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // Save profile changes
   const handleSave = async e => {
     e.preventDefault();
     setMessage('');
@@ -44,7 +70,7 @@ const UserProfile = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ ...form, notificationPrefs: notifPrefs }),
+        body: JSON.stringify(form),
       }
     );
     const data = await res.json();
@@ -52,10 +78,11 @@ const UserProfile = () => {
       setUser(data.data);
       setEditMode(false);
       setMessage('Profile updated!');
-    } else setMessage(data.message || 'Failed to update profile.');
+    } else {
+      setMessage(data.message || 'Failed to update profile.');
+    }
   };
 
-  // Change password
   const handleChangePassword = async e => {
     e.preventDefault();
     setMessage('');
@@ -74,152 +101,148 @@ const UserProfile = () => {
     if (data.success) {
       setPassword('');
       setMessage('Password changed!');
-    } else setMessage(data.message || 'Failed to change password.');
+    } else {
+      setMessage(data.message || 'Failed to change password.');
+    }
   };
 
-  // Notification preferences
-  const handleNotifChange = e => {
-    setNotifPrefs({ ...notifPrefs, [e.target.name]: e.target.checked });
-  };
-
-  if (!user)
-    return <div className="text-gray-500">Loading user profile...</div>;
+  if (loading)
+    return <div className="text-center text-gray-500">Loading profile...</div>;
 
   return (
-    <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-2">Profile & Settings</h3>
-      <div className="bg-gray-50 p-4 rounded">
-        {!editMode ? (
-          <>
-            <div className="mb-2">
-              <span className="font-medium">Name:</span> {user.name}
-            </div>
-            <div className="mb-2">
-              <span className="font-medium">Email:</span> {user.email}
-            </div>
-            <div className="mb-2">
-              <span className="font-medium">Phone:</span> {user.phone}
-            </div>
-            <div className="mb-2">
-              <span className="font-medium">Notifications:</span>
-              <span className="ml-2 text-xs">
-                {notifPrefs.sms && 'SMS '}
-                {notifPrefs.whatsapp && 'WhatsApp '}
-                {notifPrefs.email && 'Email'}
-              </span>
-            </div>
-            <button
-              onClick={() => setEditMode(true)}
-              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 mt-2"
+    <div className="max-w-2xl mx-auto mt-10 bg-white rounded-2xl shadow-md px-8 py-10">
+      <div className="flex flex-col items-center mb-8">
+        <img
+          src="https://i.pravatar.cc/150"
+          alt="Profile"
+          className="w-28 h-28 rounded-full border-4 border-purple-700 object-cover shadow"
+        />
+        <h2 className="mt-4 text-2xl font-semibold text-purple-700">
+          User Profile
+        </h2>
+      </div>
+
+      {!editMode ? (
+        <div className="space-y-6 text-gray-700">
+          <div>
+            <label className="text-sm text-gray-500">Full Name</label>
+            <p className="text-lg font-medium">{user?.name}</p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <FiMail className="text-purple-700" />
+            <a
+              href={`mailto:${user?.email}`}
+              className="hover:underline text-blue-600"
             >
-              Edit Profile
-            </button>
-            <form
-              onSubmit={handleChangePassword}
-              className="flex items-center gap-2 mt-4"
+              {user?.email}
+            </a>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <FiPhone className="text-purple-700" />
+            <a
+              href={`tel:${user?.phone}`}
+              className="hover:underline text-blue-600"
             >
+              {user?.phone}
+            </a>
+          </div>
+
+          <form onSubmit={handleChangePassword} className="space-y-4 pt-4">
+            <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="New Password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="px-3 py-2 border rounded"
+                className="w-full px-4 py-2 pr-10 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                 minLength={6}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(v => !v)}
-                className="text-xs text-gray-500"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-700"
+                aria-label="Toggle password visibility"
               >
-                {showPassword ? 'Hide' : 'Show'}
+                {showPassword ? <FiEyeOff /> : <FiEye />}
               </button>
-              <button
-                type="submit"
-                className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
-              >
-                Change Password
-              </button>
-            </form>
-          </>
-        ) : (
-          <form onSubmit={handleSave}>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-purple-700 text-white py-2 rounded-lg hover:bg-purple-800"
+            >
+              Change Password
+            </button>
+          </form>
+
+          <button
+            onClick={() => setEditMode(true)}
+            className="w-full bg-purple-700 text-white py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-800 mt-4"
+          >
+            <FiEdit /> Edit Profile
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleSave} className="space-y-6">
+          <div>
+            <label className="text-sm text-gray-600">Full Name</label>
             <input
               name="name"
-              value={form.name}
+              value={form.name || ''}
               onChange={handleChange}
-              className="w-full mb-2 px-3 py-2 border rounded"
+              className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500"
               placeholder="Name"
               required
             />
+          </div>
+          <div>
+            <label className="text-sm text-gray-600">Email</label>
             <input
               name="email"
-              value={form.email}
+              value={form.email || ''}
               onChange={handleChange}
-              className="w-full mb-2 px-3 py-2 border rounded"
+              className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500"
               placeholder="Email"
               required
             />
+          </div>
+          <div>
+            <label className="text-sm text-gray-600">Phone</label>
             <input
               name="phone"
-              value={form.phone}
+              value={form.phone || ''}
               onChange={handleChange}
-              className="w-full mb-2 px-3 py-2 border rounded"
+              className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500"
               placeholder="Phone"
               required
             />
-            <div className="mb-2">
-              <span className="font-medium">Notifications:</span>
-              <label className="ml-2 text-xs">
-                <input
-                  type="checkbox"
-                  name="sms"
-                  checked={notifPrefs.sms}
-                  onChange={handleNotifChange}
-                  className="mr-1"
-                />
-                SMS
-              </label>
-              <label className="ml-2 text-xs">
-                <input
-                  type="checkbox"
-                  name="whatsapp"
-                  checked={notifPrefs.whatsapp}
-                  onChange={handleNotifChange}
-                  className="mr-1"
-                />
-                WhatsApp
-              </label>
-              <label className="ml-2 text-xs">
-                <input
-                  type="checkbox"
-                  name="email"
-                  checked={notifPrefs.email}
-                  onChange={handleNotifChange}
-                  className="mr-1"
-                />
-                Email
-              </label>
-            </div>
-            <div className="flex gap-2 mt-2">
-              <button
-                type="button"
-                onClick={() => setEditMode(false)}
-                className="bg-gray-300 px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-              >
-                Save
-              </button>
-            </div>
-          </form>
-        )}
-        {message && <div className="mt-2 text-sm">{message}</div>}
-      </div>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button
+              type="button"
+              onClick={() => setEditMode(false)}
+              className="w-1/2 border border-gray-300 py-2 rounded-lg hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="w-1/2 bg-purple-700 text-white py-2 rounded-lg hover:bg-purple-800"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      )}
+
+      {message && (
+        <div className="mt-6 text-center text-sm text-green-600 font-medium">
+          {message}
+        </div>
+      )}
     </div>
   );
 };

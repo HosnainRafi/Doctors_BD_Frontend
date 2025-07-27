@@ -22,7 +22,7 @@ const MedexSearch = () => {
     const timeout = setTimeout(async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/v1/medex/search?query=${query}`
+          `https://doctors-bd-backend.vercel.app/api/v1/medex/search?query=${query}`
         );
         setResults(res.data.data);
         setSelected(null);
@@ -43,7 +43,7 @@ const MedexSearch = () => {
     }
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/v1/medex/details`,
+        `https://doctors-bd-backend.vercel.app/api/v1/medex/details`,
         {
           params: { url: link },
         }

@@ -1,10 +1,42 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { FaBell, FaCheckCircle, FaExternalLinkAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const NotificationList = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState('');
   const token = localStorage.getItem('userToken');
-  const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
+  const email = token ? JSON.parse(atob(token.split('.')[1])).email : null;
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      if (!email) return;
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `https://doctors-bd-backend.vercel.app/api/v1/users?email=${encodeURIComponent(
+            email
+          )}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = await res.json();
+        if (data?.data?._id) {
+          setUserId(data.data._id);
+        } else {
+          toast.error('User not found for this email.');
+        }
+      } catch (err) {
+        toast.error('Error fetching user info.',err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserId();
+  }, [email, token]);
 
   useEffect(() => {
     if (!userId) return;
@@ -22,7 +54,6 @@ const NotificationList = () => {
       });
   }, [userId, token]);
 
-  // Mark as read
   const handleMarkAsRead = async id => {
     await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/notifications/${id}/read`,
@@ -32,7 +63,7 @@ const NotificationList = () => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({}), // <-- send an empty object
+        body: JSON.stringify({}),
       }
     );
     setNotifications(prev =>
@@ -40,7 +71,6 @@ const NotificationList = () => {
     );
   };
 
-  // Mark all as read
   const handleMarkAllAsRead = async () => {
     await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/notifications/mark-all-read?user_id=${userId}`,
@@ -52,57 +82,100 @@ const NotificationList = () => {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
   };
 
-  if (loading) return <div>Loading notifications...</div>;
+  if (loading)
+    return (
+      <div className="text-center py-20 text-gray-600 text-lg font-medium">
+        Loading notifications...
+      </div>
+    );
 
   return (
-    <div className="mb-6">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold">Notifications</h3>
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <header className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <h2 className="text-3xl font-extrabold text-gray-800 flex items-center gap-2">
+          <FaBell className="text-purple-600" />
+          Notifications
+        </h2>
         <button
           onClick={handleMarkAllAsRead}
-          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs"
+          disabled={notifications.every(n => n.isRead)}
+          className={`px-4 py-2 rounded-md text-white font-semibold text-sm transition ${
+            notifications.every(n => n.isRead)
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-green-600 hover:bg-green-700'
+          }`}
+          title={
+            notifications.every(n => n.isRead)
+              ? 'All notifications are already read'
+              : 'Mark all as read'
+          }
         >
           Mark All as Read
         </button>
-      </div>
-      <ul className="divide-y">
-        {notifications.length === 0 && (
-          <li className="text-gray-400 py-2">No notifications.</li>
-        )}
-        {notifications.map(n => (
-          <li
-            key={n._id}
-            className={`py-2 px-2 flex items-center justify-between ${
-              n.isRead ? 'bg-gray-50' : 'bg-yellow-50'
-            }`}
-          >
-            <div>
-              <div className="font-medium">{n.message}</div>
-              <div className="text-xs text-gray-400">
-                {new Date(n.createdAt).toLocaleString()}
-              </div>
-            </div>
-            <div className="flex gap-2">
-              {!n.isRead && (
-                <button
-                  onClick={() => handleMarkAsRead(n._id)}
-                  className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
+      </header>
+
+      {notifications.length === 0 ? (
+        <p className="text-center text-gray-500 text-lg py-20">
+          No notifications to show.
+        </p>
+      ) : (
+        <ul className="space-y-4">
+          {notifications.map(n => (
+            <li
+              key={n._id}
+              className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-5 rounded-xl border transition-shadow ${
+                n.isRead
+                  ? 'bg-white border-gray-200 shadow-sm hover:shadow-md'
+                  : 'bg-purple-50 border-purple-300 shadow-lg hover:shadow-xl'
+              }`}
+              title={n.isRead ? 'Read notification' : 'Unread notification'}
+            >
+              <div className="flex-1">
+                <p
+                  className={`font-medium text-gray-800 ${
+                    n.isRead ? '' : 'font-semibold'
+                  }`}
                 >
-                  Mark as Read
-                </button>
-              )}
-              {n.link && (
-                <a
-                  href={n.link}
-                  className="bg-purple-600 text-white px-2 py-1 rounded text-xs hover:bg-purple-700"
+                  {n.message}
+                </p>
+                <time
+                  dateTime={n.createdAt}
+                  className="text-xs text-gray-400 mt-1 block"
+                >
+                  {new Date(n.createdAt).toLocaleString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </time>
+              </div>
+
+              <div className="flex gap-2 flex-shrink-0">
+                {!n.isRead && (
+                  <button
+                    onClick={() => handleMarkAsRead(n._id)}
+                    className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition"
+                    aria-label="Mark as read"
+                  >
+                    <FaCheckCircle className="inline mr-1 -mt-0.5" />
+                    Mark as Read
+                  </button>
+                )}
+                <Link
+                  to={'/dashboard/user/appointment'}
+                  className="bg-purple-600 text-white px-3 py-1 rounded-md text-sm hover:bg-purple-700 transition flex items-center gap-1"
+                  aria-label="View notification details"
                 >
                   View
-                </a>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+                  <FaExternalLinkAlt className="text-xs" />
+                </Link>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

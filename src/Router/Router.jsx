@@ -36,68 +36,71 @@ import Reviews from "../Pages/Dashboard/DoctorDashboard/Reviews";
 import Earnings from "../Pages/Dashboard/DoctorDashboard/Earnings";
 import DoctorProfile from "../Pages/Dashboard/DoctorDashboard/DoctorProfile";
 import DoctorAppointmentList from "../Pages/Dashboard/DoctorDashboard/DoctorAppointmentList";
+import ReviewForm from "../Pages/Dashboard/UserDashboard/reviewForm";
+import NotificationList from './../Pages/Dashboard/UserDashboard/NotificationList';
+import UserProfile from './../Pages/Dashboard/UserDashboard/UserProfile';
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <Home />,
       },
       {
-        path: "/chat-with-assistant",
+        path: '/chat-with-assistant',
         element: <ChatWithAssistant />,
       },
       {
-        path: "/find-doctor-by-district",
+        path: '/find-doctor-by-district',
         element: <FindDoctorByDistrict />,
       },
       {
-        path: "/find-doctor-by-hospital",
+        path: '/find-doctor-by-hospital',
         element: <FindDoctorByHospital />,
       },
       {
-        path: "/find-doctor-by-category",
+        path: '/find-doctor-by-category',
         element: <FindDoctorByCategory />,
       },
       {
-        path: "/doctor/:slug",
+        path: '/doctor/:slug',
         element: <DoctorDetails />,
       },
       {
-        path: "/all-doctors",
+        path: '/all-doctors',
         element: <AllDoctors />,
       },
       {
-        path: "/contact",
+        path: '/contact',
         element: <Contact />,
       },
       {
-        path: "/about-us",
+        path: '/about-us',
         element: <AboutUs />,
       },
       {
-        path: "/team",
+        path: '/team',
         element: <DevTeam />,
       },
       {
-        path: "/article/:id",
+        path: '/article/:id',
         element: <ArticleDetailPage />,
       },
       {
-        path: "/doctor/dashboard",
+        path: '/doctor/dashboard',
         element: <DoctorDashboard />,
       },
       {
-        path: "/book-appointment",
+        path: '/book-appointment',
         element: <BookAppointment />,
       },
     ],
   },
   {
-    path: "/login",
+    path: '/login',
     element: <AuthLayout />,
     children: [
       {
@@ -105,13 +108,13 @@ export const router = createBrowserRouter([
         element: <UserLogin />,
       },
       {
-        path: "doctor",
+        path: 'doctor',
         element: <DoctorLogin />,
       },
     ],
   },
   {
-    path: "/register",
+    path: '/register',
     element: <AuthLayout />,
     children: [
       {
@@ -119,13 +122,13 @@ export const router = createBrowserRouter([
         element: <UserRegister />,
       },
       {
-        path: "doctor",
+        path: 'doctor',
         element: <DoctorRegister />,
       },
     ],
   },
   {
-    path: "/dashboard/user",
+    path: '/dashboard/user',
     element: <DashboardUserLayout />,
     children: [
       {
@@ -133,17 +136,37 @@ export const router = createBrowserRouter([
         element: <UserDashboard />,
       },
       {
-        path: "patients",
+        path: 'patients',
         element: <PatientList />,
       },
       {
-        path: "appointment",
+        path: 'appointment',
         element: <AppointmentList />,
+      },
+      {
+        path: 'prescriptions',
+        element: <PrescriptionList />,
+      },
+      {
+        path: 'followups',
+        element: <FollowUpList />,
+      },
+      {
+        path: 'notifications',
+        element: <NotificationList />,
+      },
+      {
+        path: 'reviews',
+        element: <ReviewForm />,
+      },
+      {
+        path: 'profile',
+        element: <UserProfile />,
       },
     ],
   },
   {
-    path: "/dashboard/doctor",
+    path: '/dashboard/doctor',
     element: <DashboardDoctorLayout />,
     children: [
       {
@@ -151,53 +174,53 @@ export const router = createBrowserRouter([
         element: <DoctorDashboard />,
       },
       {
-        path: "appointment",
+        path: 'appointment',
         element: <DoctorAppointmentList />,
       },
       {
-        path: "prescriptions",
+        path: 'prescriptions',
         element: <PrescriptionList />,
       },
       {
-        path: "followups",
+        path: 'followups',
         element: <FollowUpList />,
       },
       {
-        path: "availability",
+        path: 'availability',
         element: <SetAvailabilityForm />,
       },
       {
-        path: "completed-appointments",
+        path: 'completed-appointments',
         element: <CompletedAppointments />,
       },
       {
-        path: "patient-history",
+        path: 'patient-history',
         element: <PatientHistory />,
       },
       {
-        path: "reviews",
+        path: 'reviews',
         element: <Reviews />,
       },
       {
-        path: "earnings",
+        path: 'earnings',
         element: <Earnings />,
       },
       {
-        path: "profile",
+        path: 'profile',
         element: <DoctorProfile />,
       },
     ],
   },
   {
-    path: "/doctor/complete-profile",
+    path: '/doctor/complete-profile',
     element: <CompleteProfilePage />,
   },
   {
-    path: "/verify-email-for-user",
+    path: '/verify-email-for-user',
     element: <VerifyEmailPageForUser />,
   },
   {
-    path: "/verify-email-for-doctor",
+    path: '/verify-email-for-doctor',
     element: <VerifyEmailPageForDoctor />,
   },
 ]);

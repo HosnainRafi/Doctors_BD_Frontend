@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaHome, FaUser, FaSignOutAlt, FaBookMedical } from 'react-icons/fa';
+import { FaHome, FaUser, FaSignOutAlt, FaBookMedical, FaPrescriptionBottleAlt, FaCalendarCheck, FaBell, FaCommentDots } from 'react-icons/fa';
 import { MdSpaceDashboard } from 'react-icons/md';
 
 const UserDashboardSidebar = ({ isOpen, onClose }) => {
@@ -90,6 +90,61 @@ const UserDashboardSidebar = ({ isOpen, onClose }) => {
           >
             <FaBookMedical />
             Appointment
+          </Link>
+          <Link
+            to="/dashboard/user/prescriptions"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/prescriptions')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaPrescriptionBottleAlt />
+            Prescriptions
+          </Link>
+          <Link
+            to="/dashboard/user/followups"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/followups')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaCalendarCheck />
+            Follow Up
+          </Link>
+          <Link
+            to="/dashboard/user/notifications"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/notifications')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaBell />
+            Notifications
+          </Link>
+          <Link
+            to="/dashboard/user/reviews"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/reviews')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaCommentDots />
+            Reviews
+          </Link>
+          <Link
+            to="/dashboard/user/profile"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/profile')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaUser />
+            Profile
           </Link>
         </div>
 

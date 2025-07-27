@@ -38,7 +38,6 @@ const PatientList = () => {
           }
         );
         const data = await res.json();
-        console.log(data);
         if (data && data.data && data.data._id) {
           setUserId(data.data._id);
         } else {
@@ -52,8 +51,6 @@ const PatientList = () => {
     };
     fetchUserId();
   }, [email, token]);
-  console.log(userId);
-  // 2. When userId is set, fetch patients
   useEffect(() => {
     const fetchPatients = async () => {
       if (!userId) {

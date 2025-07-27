@@ -142,6 +142,26 @@ export const router = createBrowserRouter([
         path: "appointment",
         element: <AppointmentList />,
       },
+      {
+        path: "prescriptions",
+        element: <PrescriptionList />,
+      },
+      {
+        path: "followups",
+        element: <FollowUpList />,
+      },
+      {
+        path: "notifications",
+        element: <NotificationList />,
+      },
+      {
+        path: "reviews",
+        element: <ReviewForm />,
+      },
+      {
+        path: "profile",
+        element: <UserProfile />,
+      },
     ],
   },
   {

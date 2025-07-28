@@ -44,7 +44,7 @@ const DoctorDashboardSidebar = ({ isOpen, onClose }) => {
       )}
 
       <div
-        className={`fixed top-0 left-0 h-full w-[300px] bg-white z-40 shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out
+        className={`fixed top-0 left-0 h-full w-[320px] bg-white z-40 shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out
         ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0 md:static md:shadow-none`}
@@ -134,7 +134,7 @@ const DoctorDashboardSidebar = ({ isOpen, onClose }) => {
           <Link
             to="/dashboard/doctor/completed-appointments"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
-              isActive('/dashboard/doctor/appointments')
+              isActive('/dashboard/doctor/completed-appointments')
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
             }`}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { FaDownload, FaRegEye, FaTimes, FaSpinner } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
@@ -88,7 +88,7 @@ const DoctorPrescriptionList = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2   gap-6">
         {prescriptions.map(p => (
           <div
             key={p._id}

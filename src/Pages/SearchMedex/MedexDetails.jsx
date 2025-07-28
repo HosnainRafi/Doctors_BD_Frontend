@@ -11,10 +11,10 @@ const MedexDetails = () => {
   useEffect(() => {
     if (!url) return;
     axios
-      .get('https://doctors-bd-backend.vercel.app/api/v1/medex/details', {
+      .get("https://doctors-bd-backend.vercel.app/api/v1/medex/details", {
         params: { url },
       })
-      .then(res => setData(res.data.data));
+      .then((res) => setData(res.data.data));
   }, [url]);
 
   if (!url) return <div>No medicine selected.</div>;
@@ -57,6 +57,7 @@ const MedexDetails = () => {
       </div>
       {[
         "indications",
+        "pharmacology",
         "mode_of_action",
         "dosage",
         "interaction",

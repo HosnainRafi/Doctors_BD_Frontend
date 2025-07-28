@@ -18,6 +18,7 @@ const FollowUpList = () => {
 
   const token = localStorage.getItem('userToken');
   const email = token ? JSON.parse(atob(token.split('.')[1])).email : null;
+  console.log(email)
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -1,30 +1,29 @@
-import React, { useState } from "react";
-import PrescriptionList from "./PrescriptionList";
-import FollowUpList from "./FollowUpList";
-import SetAvailabilityForm from "./SetAvailabilityForm";
-import DoctorProfile from "./DoctorProfile";
-import Reviews from "./Reviews";
-import PrescriptionForm from "./PrescriptionForm";
-import Earnings from "./Earnings";
-import PatientHistory from "./PatientHistory";
-import CompletedAppointments from "./CompletedAppointments";
-import AppointmentList from "../UserDashboard/AppointmentList";
-import DoctorAppointmentList from "./DoctorAppointmentList";
+import React, { useState } from 'react';
+import SetAvailabilityForm from './SetAvailabilityForm';
+import DoctorProfile from './DoctorProfile';
+import Reviews from './Reviews';
+import PrescriptionForm from './PrescriptionForm';
+import Earnings from './Earnings';
+import PatientHistory from './PatientHistory';
+import CompletedAppointments from './CompletedAppointments';
+import DoctorAppointmentList from './DoctorAppointmentList';
+import DoctorFollowUpList from './DoctorFollowUpList';
+import DoctorPrescriptionList from './DoctorPrescriptionList';
 
 const TABS = [
-  { key: "appointments", label: "Appointments" },
-  { key: "prescriptions", label: "Prescriptions" },
-  { key: "followups", label: "Follow-Ups" },
-  { key: "completedAppointmens", label: "Completed-Appointments" },
-  { key: "availability", label: "Availability" },
-  { key: "profile", label: "Profile" },
-  { key: "reviews", label: "Reviews" },
-  { key: "patientHistory", label: "Patient History" },
-  { key: "earnings", label: "Earnings" },
+  { key: 'appointments', label: 'Appointments' },
+  { key: 'prescriptions', label: 'Prescriptions' },
+  { key: 'followups', label: 'Follow-Ups' },
+  { key: 'completedAppointmens', label: 'Completed-Appointments' },
+  { key: 'availability', label: 'Availability' },
+  { key: 'profile', label: 'Profile' },
+  { key: 'reviews', label: 'Reviews' },
+  { key: 'patientHistory', label: 'Patient History' },
+  { key: 'earnings', label: 'Earnings' },
 ];
 
 const DoctorDashboard = () => {
-  const [activeTab, setActiveTab] = useState("appointments");
+  const [activeTab, setActiveTab] = useState('appointments');
   const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   return (
@@ -34,14 +33,14 @@ const DoctorDashboard = () => {
           Doctor Dashboard
         </h2>
         <div className="flex space-x-4 mb-6 justify-center">
-          {TABS.map((tab) => (
+          {TABS.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2 rounded ${
                 activeTab === tab.key
-                  ? "bg-purple-700 text-white"
-                  : "bg-white text-purple-700 border border-purple-700"
+                  ? 'bg-purple-700 text-white'
+                  : 'bg-white text-purple-700 border border-purple-700'
               }`}
             >
               {tab.label}
@@ -49,7 +48,7 @@ const DoctorDashboard = () => {
           ))}
         </div>
         <div>
-          {activeTab === "appointments" && (
+          {activeTab === 'appointments' && (
             <>
               <DoctorAppointmentList
                 onCreatePrescription={setSelectedAppointment}
@@ -63,14 +62,14 @@ const DoctorDashboard = () => {
               )}
             </>
           )}
-          {activeTab === "prescriptions" && <PrescriptionList />}
-          {activeTab === "followups" && <FollowUpList />}
-          {activeTab === "availability" && <SetAvailabilityForm />}
-          {activeTab === "completedAppointmens" && <CompletedAppointments />}
-          {activeTab === "profile" && <DoctorProfile />}
-          {activeTab === "reviews" && <Reviews />}
-          {activeTab === "patientHistory" && <PatientHistory />}
-          {activeTab === "earnings" && <Earnings />}
+          {activeTab === 'prescriptions' && <DoctorPrescriptionList />}
+          {activeTab === 'followups' && <DoctorFollowUpList />}
+          {activeTab === 'availability' && <SetAvailabilityForm />}
+          {activeTab === 'completedAppointmens' && <CompletedAppointments />}
+          {activeTab === 'profile' && <DoctorProfile />}
+          {activeTab === 'reviews' && <Reviews />}
+          {activeTab === 'patientHistory' && <PatientHistory />}
+          {activeTab === 'earnings' && <Earnings />}
         </div>
       </div>
     </div>

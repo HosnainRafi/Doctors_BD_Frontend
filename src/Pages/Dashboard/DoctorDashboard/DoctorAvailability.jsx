@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FiPlus, FiTrash2, FiWifiOff, FiWifi } from 'react-icons/fi';
 
-const SetAvailabilityForm = () => {
+const DoctorAvailability = () => {
   const [slots, setSlots] = useState([{ date: '', time: '' }]);
   const [blockedSlots, setBlockedSlots] = useState([{ date: '', time: '' }]);
   const [isOnline, setIsOnline] = useState(false);
@@ -232,4 +232,4 @@ const SetAvailabilityForm = () => {
   );
 };
 
-export default SetAvailabilityForm;
+export default DoctorAvailability;

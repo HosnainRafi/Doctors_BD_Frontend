@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FiSearch, FiCalendar, FiX, FiUser, FiClipboard } from 'react-icons/fi';
 
-const CompletedAppointments = () => {
+const DoctorCompletedAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState('');
@@ -320,4 +320,4 @@ const CompletedAppointments = () => {
   );
 };
 
-export default CompletedAppointments;
+export default DoctorCompletedAppointments;

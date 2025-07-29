@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const Reviews = () => {
+const DoctorReviewsToPatients = () => {
   const [reviews, setReviews] = useState([]);
   const [reply, setReply] = useState('');
   const [replyId, setReplyId] = useState(null);
@@ -164,4 +164,4 @@ const Reviews = () => {
   );
 };
 
-export default Reviews;
+export default DoctorReviewsToPatients;

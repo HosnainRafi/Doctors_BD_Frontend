@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import DoctorDashboardSidebar from './../Shared/Navbar/DoctorDashboardSidebar';
+import DoctorDashboardSidebar from '../Shared/Navbar/DoctorDashboardSidebar';
 
-const DashboardDoctorLayout = () => {
+const DoctorDashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -32,4 +32,4 @@ const DashboardDoctorLayout = () => {
   );
 };
 
-export default DashboardDoctorLayout;
+export default DoctorDashboardLayout;

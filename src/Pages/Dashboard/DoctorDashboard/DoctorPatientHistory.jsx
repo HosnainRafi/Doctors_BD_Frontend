@@ -4,7 +4,7 @@ import 'react-tabs/style/react-tabs.css';
 import { FaUser } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 
-const PatientHistory = () => {
+const DoctorPatientHistory = () => {
   const [patients, setPatients] = useState([]);
   const [selectedPatientIndex, setSelectedPatientIndex] = useState(0);
   const [appointments, setAppointments] = useState([]);
@@ -36,7 +36,7 @@ const PatientHistory = () => {
           fetchPatientHistory(patientArray[0]);
         }
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctorId, doctorToken]);
 
   const fetchPatientHistory = patient => {
@@ -223,4 +223,4 @@ const PatientHistory = () => {
   );
 };
 
-export default PatientHistory;
+export default DoctorPatientHistory;

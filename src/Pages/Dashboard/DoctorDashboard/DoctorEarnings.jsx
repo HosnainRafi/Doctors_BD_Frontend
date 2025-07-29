@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const Earnings = () => {
+const DoctorEarnings = () => {
   const [earnings, setEarnings] = useState({
     total: 0,
     count: 0,
@@ -93,4 +93,4 @@ const Earnings = () => {
   );
 };
 
-export default Earnings;
+export default DoctorEarnings;

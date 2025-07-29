@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { FaBell, FaCheckCircle, FaExternalLinkAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
-const NotificationList = () => {
+const UserNotificationList = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState('');
@@ -180,4 +180,4 @@ const NotificationList = () => {
   );
 };
 
-export default NotificationList;
+export default UserNotificationList;

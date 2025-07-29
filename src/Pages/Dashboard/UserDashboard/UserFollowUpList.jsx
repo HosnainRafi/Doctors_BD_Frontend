@@ -10,7 +10,7 @@ import {
 } from 'react-icons/fa';
 import { MdOutlineEmail } from 'react-icons/md';
 
-const FollowUpList = () => {
+const UserFollowUpList = () => {
   const [followUps, setFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reminderMsg, setReminderMsg] = useState('');
@@ -217,4 +217,4 @@ const FollowUpList = () => {
   );
 };
 
-export default FollowUpList;
+export default UserFollowUpList;

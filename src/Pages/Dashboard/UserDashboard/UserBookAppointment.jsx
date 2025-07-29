@@ -18,7 +18,7 @@ import {
   FaRegFileAlt,
 } from 'react-icons/fa';
 
-const BookAppointment = () => {
+const UserBookAppointment = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get('userId');
   const [patients, setPatients] = useState([]);
@@ -240,4 +240,4 @@ const BookAppointment = () => {
   );
 };
 
-export default BookAppointment;
+export default UserBookAppointment;

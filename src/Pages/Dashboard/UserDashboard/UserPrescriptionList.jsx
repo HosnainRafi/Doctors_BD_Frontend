@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { ImSpinner10 } from 'react-icons/im';
 
-const PrescriptionList = () => {
+const UserPrescriptionList = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [userId, setUserId] = useState('');
@@ -282,4 +282,4 @@ const PrescriptionList = () => {
   );
 };
 
-export default PrescriptionList;
+export default UserPrescriptionList;

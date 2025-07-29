@@ -9,7 +9,7 @@ import {
 import { ImSpinner10 } from "react-icons/im";
 import toast, { Toaster } from "react-hot-toast";
 
-const AppointmentList = () => {
+const UserAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reminderMsg, setReminderMsg] = useState("");
@@ -461,4 +461,4 @@ const AppointmentList = () => {
   );
 };
 
-export default AppointmentList;
+export default UserAppointmentList;

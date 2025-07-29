@@ -53,7 +53,7 @@ const ReviewCard = ({ review, onEdit, onDelete }) => (
   </div>
 );
 
-const ReviewForm = () => {
+const UserReviewToDoctor = () => {
   const [appointments, setAppointments] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [form, setForm] = useState({ doctor_id: '', rating: 5, comment: '' });
@@ -378,4 +378,4 @@ const ReviewForm = () => {
   );
 };
 
-export default ReviewForm;
+export default UserReviewToDoctor;

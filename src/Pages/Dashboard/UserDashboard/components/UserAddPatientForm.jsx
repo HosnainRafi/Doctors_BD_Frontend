@@ -18,7 +18,7 @@ function calculateAge(dob) {
   return `${age} years`;
 }
 
-const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
+const UserAddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
   console.log(onPatientAdded, userId, editPatient);
   const [form, setForm] = useState({
     name: "",
@@ -256,4 +256,4 @@ const AddPatientForm = ({ onPatientAdded, userId, editPatient }) => {
   );
 };
 
-export default AddPatientForm;
+export default UserAddPatientForm;

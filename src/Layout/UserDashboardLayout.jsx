@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import UserDashboardSidebar from '../Shared/Navbar/UserDashboardSidebar';
 import { FaBars, FaTimes } from 'react-icons/fa';
 
-const DashboardUserLayout = () => {
+const UserDashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -25,7 +25,6 @@ const DashboardUserLayout = () => {
           </button>
         </div>
 
-
         <div className="flex-1 overflow-auto p-4 bg-gray-100">
           <Outlet />
         </div>
@@ -34,4 +33,4 @@ const DashboardUserLayout = () => {
   );
 };
 
-export default DashboardUserLayout;
+export default UserDashboardLayout;

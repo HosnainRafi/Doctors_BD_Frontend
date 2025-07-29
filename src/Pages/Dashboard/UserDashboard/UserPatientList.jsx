@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
-import AddPatientForm from "./AddPatientForm";
+import React, { useEffect, useState } from 'react';
 import {
   FaUserEdit,
   FaTrash,
   FaCheck,
   FaPlus,
   FaUserShield,
-} from "react-icons/fa";
-import toast, { Toaster } from "react-hot-toast";
-import { ImSpinner10 } from "react-icons/im";
+} from 'react-icons/fa';
+import toast, { Toaster } from 'react-hot-toast';
+import { ImSpinner10 } from 'react-icons/im';
+import UserAddPatientForm from './components/UserAddPatientForm';
 
-const PatientList = () => {
+const UserPatientList = () => {
   const [patients, setPatients] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
   const [editPatient, setEditPatient] = useState(null);
   const [loading, setLoading] = useState(false);
   const [defaultPatientId, setDefaultPatientId] = useState(
-    localStorage.getItem("defaultPatientId") || ""
+    localStorage.getItem('defaultPatientId') || ''
   );
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState('');
 
-  const token = localStorage.getItem("userToken");
-  const email = token ? JSON.parse(atob(token.split(".")[1])).email : null;
+  const token = localStorage.getItem('userToken');
+  const email = token ? JSON.parse(atob(token.split('.')[1])).email : null;
 
   // 1. On mount, get userId by email
   useEffect(() => {
@@ -41,10 +41,10 @@ const PatientList = () => {
         if (data && data.data && data.data._id) {
           setUserId(data.data._id);
         } else {
-          toast.error("User not found for this email.");
+          toast.error('User not found for this email.');
         }
       } catch (err) {
-        toast.error("Error fetching user info.", err);
+        toast.error('Error fetching user info.', err);
       } finally {
         setLoading(false);
       }
@@ -70,7 +70,7 @@ const PatientList = () => {
         const data = await res.json();
         setPatients(data.data || []);
       } catch (error) {
-        toast.error("Error fetching patients.", error);
+        toast.error('Error fetching patients.', error);
       } finally {
         setLoading(false);
       }
@@ -78,32 +78,32 @@ const PatientList = () => {
     fetchPatients();
   }, [showAdd, editPatient, userId, token]);
 
-  const handleSetDefault = (id) => {
+  const handleSetDefault = id => {
     setDefaultPatientId(id);
-    localStorage.setItem("defaultPatientId", id);
-    toast.success("✅ Default patient set!");
+    localStorage.setItem('defaultPatientId', id);
+    toast.success('✅ Default patient set!');
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this patient?"))
+  const handleDelete = async id => {
+    if (!window.confirm('Are you sure you want to delete this patient?'))
       return;
 
     try {
       await fetch(
         `https://doctors-bd-backend.vercel.app/api/v1/patients/${id}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setPatients((prev) => prev.filter((p) => p._id !== id));
+      setPatients(prev => prev.filter(p => p._id !== id));
       if (defaultPatientId === id) {
-        setDefaultPatientId("");
-        localStorage.removeItem("defaultPatientId");
+        setDefaultPatientId('');
+        localStorage.removeItem('defaultPatientId');
       }
-      toast.success("🗑️ Patient deleted successfully");
+      toast.success('🗑️ Patient deleted successfully');
     } catch (error) {
-      toast.error(error.message || "Failed to delete patient");
+      toast.error(error.message || 'Failed to delete patient');
     }
   };
 
@@ -118,12 +118,12 @@ const PatientList = () => {
         <button
           className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg transition flex items-center gap-2"
           onClick={() => {
-            setShowAdd((v) => !v);
+            setShowAdd(v => !v);
             setEditPatient(null);
           }}
         >
           {showAdd ? (
-            "Close"
+            'Close'
           ) : (
             <>
               <FaPlus /> Add Patient
@@ -134,7 +134,7 @@ const PatientList = () => {
 
       {showAdd && (
         <div className="mb-4">
-          <AddPatientForm
+          <UserAddPatientForm
             onPatientAdded={() => setShowAdd(false)}
             userId={userId}
           />
@@ -142,7 +142,7 @@ const PatientList = () => {
       )}
       {editPatient && (
         <div className="mb-4">
-          <AddPatientForm
+          <UserAddPatientForm
             editPatient={editPatient}
             onPatientAdded={() => setEditPatient(null)}
             userId={userId}
@@ -161,7 +161,7 @@ const PatientList = () => {
               No patients found for this user.
             </div>
           )}
-          {patients.map((p) => (
+          {patients.map(p => (
             <div
               key={p._id}
               className="bg-gray-50 border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow transition"
@@ -186,8 +186,8 @@ const PatientList = () => {
                     onClick={() => handleSetDefault(p._id)}
                     className={`px-4 py-2 text-sm rounded-lg transition flex items-center gap-2 ${
                       defaultPatientId === p._id
-                        ? "bg-green-600 text-white cursor-not-allowed"
-                        : "bg-gray-200 text-gray-700 hover:bg-green-200"
+                        ? 'bg-green-600 text-white cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-700 hover:bg-green-200'
                     }`}
                     disabled={defaultPatientId === p._id}
                   >
@@ -218,4 +218,4 @@ const PatientList = () => {
   );
 };
 
-export default PatientList;
+export default UserPatientList;

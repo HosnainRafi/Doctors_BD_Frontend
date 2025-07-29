@@ -8,23 +8,24 @@ import {
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { ImSpinner10 } from 'react-icons/im';
-import UserAddPatientForm from './components/UserAddPatientForm';
 import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
 import axiosCommon from '../../../api/axiosCommon';
 import DeleteConfirmModal from '../../../Modal/DeleteConfirmModal';
+import UserAddPatientModal from '../../../Modal/UserAddPatientModal';
 
 const UserPatientList = () => {
   const [patients, setPatients] = useState([]);
-  const [showAdd, setShowAdd] = useState(false);
-  const [editPatient, setEditPatient] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [refetchData, setRefetchData] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editPatient, setEditPatient] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [patientToDelete, setPatientToDelete] = useState(null);
   const [defaultPatientId, setDefaultPatientId] = useState(
     localStorage.getItem('defaultPatientId') || ''
   );
   const [userId, setUserId] = useState('');
 
+  // Fetch userId and patients on mount and after updates
   useEffect(() => {
     const fetchUserIdAndPatients = async () => {
       setLoading(true);
@@ -44,7 +45,27 @@ const UserPatientList = () => {
     };
 
     fetchUserIdAndPatients();
-  }, [showAdd, editPatient, refetchData]);
+  }, [modalOpen, deleteModalOpen]); // Refresh list after modal close or delete
+
+  const openAddModal = () => {
+    setEditPatient(null);
+    setModalOpen(true);
+  };
+
+  const openEditModal = patient => {
+    setEditPatient(patient);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setEditPatient(null);
+    setModalOpen(false);
+  };
+
+  const handlePatientSaved = () => {
+    // Close modal and reload happens from useEffect watching modalOpen change
+    closeModal();
+  };
 
   const handleSetDefault = id => {
     setDefaultPatientId(id);
@@ -52,15 +73,26 @@ const UserPatientList = () => {
     toast.success('Default patient set!');
   };
 
-  const handleConfirmDelete = async id => {
+  const openDeleteModal = patient => {
+    setPatientToDelete(patient);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setPatientToDelete(null);
+    setDeleteModalOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!patientToDelete) return;
     try {
-      await axiosCommon.delete(`/patients/${id}`);
-      setRefetchData(!refetchData);
-      if (defaultPatientId === id) {
+      await axiosCommon.delete(`/patients/${patientToDelete._id}`);
+      toast.success('Patient deleted successfully');
+      if (defaultPatientId === patientToDelete._id) {
         setDefaultPatientId('');
         localStorage.removeItem('defaultPatientId');
       }
-      toast.success('Patient deleted successfully');
+      closeDeleteModal();
     } catch (error) {
       toast.error(error.message || 'Failed to delete patient');
     }
@@ -73,41 +105,14 @@ const UserPatientList = () => {
           <FaUserShield className="text-purple-600" /> My Patients
         </h3>
         <button
+          onClick={openAddModal}
           className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg transition flex items-center gap-2"
-          onClick={() => {
-            setShowAdd(addForm => !addForm);
-            setEditPatient(null);
-          }}
         >
-          {showAdd ? (
-            'Close'
-          ) : (
-            <>
-              <FaPlus /> Add Patient
-            </>
-          )}
+          <FaPlus /> Add Patient
         </button>
       </div>
 
-      {showAdd && (
-        <div className="mb-4">
-          <UserAddPatientForm
-            onPatientAdded={() => setShowAdd(false)}
-            userId={userId}
-          />
-        </div>
-      )}
-      {editPatient && (
-        <div className="mb-4">
-          <UserAddPatientForm
-            editPatient={editPatient}
-            onPatientAdded={() => setEditPatient(null)}
-            userId={userId}
-          />
-        </div>
-      )}
-
-      {loading && patients.length === 0 ? (
+      {loading ? (
         <div className="flex justify-center items-center h-64">
           <ImSpinner10 size={40} className="animate-spin text-purple-600" />
         </div>
@@ -154,30 +159,40 @@ const UserPatientList = () => {
                     Set Default
                   </button>
                   <button
-                    onClick={() => setEditPatient(patient)}
+                    onClick={() => openEditModal(patient)}
                     className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
                   >
                     <FaUserEdit />
                     Edit
                   </button>
                   <button
-                    onClick={() => setIsOpen(true)}
+                    onClick={() => openDeleteModal(patient)}
                     className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
                   >
                     <FaTrash />
                     Delete
                   </button>
-                  <DeleteConfirmModal
-                    isOpen={isOpen}
-                    onClose={() => setIsOpen(false)}
-                    onConfirm={() => handleConfirmDelete(patient._id)}
-                  />
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      <UserAddPatientModal
+        isOpen={modalOpen}
+        onClose={closeModal}
+        onPatientSaved={handlePatientSaved}
+        userId={userId}
+        editPatient={editPatient}
+      />
+
+      <DeleteConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleConfirmDelete}
+        message={`Are you sure you want to delete patient "${patientToDelete?.name}"?`}
+      />
     </div>
   );
 };

@@ -103,14 +103,6 @@ export const router = createBrowserRouter([
         path: '/article/:id',
         element: <ArticleDetailPage />,
       },
-      {
-        path: '/doctor/dashboard',
-        element: <DoctorDashboard />,
-      },
-      {
-        path: '/book-appointment',
-        element: <BookAppointment />,
-      },
     ],
   },
   {
@@ -156,6 +148,10 @@ export const router = createBrowserRouter([
       {
         path: 'appointment',
         element: <AppointmentList />,
+      },
+      {
+        path: 'book-appointment',
+        element: <BookAppointment />,
       },
       {
         path: 'prescriptions',

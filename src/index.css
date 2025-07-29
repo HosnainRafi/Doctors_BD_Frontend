@@ -4,3 +4,15 @@
 body {
   @apply font-sans;
 }
+.react-datepicker-wrapper {
+  display: flex !important;
+}
+.MuiPickersSectionList-root{
+  height:50px;
+  display:flex;
+  align-items:center;
+  border-radius:14px;
+}
+.MuiPickersTextField-root{
+  display:flex !important;
+}

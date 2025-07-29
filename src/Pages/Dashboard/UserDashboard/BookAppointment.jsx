@@ -1,97 +1,153 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useSearchParams } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import {
+  LocalizationProvider,
+  TimePicker,
+} from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
+import {
+  FaUserInjured,
+  FaUserMd,
+  FaCalendarAlt,
+  FaClock,
+  FaRegFileAlt,
+} from 'react-icons/fa';
 
 const BookAppointment = () => {
   const [searchParams] = useSearchParams();
-  const userId = searchParams.get("userId");
-
-  // Use userId in your component
-  console.log("User ID:", userId);
+  const userId = searchParams.get('userId');
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [form, setForm] = useState({
-    patient_id: "",
-    doctor_id: "",
-    registered_doctor_id: "",
-    date: "",
-    time: "",
-    reason: "",
+    patient_id: '',
+    doctor_id: '',
+    registered_doctor_id: '',
+    date: new Date(),
+    time: new Date(),
+    reason: '',
   });
-  const [message, setMessage] = useState("");
-  const token = localStorage.getItem("userToken");
-  //const userId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+  const navigate = useNavigate();
+  const token = localStorage.getItem('userToken');
 
   useEffect(() => {
-    fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+    const fetchData = async () => {
+      try {
+        const patientRes = await fetch(
+          `https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const patientData = await patientRes.json();
+        setPatients(patientData.data || []);
+
+        const doctorRes = await fetch(
+          `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors`
+        );
+        const doctorData = await doctorRes.json();
+        setDoctors(doctorData.data || []);
+      } catch (err) {
+        toast.error(err.message);
       }
-    )
-      .then((res) => res.json())
-      .then((data) => setPatients(data.data || []));
-    fetch(`https://doctors-bd-backend.vercel.app/api/v1/registered-doctors`)
-      .then((res) => res.json())
-      .then((data) => setDoctors(data.data || []));
+    };
+
+    if (userId && token) fetchData();
   }, [userId, token]);
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleDateChange = (date) => {
+    setForm({ ...form, date });
+  };
+
+  const handleTimeChange = (newTime) => {
+    setForm({ ...form, time: newTime });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
-    const body = { ...form, user_id: userId };
 
-    // Only send one doctor field
-    if (body.registered_doctor_id) {
-      delete body.doctor_id;
-    } else if (body.doctor_id) {
-      delete body.registered_doctor_id;
-    }
+    const timeFormatted = form.time
+      ? `${form.time.getHours().toString().padStart(2, '0')}:${form.time
+          .getMinutes()
+          .toString()
+          .padStart(2, '0')}`
+      : '10:00';
 
-    // Remove empty string fields
+    const body = {
+      ...form,
+      time: timeFormatted,
+      date: form.date.toISOString().split('T')[0],
+      user_id: userId,
+    };
+
+    if (body.registered_doctor_id) delete body.doctor_id;
+    else if (body.doctor_id) delete body.registered_doctor_id;
+
     Object.keys(body).forEach((key) => {
-      if (body[key] === "") delete body[key];
+      if (body[key] === '') delete body[key];
     });
 
-    const res = await fetch(
-      "https://doctors-bd-backend.vercel.app/api/v1/appointments",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
+    try {
+      const res = await fetch(
+        'https://doctors-bd-backend.vercel.app/api/v1/appointments',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(body),
+        }
+      );
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success('Appointment booked successfully!');
+        setForm({
+          patient_id: '',
+          doctor_id: '',
+          registered_doctor_id: '',
+          date: new Date(),
+          time: new Date(),
+          reason: '',
+        });
+        navigate('/dashboard/user/appointment')
+      } else {
+        toast.error(data.message || 'Failed to book appointment.');
       }
-    );
-    const data = await res.json();
-    if (data.success) setMessage("Appointment booked!");
-    else setMessage(data.message || "Failed to book appointment.");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-100 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8"
+        className=" bg-white border border-purple-100 rounded-2xl shadow-xl p-10"
       >
-        <h2 className="text-2xl font-bold text-purple-700 mb-6 text-center">
+        <h2 className="text-4xl font-bold text-purple-700 text-center mb-10">
           Book Appointment
         </h2>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">
-            Select Patient
+
+        <div className="mb-6">
+          <label className="text-gray-800 font-medium mb-2 flex items-center gap-2">
+            <FaUserInjured className="text-purple-700" /> Select Patient
           </label>
           <select
             name="patient_id"
             value={form.patient_id}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-700 bg-white"
           >
-            <option value="">Select Patient</option>
+            <option value="">-- Choose a patient --</option>
             {patients.map((p) => (
               <option key={p._id} value={p._id}>
                 {p.name}
@@ -99,18 +155,19 @@ const BookAppointment = () => {
             ))}
           </select>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">
-            Select Doctor
+
+        <div className="mb-6">
+          <label className="text-gray-800 font-medium mb-2 flex items-center gap-2">
+            <FaUserMd className="text-purple-700" /> Select Doctor
           </label>
           <select
             name="registered_doctor_id"
             value={form.registered_doctor_id}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-700 bg-white"
           >
-            <option value="">Select Doctor</option>
+            <option value="">-- Choose a doctor --</option>
             {doctors.map((d) => (
               <option key={d._id} value={d._id}>
                 Dr. {d.name} ({d.specialty})
@@ -118,54 +175,66 @@ const BookAppointment = () => {
             ))}
           </select>
         </div>
-        <div className="mb-4 flex gap-2">
+
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="flex-1">
-            <label className="block text-gray-700 font-medium mb-1">Date</label>
-            <input
-              name="date"
-              type="date"
-              value={form.date}
-              onChange={handleChange}
+            <label className="text-gray-800 font-medium mb-2 flex items-center gap-2">
+              <FaCalendarAlt className="text-purple-700" /> Date
+            </label>
+            <DatePicker
+              selected={form.date}
+              onChange={handleDateChange}
+              dateFormat="yyyy-MM-dd"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-700 bg-white"
+              minDate={new Date()}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
             />
           </div>
+
           <div className="flex-1">
-            <label className="block text-gray-700 font-medium mb-1">Time</label>
-            <input
-              name="time"
-              type="time"
-              value={form.time}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
-            />
+            <label className="text-gray-800 font-medium mb-2 flex items-center gap-2">
+              <FaClock className="text-purple-700" /> Time
+            </label>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <TimePicker
+                value={form.time}
+                onChange={handleTimeChange}
+                textField={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    required
+                    sx={{
+                      backgroundColor: '#fff',
+                      borderRadius: 1,
+                    }}
+                  />
+                )}
+              />
+            </LocalizationProvider>
           </div>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">
-            Reason for Appointment
+
+        <div className="mb-6">
+          <label className="text-gray-800 font-medium mb-2 flex items-center gap-2">
+            <FaRegFileAlt className="text-purple-700" /> Reason
           </label>
           <textarea
             name="reason"
-            placeholder="Describe your problem or reason for visit"
             value={form.reason}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
             rows={3}
+            placeholder="Describe the reason for your appointment"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-700 bg-white"
           />
         </div>
+
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-bold py-2 rounded-lg shadow-md transition duration-200"
+          className="w-full bg-purple-700 hover:bg-purple-800 transition text-white font-semibold text-lg py-3 rounded-lg shadow-md"
         >
-          Book Appointment
+          Confirm Appointment
         </button>
-        {message && (
-          <div className="mt-4 text-center text-green-700 font-semibold">
-            {message}
-          </div>
-        )}
       </form>
     </div>
   );

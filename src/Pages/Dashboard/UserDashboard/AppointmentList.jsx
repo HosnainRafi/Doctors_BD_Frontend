@@ -190,7 +190,7 @@ const AppointmentList = () => {
           My Appointments
         </h3>
         <a
-          href={`/book-appointment?userId=${userId}`}
+          href={`/dashboard/user/book-appointment?userId=${userId}`}
           className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition"
         >
           Book New Appointment

@@ -6,111 +6,68 @@ import {
   FaPlus,
   FaUserShield,
 } from 'react-icons/fa';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { ImSpinner10 } from 'react-icons/im';
 import UserAddPatientForm from './components/UserAddPatientForm';
+import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
+import axiosCommon from '../../../api/axiosCommon';
+import DeleteConfirmModal from '../../../Modal/DeleteConfirmModal';
 
 const UserPatientList = () => {
   const [patients, setPatients] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
   const [editPatient, setEditPatient] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [refetchData, setRefetchData] = useState(false);
   const [defaultPatientId, setDefaultPatientId] = useState(
     localStorage.getItem('defaultPatientId') || ''
   );
   const [userId, setUserId] = useState('');
 
-  const token = localStorage.getItem('userToken');
-  const email = token ? JSON.parse(atob(token.split('.')[1])).email : null;
+  useEffect(() => {
+    const fetchUserIdAndPatients = async () => {
+      setLoading(true);
+      try {
+        const id = await getUserIdByEmail();
+        setUserId(id);
 
-  // 1. On mount, get userId by email
-  useEffect(() => {
-    const fetchUserId = async () => {
-      if (!email) return;
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/users?email=${encodeURIComponent(
-            email
-          )}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const data = await res.json();
-        if (data && data.data && data.data._id) {
-          setUserId(data.data._id);
-        } else {
-          toast.error('User not found for this email.');
-        }
-      } catch (err) {
-        toast.error('Error fetching user info.', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserId();
-  }, [email, token]);
-  useEffect(() => {
-    const fetchPatients = async () => {
-      if (!userId) {
-        setPatients([]);
-        return;
-      }
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await res.json();
-        setPatients(data.data || []);
+        const response = await axiosCommon.get('/patients', {
+          params: { user_id: id },
+        });
+        setPatients(response.data.data || []);
       } catch (error) {
-        toast.error('Error fetching patients.', error);
+        toast.error(error.message || 'Error fetching patients.');
       } finally {
         setLoading(false);
       }
     };
-    fetchPatients();
-  }, [showAdd, editPatient, userId, token]);
+
+    fetchUserIdAndPatients();
+  }, [showAdd, editPatient, refetchData]);
 
   const handleSetDefault = id => {
     setDefaultPatientId(id);
     localStorage.setItem('defaultPatientId', id);
-    toast.success('✅ Default patient set!');
+    toast.success('Default patient set!');
   };
 
-  const handleDelete = async id => {
-    if (!window.confirm('Are you sure you want to delete this patient?'))
-      return;
-
+  const handleConfirmDelete = async id => {
     try {
-      await fetch(
-        `https://doctors-bd-backend.vercel.app/api/v1/patients/${id}`,
-        {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setPatients(prev => prev.filter(p => p._id !== id));
+      await axiosCommon.delete(`/patients/${id}`);
+      setRefetchData(!refetchData);
       if (defaultPatientId === id) {
         setDefaultPatientId('');
         localStorage.removeItem('defaultPatientId');
       }
-      toast.success('🗑️ Patient deleted successfully');
+      toast.success('Patient deleted successfully');
     } catch (error) {
       toast.error(error.message || 'Failed to delete patient');
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <Toaster position="top-right" />
-
+    <div className="max-w-6xl mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
           <FaUserShield className="text-purple-600" /> My Patients
@@ -118,7 +75,7 @@ const UserPatientList = () => {
         <button
           className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg transition flex items-center gap-2"
           onClick={() => {
-            setShowAdd(v => !v);
+            setShowAdd(addForm => !addForm);
             setEditPatient(null);
           }}
         >
@@ -161,19 +118,21 @@ const UserPatientList = () => {
               No patients found for this user.
             </div>
           )}
-          {patients.map(p => (
+          {patients.map(patient => (
             <div
-              key={p._id}
+              key={patient._id}
               className="bg-gray-50 border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow transition"
             >
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                 <div className="mb-3 sm:mb-0">
-                  <p className="text-lg font-medium text-gray-800">{p.name}</p>
-                  <p className="text-sm text-gray-600">{p.phone}</p>
-                  {p.email && (
-                    <p className="text-sm text-gray-400">{p.email}</p>
+                  <p className="text-lg font-medium text-gray-800">
+                    {patient.name}
+                  </p>
+                  <p className="text-sm text-gray-600">{patient.phone}</p>
+                  {patient.email && (
+                    <p className="text-sm text-gray-400">{patient.email}</p>
                   )}
-                  {defaultPatientId === p._id && (
+                  {defaultPatientId === patient._id && (
                     <span className="inline-block mt-2 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
                       <FaCheck className="inline-block mr-1" />
                       Default
@@ -183,31 +142,36 @@ const UserPatientList = () => {
 
                 <div className="flex gap-2 flex-wrap">
                   <button
-                    onClick={() => handleSetDefault(p._id)}
+                    onClick={() => handleSetDefault(patient._id)}
                     className={`px-4 py-2 text-sm rounded-lg transition flex items-center gap-2 ${
-                      defaultPatientId === p._id
+                      defaultPatientId === patient._id
                         ? 'bg-green-600 text-white cursor-not-allowed'
                         : 'bg-gray-200 text-gray-700 hover:bg-green-200'
                     }`}
-                    disabled={defaultPatientId === p._id}
+                    disabled={defaultPatientId === patient._id}
                   >
                     <FaCheck />
                     Set Default
                   </button>
                   <button
-                    onClick={() => setEditPatient(p)}
+                    onClick={() => setEditPatient(patient)}
                     className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
                   >
                     <FaUserEdit />
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(p._id)}
+                    onClick={() => setIsOpen(true)}
                     className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-2"
                   >
                     <FaTrash />
                     Delete
                   </button>
+                  <DeleteConfirmModal
+                    isOpen={isOpen}
+                    onClose={() => setIsOpen(false)}
+                    onConfirm={() => handleConfirmDelete(patient._id)}
+                  />
                 </div>
               </div>
             </div>

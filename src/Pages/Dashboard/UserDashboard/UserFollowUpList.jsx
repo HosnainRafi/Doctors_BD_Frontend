@@ -74,7 +74,7 @@ const UserFollowUpList = () => {
   };
 
   const handleBookFollowUp = followUp => {
-    navigate('/book-appointment', {
+    navigate('/dashboard/user/book-appointment', {
       state: {
         patient_id: followUp.patient_id?._id,
         doctor_id:

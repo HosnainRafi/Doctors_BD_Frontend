@@ -6,7 +6,7 @@ import {
   HiVideoCamera,
   HiX,
 } from 'react-icons/hi';
-import { ImSpinner10 } from 'react-icons/im';
+import { ImSpinner10, ImSpinner9 } from 'react-icons/im';
 import toast from 'react-hot-toast';
 import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
 import axiosCommon from '../../../api/axiosCommon';
@@ -20,7 +20,6 @@ const UserAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [reminderMsg, setReminderMsg] = useState('');
   const [rescheduleId, setRescheduleId] = useState(null);
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
@@ -88,7 +87,7 @@ const UserAppointmentList = () => {
 
   const handleSubmitReschedule = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       await axiosCommon.patch(
         `/appointments/${rescheduleId}`,
         {
@@ -108,11 +107,11 @@ const UserAppointmentList = () => {
       setNewDate('');
       setNewTime('');
       toast.success('Appointment rescheduled successfully');
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.error(error);
       toast.error('Failed to reschedule appointment');
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -121,27 +120,29 @@ const UserAppointmentList = () => {
   };
 
   const handleSendReminder = async appointment => {
-    setReminderMsg('');
     try {
-      const res = await fetch(
-        `https://doctors-bd-backend.vercel.app/api/v1/appointments/${appointment._id}/reminder`,
+      setLoading(true);
+      const res = await axiosCommon.post(
+        `/appointments/${appointment._id}/reminder`,
+        {},
         {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      const data = await res.json();
+      const data = res.data;
       if (data.success) {
-        setReminderMsg('Reminder sent!');
         toast.success('Reminder sent successfully');
+        setLoading(false);
       } else {
-        setReminderMsg(data.message || 'Failed to send reminder.');
+        setLoading(false);
         toast.error(data.message || 'Failed to send reminder.');
       }
     } catch (error) {
-      toast.error('Error sending reminder', error);
+      toast.error(error.message || 'Error sending reminder');
     } finally {
-      setTimeout(() => setReminderMsg(''), 2000);
+      setLoading(false);
     }
   };
 
@@ -380,7 +381,7 @@ const UserAppointmentList = () => {
                       className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-medium shadow-sm hover:bg-blue-700 transition"
                     >
                       <HiBell className="w-4 h-4" />
-                      Send Reminder
+                      {loading ? <ImSpinner9 className='animate-spin' /> : 'Send Reminder'}
                     </button>
                   </div>
                 </div>
@@ -390,11 +391,6 @@ const UserAppointmentList = () => {
         </div>
       )}
 
-      {reminderMsg && (
-        <div className="mt-4 text-sm text-green-700 font-medium">
-          {reminderMsg}
-        </div>
-      )}
       <DeleteConfirmModal
         title="Confirm Cancel"
         subTitle="Are you sure you want to cancel appointment? This action cannot be undone."

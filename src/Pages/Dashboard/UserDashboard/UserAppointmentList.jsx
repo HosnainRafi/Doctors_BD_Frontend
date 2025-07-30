@@ -14,6 +14,7 @@ import { format, parseISO, setHours, setMinutes } from 'date-fns';
 import { getAuthToken } from '../../../utils/getAuthToken';
 import DeleteConfirmModal from '../../../Modal/DeleteConfirmModal';
 import DoctorDetailsModal from '../../../Modal/DoctorDetailsModal';
+import RescheduleAppointmentModal from '../../../Modal/RescheduleAppointmentModal';
 
 const UserAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
@@ -85,30 +86,33 @@ const UserAppointmentList = () => {
     setNewTime(currentTime);
   };
 
-  const handleSubmitReschedule = async id => {
+  const handleSubmitReschedule = async () => {
     try {
-      await fetch(
-        `https://doctors-bd-backend.vercel.app/api/v1/appointments/${id}`,
+      setLoading(true)
+      await axiosCommon.patch(
+        `/appointments/${rescheduleId}`,
         {
-          method: 'PATCH',
+          date: newDate,
+          time: newTime,
+        },
+        {
           headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ date: newDate, time: newTime }),
         }
       );
-      setAppointments(prev =>
-        prev.map(a =>
-          a._id === id ? { ...a, date: newDate, time: newTime } : a
-        )
-      );
+
+      setRefetch(!refetch);
+
       setRescheduleId(null);
       setNewDate('');
       setNewTime('');
       toast.success('Appointment rescheduled successfully');
+      setLoading(false)
     } catch (error) {
-      toast.error('Failed to reschedule appointment', error);
+      console.error(error);
+      toast.error('Failed to reschedule appointment');
+      setLoading(false)
     }
   };
 
@@ -381,44 +385,6 @@ const UserAppointmentList = () => {
                   </div>
                 </div>
               </div>
-
-              {rescheduleId === a._id && (
-                <form
-                  onSubmit={e => {
-                    e.preventDefault();
-                    handleSubmitReschedule(a._id);
-                  }}
-                  className="mt-4 flex flex-wrap items-center gap-2"
-                >
-                  <input
-                    type="date"
-                    value={newDate}
-                    onChange={e => setNewDate(e.target.value)}
-                    className="border border-gray-300 px-3 py-2 rounded text-sm"
-                    required
-                  />
-                  <input
-                    type="time"
-                    value={newTime}
-                    onChange={e => setNewTime(e.target.value)}
-                    className="border border-gray-300 px-3 py-2 rounded text-sm"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="bg-green-600 text-white px-4 py-2 rounded text-xs hover:bg-green-700"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRescheduleId(null)}
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded text-xs hover:bg-gray-400"
-                  >
-                    Cancel
-                  </button>
-                </form>
-              )}
             </div>
           ))}
         </div>
@@ -442,6 +408,18 @@ const UserAppointmentList = () => {
           doctorDetails={doctorDetails}
           isOpen={showDoctorModal}
           onClose={() => setShowDoctorModal(false)}
+        />
+      )}
+      {rescheduleId && (
+        <RescheduleAppointmentModal
+          isOpen={true}
+          loading={loading}
+          onClose={() => setRescheduleId(null)}
+          onSubmit={handleSubmitReschedule}
+          newDate={newDate}
+          setNewDate={setNewDate}
+          newTime={newTime}
+          setNewTime={setNewTime}
         />
       )}
     </div>

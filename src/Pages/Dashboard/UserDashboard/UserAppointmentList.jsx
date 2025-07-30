@@ -1,100 +1,81 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   HiBell,
   HiOutlineUserCircle,
   HiRefresh,
   HiVideoCamera,
   HiX,
-} from "react-icons/hi";
-import { ImSpinner10 } from "react-icons/im";
-import toast, { Toaster } from "react-hot-toast";
+} from 'react-icons/hi';
+import { ImSpinner10 } from 'react-icons/im';
+import toast from 'react-hot-toast';
+import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
+import axiosCommon from '../../../api/axiosCommon';
+import { format, parseISO, setHours, setMinutes } from 'date-fns';
+import { getAuthToken } from '../../../utils/getAuthToken';
+import DeleteConfirmModal from '../../../Modal/DeleteConfirmModal';
+import DoctorDetailsModal from '../../../Modal/DoctorDetailsModal';
 
 const UserAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [reminderMsg, setReminderMsg] = useState("");
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [reminderMsg, setReminderMsg] = useState('');
   const [rescheduleId, setRescheduleId] = useState(null);
-  const [newDate, setNewDate] = useState("");
-  const [newTime, setNewTime] = useState("");
-  const [userId, setUserId] = useState("");
+  const [newDate, setNewDate] = useState('');
+  const [newTime, setNewTime] = useState('');
+  const [userId, setUserId] = useState('');
+  const [deleteId, setDeleteId] = useState(null);
+  const [refetch, setRefetch] = useState(false);
+  const [showDoctorModal, setShowDoctorModal] = useState(false);
+  const [doctorDetails, setDoctorDetails] = useState(null);
 
-  const token = localStorage.getItem("userToken");
-  const email = token ? JSON.parse(atob(token.split(".")[1])).email : null;
+  const token = getAuthToken();
 
-  // 1. On mount, get userId by email
-  useEffect(() => {
-    const fetchUserId = async () => {
-      if (!email) return;
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/users?email=${encodeURIComponent(
-            email
-          )}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const data = await res.json();
-        if (data && data.data && data.data._id) {
-          setUserId(data.data._id);
-        } else {
-          toast.error("User not found for this email.");
-        }
-      } catch (err) {
-        toast.error("Error fetching user info.", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserId();
-  }, [email, token]);
-
-  // 2. When userId is set, fetch appointments
   useEffect(() => {
     const fetchAppointments = async () => {
-      if (!userId) {
-        setAppointments([]);
-        return;
-      }
       setLoading(true);
       try {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/appointments?user_id=${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const data = await res.json();
-        setAppointments(data.data || []);
+        const id = await getUserIdByEmail();
+        setUserId(id);
+        const response = await axiosCommon.get('/appointments', {
+          params: { user_id: id },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setAppointments(response.data.data || []);
       } catch (error) {
-        toast.error("Error fetching appointments.", error);
+        toast.error(error.message || 'Failed to load data');
       } finally {
         setLoading(false);
       }
     };
     fetchAppointments();
-  }, [userId, token]);
+  }, [token, refetch]);
 
-  const handleCancel = async (id) => {
+  const openDeleteModal = id => {
+    setDeleteId(id);
+    setDeleteModalOpen(true);
+  };
+  const closeDeleteModal = () => {
+    setDeleteId(null);
+    setDeleteModalOpen(false);
+  };
+  const handleConfirmDelete = async () => {
     try {
-      await fetch(
-        `https://doctors-bd-backend.vercel.app/api/v1/appointments/${id}`,
+      await axiosCommon.patch(
+        `/appointments/${deleteId}`,
+        { status: 'cancelled' },
         {
-          method: "PATCH",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ status: "cancelled" }),
         }
       );
-      setAppointments((prev) =>
-        prev.map((a) => (a._id === id ? { ...a, status: "cancelled" } : a))
-      );
-      toast.success("Appointment cancelled successfully");
+      setRefetch(!refetch);
+      toast.success('Appointment cancelled successfully');
     } catch (error) {
-      toast.error("Failed to cancel appointment", error);
+      toast.error('Failed to cancel appointment', error);
     }
   };
 
@@ -104,87 +85,83 @@ const UserAppointmentList = () => {
     setNewTime(currentTime);
   };
 
-  const handleSubmitReschedule = async (id) => {
+  const handleSubmitReschedule = async id => {
     try {
       await fetch(
         `https://doctors-bd-backend.vercel.app/api/v1/appointments/${id}`,
         {
-          method: "PATCH",
+          method: 'PATCH',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ date: newDate, time: newTime }),
         }
       );
-      setAppointments((prev) =>
-        prev.map((a) =>
+      setAppointments(prev =>
+        prev.map(a =>
           a._id === id ? { ...a, date: newDate, time: newTime } : a
         )
       );
       setRescheduleId(null);
-      setNewDate("");
-      setNewTime("");
-      toast.success("Appointment rescheduled successfully");
+      setNewDate('');
+      setNewTime('');
+      toast.success('Appointment rescheduled successfully');
     } catch (error) {
-      toast.error("Failed to reschedule appointment", error);
+      toast.error('Failed to reschedule appointment', error);
     }
   };
 
-  const handleStartVideoCall = (appointment) => {
-    window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, "_blank");
+  const handleStartVideoCall = appointment => {
+    window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, '_blank');
   };
 
-  const handleSendReminder = async (appointment) => {
-    setReminderMsg("");
+  const handleSendReminder = async appointment => {
+    setReminderMsg('');
     try {
       const res = await fetch(
         `https://doctors-bd-backend.vercel.app/api/v1/appointments/${appointment._id}/reminder`,
         {
-          method: "POST",
+          method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       const data = await res.json();
       if (data.success) {
-        setReminderMsg("Reminder sent!");
-        toast.success("Reminder sent successfully");
+        setReminderMsg('Reminder sent!');
+        toast.success('Reminder sent successfully');
       } else {
-        setReminderMsg(data.message || "Failed to send reminder.");
-        toast.error(data.message || "Failed to send reminder.");
+        setReminderMsg(data.message || 'Failed to send reminder.');
+        toast.error(data.message || 'Failed to send reminder.');
       }
     } catch (error) {
-      toast.error("Error sending reminder", error);
+      toast.error('Error sending reminder', error);
     } finally {
-      setTimeout(() => setReminderMsg(""), 2000);
+      setTimeout(() => setReminderMsg(''), 2000);
     }
   };
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
+  const formatDate = dateStr => {
+    try {
+      return format(parseISO(dateStr), 'dd MMMM yyyy');
+    } catch {
+      return dateStr;
+    }
   };
 
   const formatTime = (dateStr, timeStr) => {
-    const [hours, minutes] = timeStr.split(":");
-    const date = new Date(dateStr);
-    date.setHours(hours);
-    date.setMinutes(minutes);
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
+    try {
+      const [h, m] = timeStr.split(':').map(Number);
+      const base = parseISO(dateStr);
+      const dateWithTime = setMinutes(setHours(base, h), m);
+      return format(dateWithTime, 'h:mm a');
+    } catch {
+      return timeStr;
+    }
   };
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
-      <Toaster position="top-right" />
-
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-2xl font-semibold text-gray-800">
           My Appointments
@@ -207,7 +184,7 @@ const UserAppointmentList = () => {
             <div className="text-gray-400">No appointments found.</div>
           )}
 
-          {appointments.map((a) => (
+          {appointments.map(a => (
             <div
               key={a._id}
               className="bg-white border border-purple-500 rounded-lg shadow-sm p-6 md:p-8 transition hover:shadow-md "
@@ -223,7 +200,7 @@ const UserAppointmentList = () => {
                   <div className="border border-purple-700 p-5 rounded-2xl shadow-md bg-white">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xl">
-                        {a.registered_doctor_id?.name?.charAt(0) || "D"}
+                        {a.registered_doctor_id?.name?.charAt(0) || 'D'}
                       </div>
                       <div className="flex-1">
                         <h3 className="text-sm text-purple-700 font-semibold uppercase tracking-wide">
@@ -232,7 +209,7 @@ const UserAppointmentList = () => {
                         <h2 className="font-semibold text-lg md:text-xl text-gray-800 flex items-center gap-2">
                           {a.doctor_id?.name ||
                             a.registered_doctor_id?.name ||
-                            "Unassigned"}
+                            'Unassigned'}
                           {a.registered_doctor_id?.isOnline ? (
                             <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                               Online
@@ -252,7 +229,7 @@ const UserAppointmentList = () => {
                                 <div>
                                   <span className="font-medium text-gray-700">
                                     Specialty:
-                                  </span>{" "}
+                                  </span>{' '}
                                   {a.registered_doctor_id.specialty}
                                 </div>
                               )}
@@ -261,9 +238,9 @@ const UserAppointmentList = () => {
                                 <div>
                                   <span className="font-medium text-gray-700">
                                     Degrees:
-                                  </span>{" "}
+                                  </span>{' '}
                                   {a.registered_doctor_id.degree_names.join(
-                                    ", "
+                                    ', '
                                   )}
                                 </div>
                               )}
@@ -271,18 +248,13 @@ const UserAppointmentList = () => {
                           )}
                         </div>
                         <div className="flex justify-end mt-1">
-                          {a.status !== "cancelled" &&
-                            a.status !== "completed" && (
+                          {a.status !== 'cancelled' &&
+                            a.status !== 'completed' && (
                               <button
-                                onClick={() =>
-                                  alert(
-                                    JSON.stringify(
-                                      a.doctor_id || a.registered_doctor_id,
-                                      null,
-                                      2
-                                    )
-                                  )
-                                }
+                                onClick={() => {
+                                  setDoctorDetails(a.registered_doctor_id);
+                                  setShowDoctorModal(true);
+                                }}
                                 className="inline-flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-full text-xs font-medium shadow-sm hover:bg-purple-700 transition duration-200"
                               >
                                 <HiOutlineUserCircle className="w-4 h-4" />
@@ -298,32 +270,32 @@ const UserAppointmentList = () => {
                   <div className="border border-purple-700 p-5 rounded-2xl shadow-md bg-white">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-full truncate bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xl">
-                        {a.patient_id?.name?.charAt(0) || "P"}
+                        {a.patient_id?.name?.charAt(0) || 'P'}
                       </div>
                       <div className="w-full">
                         <h3 className="text-sm text-purple-700 font-semibold uppercase tracking-wide">
                           Patient Info
                         </h3>
                         <h2 className="font-semibold text-lg md:text-xl text-gray-800">
-                          {a.patient_id?.name || "Unknown"}
+                          {a.patient_id?.name || 'Unknown'}
                         </h2>
                         <div className="text-sm text-gray-700 mt-2 space-y-1">
                           <p className="font-medium text-gray-800 flex items-center text-sm">
                             <span className="pr-3 border-r-2 border-gray-400">
-                              Gender: {a.patient_id?.gender || "N/A"}
+                              Gender: {a.patient_id?.gender || 'N/A'}
                             </span>
                             <span className="pl-3">
-                              Weight:{" "}
+                              Weight:{' '}
                               {a.patient_id?.weight
                                 ? `${a.patient_id.weight} kg`
-                                : "N/A"}
+                                : 'N/A'}
                             </span>
                           </p>
                           {a.patient_id?.address && (
                             <div>
                               <span className="font-medium text-gray-800">
                                 Address:
-                              </span>{" "}
+                              </span>{' '}
                               {a.patient_id.address}
                             </div>
                           )}
@@ -348,11 +320,11 @@ const UserAppointmentList = () => {
                     </div>
                     <span
                       className={`px-3 py-1.5 rounded-full text-xs font-semibold text-white uppercase ${
-                        a.status === "confirmed"
-                          ? "bg-green-500"
-                          : a.status === "cancelled"
-                          ? "bg-red-500"
-                          : "bg-blue-500"
+                        a.status === 'confirmed'
+                          ? 'bg-green-500'
+                          : a.status === 'cancelled'
+                          ? 'bg-red-500'
+                          : 'bg-blue-500'
                       }`}
                     >
                       {a.status}
@@ -361,16 +333,16 @@ const UserAppointmentList = () => {
 
                   {a.reason && (
                     <div className="mt-4 text-sm text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                      <span className="font-medium text-gray-800">Reason:</span>{" "}
+                      <span className="font-medium text-gray-800">Reason:</span>{' '}
                       {a.reason}
                     </div>
                   )}
 
                   <div className="flex flex-wrap justify-end gap-2 mt-4">
-                    {a.status !== "cancelled" && a.status !== "completed" && (
+                    {a.status !== 'cancelled' && a.status !== 'completed' && (
                       <>
                         <button
-                          onClick={() => handleCancel(a._id)}
+                          onClick={() => openDeleteModal(a._id)}
                           className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-full text-xs font-medium shadow-sm hover:bg-red-700 transition"
                         >
                           <HiX className="w-4 h-4" />
@@ -389,7 +361,7 @@ const UserAppointmentList = () => {
                     )}
 
                     {a.registered_doctor_id?.isOnline &&
-                      a.status === "confirmed" && (
+                      a.status === 'confirmed' && (
                         <button
                           onClick={() => handleStartVideoCall(a)}
                           className="inline-flex items-center gap-2 bg-purple-700 text-white px-4 py-2 rounded-full text-xs font-medium shadow-sm hover:bg-purple-800 transition"
@@ -412,7 +384,7 @@ const UserAppointmentList = () => {
 
               {rescheduleId === a._id && (
                 <form
-                  onSubmit={(e) => {
+                  onSubmit={e => {
                     e.preventDefault();
                     handleSubmitReschedule(a._id);
                   }}
@@ -421,14 +393,14 @@ const UserAppointmentList = () => {
                   <input
                     type="date"
                     value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
+                    onChange={e => setNewDate(e.target.value)}
                     className="border border-gray-300 px-3 py-2 rounded text-sm"
                     required
                   />
                   <input
                     type="time"
                     value={newTime}
-                    onChange={(e) => setNewTime(e.target.value)}
+                    onChange={e => setNewTime(e.target.value)}
                     className="border border-gray-300 px-3 py-2 rounded text-sm"
                     required
                   />
@@ -456,6 +428,21 @@ const UserAppointmentList = () => {
         <div className="mt-4 text-sm text-green-700 font-medium">
           {reminderMsg}
         </div>
+      )}
+      <DeleteConfirmModal
+        title="Confirm Cancel"
+        subTitle="Are you sure you want to cancel appointment? This action cannot be undone."
+        buttonActionType="Cancel Appointment"
+        isOpen={deleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleConfirmDelete}
+      />
+      {showDoctorModal && (
+        <DoctorDetailsModal
+          doctorDetails={doctorDetails}
+          isOpen={showDoctorModal}
+          onClose={() => setShowDoctorModal(false)}
+        />
       )}
     </div>
   );

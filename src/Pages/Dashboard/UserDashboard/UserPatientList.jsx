@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FaUserEdit,
   FaTrash,
@@ -25,7 +25,6 @@ const UserPatientList = () => {
   );
   const [userId, setUserId] = useState('');
 
-  // Fetch userId and patients on mount and after updates
   useEffect(() => {
     const fetchUserIdAndPatients = async () => {
       setLoading(true);
@@ -45,7 +44,7 @@ const UserPatientList = () => {
     };
 
     fetchUserIdAndPatients();
-  }, [modalOpen, deleteModalOpen]); // Refresh list after modal close or delete
+  }, [modalOpen, deleteModalOpen]);
 
   const openAddModal = () => {
     setEditPatient(null);
@@ -63,7 +62,6 @@ const UserPatientList = () => {
   };
 
   const handlePatientSaved = () => {
-    // Close modal and reload happens from useEffect watching modalOpen change
     closeModal();
   };
 
@@ -188,10 +186,12 @@ const UserPatientList = () => {
       />
 
       <DeleteConfirmModal
+        title="Confirm Delete"
+        subTitle={`Are you sure you want to delete patient "${patientToDelete?.name}"?`}
+        buttonActionType="Delete"
         isOpen={deleteModalOpen}
         onClose={closeDeleteModal}
         onConfirm={handleConfirmDelete}
-        message={`Are you sure you want to delete patient "${patientToDelete?.name}"?`}
       />
     </div>
   );

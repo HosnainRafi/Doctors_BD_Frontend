@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
-export default function DeleteConfirmModal({ isOpen, onClose, onConfirm }) {
+export default function DeleteConfirmModal({title,subTitle,buttonActionType, isOpen, onClose, onConfirm }) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -33,13 +33,10 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm }) {
                   as="h3"
                   className="text-lg font-semibold text-gray-800"
                 >
-                  Confirm Delete
+                  {title}
                 </Dialog.Title>
                 <div className="mt-2">
-                  <p className="text-sm text-gray-600">
-                    Are you sure you want to delete this item? This action
-                    cannot be undone.
-                  </p>
+                  <p className="text-sm text-gray-600">{subTitle}</p>
                 </div>
 
                 <div className="mt-6 flex justify-end gap-3">
@@ -58,7 +55,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm }) {
                       onClose();
                     }}
                   >
-                    Delete
+                    {buttonActionType}
                   </button>
                 </div>
               </Dialog.Panel>

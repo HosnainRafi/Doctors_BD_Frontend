@@ -23,8 +23,6 @@ export const getUserIdByEmail = async () => {
       throw new Error('User not found for this email.');
     }
   } catch (err) {
-    throw new Error(
-      err?.response?.data?.message || 'Error fetching user info.'
-    );
+    throw new Error(err?.message || 'Error fetching user info.');
   }
 };

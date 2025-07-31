@@ -32,7 +32,7 @@ const UserBookAppointment = () => {
   });
 
   const token = localStorage.getItem("userToken");
-  const backendUrl = "https://doctors-bd-backend.vercel.app";
+  const backendUrl = "http://localhost:5000";
 
   useEffect(() => {
     // This effect correctly fetches initial data and does not need to change.

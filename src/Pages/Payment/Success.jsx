@@ -1,80 +1,85 @@
-// Success.jsx
-
+// src/Pages/Payment/Success.jsx
 import React, { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Success = () => {
   const [searchParams] = useSearchParams();
   const tran_id = searchParams.get("tran_id");
-  const [appointment, setAppointment] = useState(null);
+  const status = searchParams.get("status");
+  const [transaction, setTransaction] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (tran_id) {
-      toast.success("Payment successful! Fetching appointment details...");
-      const fetchAppointmentDetails = async () => {
-        try {
-          // OPTIMIZED: Use the new endpoint to get appointment details directly
-          const response = await axios.get(
-            `/api/v1/payment/appointment-by-tran_id/${tran_id}`
-          );
-          if (response.data.success) {
-            setAppointment(response.data.data);
-          } else {
-            throw new Error(response.data.message);
-          }
-        } catch (err) {
-          console.error("Error fetching appointment details:", err);
-          setError(
-            err.response?.data?.message ||
-              "Could not fetch appointment details."
-          );
-          toast.error("Failed to load appointment details.");
-        } finally {
-          setLoading(false);
-        }
-      };
+    const fetchTransactionDetails = async () => {
+      if (!tran_id) {
+        setError("Transaction ID is missing");
+        setLoading(false);
+        return;
+      }
 
-      fetchAppointmentDetails();
-    } else {
-      setError("No transaction ID found. Payment status is uncertain.");
-      setLoading(false);
-    }
+      try {
+        console.log("Fetching transaction details for:", tran_id);
+
+        // Fetch transaction details with populated appointment
+        const transactionRes = await axios.get(
+          `/api/v1/payment/transaction/${tran_id}`
+        );
+        const transactionData = transactionRes.data.data;
+
+        console.log("Transaction data:", transactionData);
+        setTransaction(transactionData);
+      } catch (err) {
+        console.error("Error fetching transaction:", err);
+        console.error("Error response:", err.response);
+        setError(
+          `Failed to load transaction details: ${
+            err.response?.data?.message || err.message
+          }`
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactionDetails();
   }, [tran_id]);
 
   if (loading) {
     return (
-      <div className="text-center p-10">
-        <h2 className="text-2xl font-semibold">Verifying Payment...</h2>
-        <p>Please wait.</p>
+      <div className="flex justify-center items-center h-64">
+        <div className="text-xl">Loading...</div>
       </div>
     );
   }
 
-  if (error) {
+  if (error || status !== "success") {
     return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md text-center">
+      <div className="bg-white p-8 rounded-lg shadow-md text-center">
         <div className="text-red-500 text-6xl mb-4">✗</div>
         <h1 className="text-3xl font-bold text-red-600 mb-2">
-          Verification Error
+          Payment {status || "Failed"}
         </h1>
-        <p className="text-gray-600 mb-6">{error}</p>
-        <p>Transaction ID: {tran_id || "N/A"}</p>
-        <Link
-          to="/dashboard"
-          className="mt-8 inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+        <p className="text-gray-600 mb-6">
+          {error || "There was an issue processing your payment."}
+        </p>
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
         >
           Go to Dashboard
-        </Link>
+        </button>
       </div>
     );
   }
 
+  const appointment = transaction?.appointment_id;
+
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className="bg-white p-8 rounded-lg shadow-md">
       <div className="text-center">
         <div className="text-green-500 text-6xl mb-4">✓</div>
         <h1 className="text-3xl font-bold text-green-600 mb-2">
@@ -83,6 +88,7 @@ const Success = () => {
         <p className="text-gray-600 mb-6">
           Your appointment has been confirmed.
         </p>
+        <p className="text-gray-600 mb-6">Transaction ID: {tran_id}</p>
       </div>
 
       {appointment && (
@@ -90,21 +96,8 @@ const Success = () => {
           <h2 className="text-xl font-semibold mb-4">Appointment Details</h2>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="font-medium">Transaction ID:</span>
-              <span>{tran_id}</span>
-            </div>
-            <div className="flex justify-between">
               <span className="font-medium">Appointment ID:</span>
               <span>{appointment._id}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Patient:</span>
-              {/* Note the updated path for populated data */}
-              <span>{appointment.patient_id?.name || "N/A"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Doctor:</span>
-              <span>Dr. {appointment.registered_doctor_id?.name || "N/A"}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-medium">Date:</span>
@@ -115,8 +108,20 @@ const Success = () => {
               <span>{appointment.time}</span>
             </div>
             <div className="flex justify-between">
+              <span className="font-medium">Doctor:</span>
+              <span>
+                Dr.{" "}
+                {appointment.doctor_id?.name ||
+                  appointment.registered_doctor_id?.name}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">Patient:</span>
+              <span>{appointment.patient_id?.name}</span>
+            </div>
+            <div className="flex justify-between">
               <span className="font-medium">Status:</span>
-              <span className="text-green-600 font-medium capitalize">
+              <span className="text-green-600 font-medium">
                 {appointment.status}
               </span>
             </div>
@@ -125,12 +130,12 @@ const Success = () => {
       )}
 
       <div className="mt-8 text-center">
-        <Link
-          to="/dashboard"
+        <button
+          onClick={() => navigate("/dashboard")}
           className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
         >
           Go to Dashboard
-        </Link>
+        </button>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import PaymentLayout from "./../Layout/PaymentLayout";
 import Success from "../Pages/Payment/Success";
 
 const PaymentRoutes = {
-  path: "/",
+  path: "/payment/",
   element: <PaymentLayout />,
   children: [
     { path: "success", element: <Success /> },

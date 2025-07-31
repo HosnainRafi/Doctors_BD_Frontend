@@ -1,48 +1,33 @@
-import { FaTimesCircle } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+// src/Pages/Payment/FailPayment.jsx
 
-export default function FailPayment() {
+import React from "react";
+import { Link, useSearchParams } from "react-router-dom";
+
+const FailPayment = () => {
+  const [searchParams] = useSearchParams();
+  const tran_id = searchParams.get("tran_id");
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-purple-100 px-4 py-12">
-      <div className="bg-white shadow-2xl rounded-3xl p-8 md:p-10 max-w-lg w-full text-center border border-red-200">
-        <div className="flex justify-center mb-6">
-          <div className="bg-red-100 p-4 rounded-full">
-            <FaTimesCircle className="text-red-600 text-5xl" />
-          </div>
-        </div>
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">
-          Payment Failed
-        </h2>
-        <p className="text-gray-600 text-base md:text-lg mb-6">
-          Unfortunately, your payment could not be processed. Please try again
-          or contact support.
-        </p>
-
-        <div className="flex justify-center gap-4">
-          <Link
-            to="/retry-payment"
-            className="px-6 py-3 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-full transition duration-300 shadow-md"
-          >
-            Retry Payment
-          </Link>
-          <Link
-            to="/dashboard/user"
-            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-full transition duration-300"
-          >
-            Go Home
-          </Link>
-        </div>
-
-        <p className="text-sm text-gray-400 mt-6">
-          Need help?{' '}
-          <a
-            href="mailto:support@carepoint.com"
-            className="text-purple-700 underline"
-          >
-            support@carepoint.com
-          </a>
-        </p>
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md text-center">
+      <div className="text-red-500 text-6xl mb-4">✗</div>
+      <h1 className="text-3xl font-bold text-red-600 mb-2">Payment Failed</h1>
+      <p className="text-gray-600 mb-6">
+        Unfortunately, your payment could not be processed. Your appointment has
+        not been booked. Please try again.
+      </p>
+      {tran_id && (
+        <p className="text-sm text-gray-500">Transaction ID: {tran_id}</p>
+      )}
+      <div className="mt-8">
+        <Link
+          to="/book-appointment" // Link back to the booking page
+          className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+        >
+          Try Again
+        </Link>
       </div>
     </div>
   );
-}
+};
+
+export default FailPayment;

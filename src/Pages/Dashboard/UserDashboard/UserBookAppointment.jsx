@@ -13,9 +13,6 @@ import {
   FaClock,
   FaRegFileAlt,
   FaCreditCard,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaExclamationTriangle,
 } from "react-icons/fa";
 
 const UserBookAppointment = () => {
@@ -25,8 +22,6 @@ const UserBookAppointment = () => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState(null);
-  const [transactionId, setTransactionId] = useState(null);
   const [form, setForm] = useState({
     patient_id: "",
     doctor_id: "",
@@ -40,36 +35,11 @@ const UserBookAppointment = () => {
   const backendUrl = "https://doctors-bd-backend.vercel.app";
 
   useEffect(() => {
-    console.log("Environment check:");
-    console.log("Backend URL:", backendUrl);
-    console.log("User ID:", userId);
-    console.log("Token exists:", !!token);
-  }, [backendUrl, userId, token]);
-
-  useEffect(() => {
-    // Check for payment status in URL parameters
-    const status = searchParams.get("status");
-    const tranId = searchParams.get("tran_id");
-
-    if (status && tranId) {
-      setPaymentStatus(status);
-      setTransactionId(tranId);
-
-      if (status === "success") {
-        toast.success("Payment successful! Your appointment is confirmed.");
-      } else if (status === "failed") {
-        toast.error("Payment failed. Please try again.");
-      } else if (status === "cancel") {
-        toast.error("Payment was cancelled.");
-      }
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
+    // This effect correctly fetches initial data and does not need to change.
     if (typeof window !== "undefined") {
       const storedToken = localStorage.getItem("userToken");
       if (!userId || !storedToken) {
-        toast.error("User ID or token is missing");
+        toast.error("User ID or token is missing. Please log in again.");
         return;
       }
       const fetchData = async () => {
@@ -97,7 +67,7 @@ const UserBookAppointment = () => {
           setDoctors(doctorData.data || []);
         } catch (err) {
           console.error("Fetch error:", err);
-          toast.error(err.message || "Failed to fetch data");
+          toast.error(err.message || "Failed to fetch necessary data");
         }
       };
       fetchData();
@@ -127,13 +97,11 @@ const UserBookAppointment = () => {
   const getMinTime = () => {
     const today = new Date();
     const isToday = form.date.toDateString() === today.toDateString();
-
     if (isToday) {
       const now = new Date();
       now.setMinutes(now.getMinutes() + 30); // Add 30 minutes buffer
       return now;
     }
-
     return new Date(0, 0, 0, 9, 0); // 9:00 AM default
   };
 
@@ -151,10 +119,7 @@ const UserBookAppointment = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
     try {
@@ -175,9 +140,8 @@ const UserBookAppointment = () => {
       Object.keys(body).forEach((key) => {
         if (body[key] === "") delete body[key];
       });
-      console.log("Submitting appointment data:", body);
 
-      // First create the appointment
+      // Step 1: Create the appointment with a 'pending' status
       const appointmentRes = await fetch(`${backendUrl}/api/v1/appointments`, {
         method: "POST",
         headers: {
@@ -186,7 +150,6 @@ const UserBookAppointment = () => {
         },
         body: JSON.stringify(body),
       });
-      console.log("Appointment response status:", appointmentRes.status);
 
       if (!appointmentRes.ok) {
         const errorData = await appointmentRes.json();
@@ -194,16 +157,12 @@ const UserBookAppointment = () => {
       }
 
       const appointmentData = await appointmentRes.json();
-      console.log("Appointment response data:", appointmentData);
 
       if (appointmentData.success) {
         const appointmentId = appointmentData.data._id;
-        console.log("Appointment created with ID:", appointmentId);
 
-        // Now initiate payment
-        console.log("Initiating payment...");
+        // Step 2: Initiate payment for the created appointment
         setPaymentLoading(true);
-
         try {
           const paymentRes = await fetch(
             `${backendUrl}/api/v1/payment/initiate/${appointmentId}`,
@@ -215,7 +174,6 @@ const UserBookAppointment = () => {
               },
             }
           );
-          console.log("Payment response status:", paymentRes.status);
 
           if (!paymentRes.ok) {
             const paymentError = await paymentRes.json();
@@ -225,40 +183,25 @@ const UserBookAppointment = () => {
           }
 
           const paymentData = await paymentRes.json();
-          console.log("Payment response data:", paymentData);
 
-          if (paymentData.success) {
-            console.log(
-              "Payment initiated successfully, redirecting to:",
-              paymentData.data.GatewayPageURL
-            );
-            // Redirect to SSLCommerz payment gateway
+          // Step 3: Redirect user to the payment gateway
+          if (paymentData.success && paymentData.data.GatewayPageURL) {
             window.location.href = paymentData.data.GatewayPageURL;
           } else {
-            throw new Error(
-              paymentData.message || "Failed to initiate payment"
-            );
+            throw new Error(paymentData.message || "Failed to get payment URL");
           }
         } finally {
+          // This will only be reached if the redirect fails
           setPaymentLoading(false);
         }
       } else {
         throw new Error(
-          appointmentData.message || "Failed to book appointment"
+          appointmentData.message || "Appointment creation failed"
         );
       }
     } catch (error) {
       console.error("Submission error:", error);
-
-      if (error.message.includes("Appointment not found")) {
-        toast.error("Appointment could not be created. Please try again.");
-      } else if (error.message.includes("Payment")) {
-        toast.error("Payment processing failed. Please try again.");
-      } else {
-        toast.error(
-          error.message || "An error occurred while booking appointment"
-        );
-      }
+      toast.error(error.message || "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -271,45 +214,13 @@ const UserBookAppointment = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Payment Status Notification */}
-      {paymentStatus && (
-        <div
-          className={`mb-6 p-4 rounded-lg flex items-center ${
-            paymentStatus === "success"
-              ? "bg-green-100 text-green-800"
-              : paymentStatus === "failed"
-              ? "bg-red-100 text-red-800"
-              : "bg-yellow-100 text-yellow-800"
-          }`}
-        >
-          {paymentStatus === "success" ? (
-            <FaCheckCircle className="text-xl mr-3" />
-          ) : paymentStatus === "failed" ? (
-            <FaTimesCircle className="text-xl mr-3" />
-          ) : (
-            <FaExclamationTriangle className="text-xl mr-3" />
-          )}
-          <div>
-            <p className="font-medium">
-              {paymentStatus === "success"
-                ? "Payment Successful!"
-                : paymentStatus === "failed"
-                ? "Payment Failed"
-                : "Payment Cancelled"}
-            </p>
-            {transactionId && (
-              <p className="text-sm">Transaction ID: {transactionId}</p>
-            )}
-          </div>
-        </div>
-      )}
-
+      {/* The payment status notification is REMOVED from this component */}
       <form
         onSubmit={handleSubmit}
         className="bg-white border border-purple-100 rounded-2xl shadow-xl p-10"
       >
         <h2 className="text-4xl font-bold text-purple-700 text-center mb-10">
-          Book Appointment
+          Book an Appointment
         </h2>
 
         <div className="mb-6">
@@ -376,7 +287,9 @@ const UserBookAppointment = () => {
                 onChange={handleTimeChange}
                 minTime={getMinTime()}
                 maxTime={new Date(0, 0, 0, 20, 0)} // 8:00 PM max
-                textField={(params) => (
+                renderInput={(
+                  params // renderInput is used for older MUI versions
+                ) => (
                   <TextField
                     {...params}
                     fullWidth
@@ -384,6 +297,11 @@ const UserBookAppointment = () => {
                     sx={{
                       backgroundColor: "#fff",
                       borderRadius: 1,
+                      "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#8b5cf6", // purple-700
+                        },
+                      },
                     }}
                   />
                 )}
@@ -394,65 +312,61 @@ const UserBookAppointment = () => {
 
         <div className="mb-6">
           <label className="text-gray-800 font-medium mb-2 flex items-center gap-2">
-            <FaRegFileAlt className="text-purple-700" /> Reason
+            <FaRegFileAlt className="text-purple-700" /> Reason for Visit
           </label>
           <textarea
             name="reason"
             value={form.reason}
             onChange={handleChange}
             rows={3}
-            placeholder="Describe the reason for your appointment"
+            placeholder="e.g., General check-up, fever, etc."
             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-700 bg-white"
           />
         </div>
 
         {/* Appointment Summary */}
-        <div className="bg-gray-50 p-4 rounded-lg mb-6">
+        <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
           <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <FaRegFileAlt className="text-purple-700" /> Appointment Summary
+            Appointment Summary
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <div>
               <span className="font-medium text-gray-600">Patient:</span>
-              <span className="ml-2">
+              <span className="ml-2 text-gray-900">
                 {selectedPatient ? selectedPatient.name : "Not selected"}
               </span>
             </div>
             <div>
               <span className="font-medium text-gray-600">Doctor:</span>
-              <span className="ml-2">
-                {selectedDoctor
-                  ? `Dr. ${selectedDoctor.name} (${selectedDoctor.specialty})`
-                  : "Not selected"}
+              <span className="ml-2 text-gray-900">
+                {selectedDoctor ? `Dr. ${selectedDoctor.name}` : "Not selected"}
               </span>
             </div>
             <div>
               <span className="font-medium text-gray-600">Date:</span>
-              <span className="ml-2">{form.date.toLocaleDateString()}</span>
+              <span className="ml-2 text-gray-900">
+                {form.date.toLocaleDateString()}
+              </span>
             </div>
             <div>
               <span className="font-medium text-gray-600">Time:</span>
-              <span className="ml-2">
+              <span className="ml-2 text-gray-900">
                 {form.time.toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
               </span>
             </div>
-            <div className="md:col-span-2">
-              <span className="font-medium text-gray-600">Reason:</span>
-              <span className="ml-2">{form.reason || "Not provided"}</span>
-            </div>
           </div>
         </div>
 
-        <div className="bg-purple-50 p-4 rounded-lg mb-6">
+        <div className="bg-purple-50 p-4 rounded-lg mb-6 border border-purple-200">
           <div className="flex items-center gap-3">
             <FaCreditCard className="text-purple-700 text-xl" />
             <div>
               <h3 className="font-semibold text-purple-800">Appointment Fee</h3>
               <p className="text-purple-600">
-                BDT 500 (Test Payment - No Real Money)
+                BDT 500 (This is a test payment)
               </p>
             </div>
           </div>
@@ -461,59 +375,31 @@ const UserBookAppointment = () => {
         <button
           type="submit"
           disabled={loading || paymentLoading}
-          className="w-full bg-purple-700 hover:bg-purple-800 transition text-white font-semibold text-lg py-3 rounded-lg shadow-md disabled:opacity-70"
+          className="w-full bg-purple-700 hover:bg-purple-800 transition-colors text-white font-semibold text-lg py-3 rounded-lg shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
         >
-          {loading ? (
-            <span className="flex items-center justify-center">
+          {loading && !paymentLoading && (
+            <>
               <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
+                className="animate-spin -ml-1 mr-3 h-5 w-5"
                 viewBox="0 0 24 24"
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                ...
               </svg>
               Creating Appointment...
-            </span>
-          ) : paymentLoading ? (
-            <span className="flex items-center justify-center">
+            </>
+          )}
+          {paymentLoading && (
+            <>
               <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
+                className="animate-spin -ml-1 mr-3 h-5 w-5"
                 viewBox="0 0 24 24"
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                ...
               </svg>
-              Processing Payment...
-            </span>
-          ) : (
-            "Pay & Book Appointment"
+              Redirecting to Payment...
+            </>
           )}
+          {!loading && !paymentLoading && "Proceed to Payment"}
         </button>
       </form>
     </div>

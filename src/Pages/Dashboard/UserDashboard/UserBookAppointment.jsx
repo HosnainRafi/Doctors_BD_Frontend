@@ -34,7 +34,7 @@ const UserBookAppointment = () => {
   // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
   const token = localStorage.getItem("userToken");
-  const backendUrl = "http://localhost:5000";
+  const backendUrl = "https://doctors-bd-backend.vercel.app";
 
   useEffect(() => {
     const fetchData = async () => {

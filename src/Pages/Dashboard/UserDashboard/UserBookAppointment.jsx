@@ -6,7 +6,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import TextField from "@mui/material/TextField";
-import { useNavigate } from "react-router-dom";
 import {
   FaUserInjured,
   FaUserMd,

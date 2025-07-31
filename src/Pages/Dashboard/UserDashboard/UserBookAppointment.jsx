@@ -13,6 +13,7 @@ import {
   FaCalendarAlt,
   FaClock,
   FaRegFileAlt,
+  FaCreditCard,
 } from "react-icons/fa";
 
 const UserBookAppointment = () => {
@@ -20,6 +21,7 @@ const UserBookAppointment = () => {
   const userId = searchParams.get("userId");
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     patient_id: "",
     doctor_id: "",
@@ -28,21 +30,23 @@ const UserBookAppointment = () => {
     time: new Date(),
     reason: "",
   });
+
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
   const token = localStorage.getItem("userToken");
+  const backendUrl = "http://localhost:5000";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const patientRes = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/patients?user_id=${userId}`,
+          `${backendUrl}/api/v1/patients?user_id=${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const patientData = await patientRes.json();
         setPatients(patientData.data || []);
-
         const doctorRes = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors`
+          `${backendUrl}/api/v1/registered-doctors`
         );
         const doctorData = await doctorRes.json();
         setDoctors(doctorData.data || []);
@@ -50,9 +54,8 @@ const UserBookAppointment = () => {
         toast.error(err.message);
       }
     };
-
     if (userId && token) fetchData();
-  }, [userId, token]);
+  }, [userId, token, backendUrl]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -68,6 +71,7 @@ const UserBookAppointment = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const timeFormatted = form.time
       ? `${form.time.getHours().toString().padStart(2, "0")}:${form.time
@@ -91,35 +95,49 @@ const UserBookAppointment = () => {
     });
 
     try {
-      const res = await fetch(
-        "https://doctors-bd-backend.vercel.app/api/v1/appointments",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      // First create the appointment
+      const res = await fetch(`${backendUrl}/api/v1/appointments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
       const data = await res.json();
 
       if (data.success) {
-        toast.success("Appointment booked successfully!");
-        setForm({
-          patient_id: "",
-          doctor_id: "",
-          registered_doctor_id: "",
-          date: new Date(),
-          time: new Date(),
-          reason: "",
-        });
-        navigate("/dashboard/user/appointment");
+        const appointmentId = data.data._id;
+
+        // Now initiate payment
+        const paymentRes = await fetch(
+          `${backendUrl}/api/v1/payment/initiate/${appointmentId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const paymentData = await paymentRes.json();
+
+        if (paymentData.success) {
+          // Redirect to SSLCommerz payment gateway
+          window.location.href = paymentData.data.GatewayPageURL;
+        } else {
+          toast.error(paymentData.message || "Failed to initiate payment.");
+          setLoading(false);
+        }
       } else {
         toast.error(data.message || "Failed to book appointment.");
+        setLoading(false);
       }
     } catch (error) {
       toast.error(error.message);
+      setLoading(false);
     }
   };
 
@@ -127,7 +145,7 @@ const UserBookAppointment = () => {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <form
         onSubmit={handleSubmit}
-        className=" bg-white border border-purple-100 rounded-2xl shadow-xl p-10"
+        className="bg-white border border-purple-100 rounded-2xl shadow-xl p-10"
       >
         <h2 className="text-4xl font-bold text-purple-700 text-center mb-10">
           Book Appointment
@@ -226,11 +244,50 @@ const UserBookAppointment = () => {
           />
         </div>
 
+        <div className="bg-purple-50 p-4 rounded-lg mb-6">
+          <div className="flex items-center gap-3">
+            <FaCreditCard className="text-purple-700 text-xl" />
+            <div>
+              <h3 className="font-semibold text-purple-800">Appointment Fee</h3>
+              <p className="text-purple-600">
+                BDT 500 (Test Payment - No Real Money)
+              </p>
+            </div>
+          </div>
+        </div>
+
         <button
           type="submit"
-          className="w-full bg-purple-700 hover:bg-purple-800 transition text-white font-semibold text-lg py-3 rounded-lg shadow-md"
+          disabled={loading}
+          className="w-full bg-purple-700 hover:bg-purple-800 transition text-white font-semibold text-lg py-3 rounded-lg shadow-md disabled:opacity-70"
         >
-          Confirm Appointment
+          {loading ? (
+            <span className="flex items-center justify-center">
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Processing...
+            </span>
+          ) : (
+            "Pay & Book Appointment"
+          )}
         </button>
       </form>
     </div>

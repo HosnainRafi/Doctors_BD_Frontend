@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from "react";
-import MedicineSearchForPrescription from "./MedicineSearchForPrescription";
+import React, { useState, useEffect } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import MedicineSearchForPrescription from './MedicineSearchForPrescription';
+import { FiPlus, FiTrash, FiX } from 'react-icons/fi';
 
 const PrescriptionForm = ({
   appointment,
@@ -9,49 +12,41 @@ const PrescriptionForm = ({
 }) => {
   const isEditing = !!prescription;
   const [medicines, setMedicines] = useState([
-    { name: "", strength: "", timing: "", duration: "", instructions: "" },
+    { name: '', strength: '', timing: '', duration: '', instructions: '' },
   ]);
-  const [advice, setAdvice] = useState("");
-  const [followUpDate, setFollowUpDate] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const doctorToken = localStorage.getItem("doctorToken");
+  const [advice, setAdvice] = useState('');
+  const [followUpDate, setFollowUpDate] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const doctorToken = localStorage.getItem('doctorToken');
 
-  // Common timing patterns for the dropdown
   const timingOptions = [
-    { value: "", label: "Select timing" },
-    { value: "1+0+0", label: "Morning" },
-    { value: "0+1+0", label: "Noon" },
-    { value: "0+0+1", label: "Evening" },
-    { value: "1+1+0", label: "Morning + Noon" },
-    { value: "1+0+1", label: "Morning + Evening" },
-    { value: "0+1+1", label: "Noon + Evening" },
-    { value: "1+1+1", label: "Morning + Noon + Evening" },
-    { value: "2+0+0", label: "2 times Morning" },
-    { value: "0+2+0", label: "2 times Noon" },
-    { value: "0+0+2", label: "2 times Evening" },
-    { value: "custom", label: "Custom timing" },
+    { value: '', label: 'Select timing' },
+    { value: '1+0+0', label: 'Morning' },
+    { value: '0+1+0', label: 'Noon' },
+    { value: '0+0+1', label: 'Evening' },
+    { value: '1+1+0', label: 'Morning + Noon' },
+    { value: '1+0+1', label: 'Morning + Evening' },
+    { value: '0+1+1', label: 'Noon + Evening' },
+    { value: '1+1+1', label: 'Morning + Noon + Evening' },
+    { value: '2+0+0', label: '2 times Morning' },
+    { value: '0+2+0', label: '2 times Noon' },
+    { value: '0+0+2', label: '2 times Evening' },
+    { value: 'custom', label: 'Custom timing' },
   ];
 
-  // Initialize form with prescription data when editing
   useEffect(() => {
     if (isEditing && prescription) {
-      // Convert existing medicines to include strength field
-      const formattedMedicines = prescription.medicines.map((med) => {
-        // Extract strength from instructions if it exists
-        let strength = "";
-        let instructions = med.instructions || "";
-
-        // Check if instructions contain strength information
+      const formattedMedicines = prescription.medicines.map(med => {
+        let strength = '';
+        let instructions = med.instructions || '';
         const strengthMatch = instructions.match(/Strength:\s*([^,]+)/i);
         if (strengthMatch) {
           strength = strengthMatch[1].trim();
-          // Remove strength from instructions
           instructions = instructions
-            .replace(/Strength:\s*([^,]+)/i, "")
+            .replace(/Strength:\s*([^,]+)/i, '')
             .trim();
         }
-
         return {
           name: med.name,
           strength,
@@ -61,8 +56,8 @@ const PrescriptionForm = ({
         };
       });
       setMedicines(formattedMedicines);
-      setAdvice(prescription.advice || "");
-      setFollowUpDate(prescription.follow_up_date || "");
+      setAdvice(prescription.advice || '');
+      setFollowUpDate(prescription.follow_up_date || '');
     }
   }, [isEditing, prescription]);
 
@@ -74,64 +69,44 @@ const PrescriptionForm = ({
 
   const handleTimingChange = (i, e) => {
     const newMeds = [...medicines];
-    const value = e.target.value;
-
-    if (value === "custom") {
-      // If custom is selected, clear the timing field for manual input
-      newMeds[i].timing = "";
-    } else {
-      // Otherwise, set the selected timing pattern
-      newMeds[i].timing = value;
-    }
-
+    newMeds[i].timing = e.target.value === 'custom' ? '' : e.target.value;
     setMedicines(newMeds);
   };
 
   const addMedicine = () =>
     setMedicines([
       ...medicines,
-      { name: "", strength: "", timing: "", duration: "", instructions: "" },
+      { name: '', strength: '', timing: '', duration: '', instructions: '' },
     ]);
 
-  const removeMedicine = (i) =>
+  const removeMedicine = i =>
     setMedicines(medicines.filter((_, idx) => idx !== i));
 
-  const handleMedicineSelect = (medicineData) => {
-    // Check if there's an empty medicine row to replace
+  const handleMedicineSelect = medicineData => {
     const emptyIndex = medicines.findIndex(
-      (med) => !med.name && !med.strength && !med.timing && !med.duration
+      med => !med.name && !med.strength && !med.timing && !med.duration
     );
-
     if (emptyIndex !== -1) {
-      // Replace the empty row with the selected medicine
       const newMeds = [...medicines];
       newMeds[emptyIndex] = medicineData;
       setMedicines(newMeds);
     } else {
-      // Add as a new medicine
       setMedicines([...medicines, medicineData]);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    setMessage("");
-    setError("");
+    setMessage('');
+    setError('');
 
-    // Helper function to extract ID from object or string
-    const extractId = (value) => {
-      if (!value) return null;
-      if (typeof value === "string") return value;
-      if (value._id) return value._id;
-      return null;
-    };
+    const extractId = value =>
+      typeof value === 'string' ? value : value?._id || null;
 
-    // Format medicines for submission (combine strength with instructions)
-    const formattedMedicines = medicines.map((med) => {
-      let instructions = med.instructions || "";
-      if (med.strength) {
+    const formattedMedicines = medicines.map(med => {
+      let instructions = med.instructions || '';
+      if (med.strength)
         instructions = `Strength: ${med.strength}. ${instructions}`.trim();
-      }
       return {
         name: med.name,
         timing: med.timing,
@@ -155,45 +130,39 @@ const PrescriptionForm = ({
       follow_up_date: followUpDate,
     };
 
-    // Set doctor ID
     if (isEditing) {
-      if (prescription.doctor_id) {
+      if (prescription.doctor_id)
         postBody.doctor_id = extractId(prescription.doctor_id);
-      } else if (prescription.registered_doctor_id) {
+      else if (prescription.registered_doctor_id)
         postBody.registered_doctor_id = extractId(
           prescription.registered_doctor_id
         );
-      }
     } else {
-      if (appointment.registered_doctor_id) {
+      if (appointment.registered_doctor_id)
         postBody.registered_doctor_id = appointment.registered_doctor_id;
-      } else if (appointment.doctor_id) {
+      else if (appointment.doctor_id)
         postBody.doctor_id = appointment.doctor_id;
-      } else {
-        setError(
-          "No doctor found for this appointment. Cannot create prescription."
+      else
+        return setError(
+          'No doctor found for this appointment. Cannot create prescription.'
         );
-        return;
-      }
     }
 
-    // Remove undefined fields
-    Object.keys(postBody).forEach((key) => {
-      if (postBody[key] === undefined || postBody[key] === null) {
-        delete postBody[key];
-      }
-    });
+    Object.keys(postBody).forEach(
+      key =>
+        (postBody[key] === undefined || postBody[key] === null) &&
+        delete postBody[key]
+    );
 
     const url = isEditing
       ? `https://doctors-bd-backend.vercel.app/api/v1/prescriptions/${prescription._id}`
-      : "https://doctors-bd-backend.vercel.app/api/v1/prescriptions";
-    const method = isEditing ? "PATCH" : "POST";
+      : 'https://doctors-bd-backend.vercel.app/api/v1/prescriptions';
 
     try {
       const res = await fetch(url, {
-        method,
+        method: isEditing ? 'PATCH' : 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${doctorToken}`,
         },
         body: JSON.stringify(postBody),
@@ -202,15 +171,15 @@ const PrescriptionForm = ({
       if (data.success) {
         setMessage(
           isEditing
-            ? "Prescription updated successfully!"
-            : "Prescription created and sent!"
+            ? 'Prescription updated successfully!'
+            : 'Prescription created and sent!'
         );
         onUpdated && onUpdated();
         onClose();
       } else {
         setMessage(
           data.message ||
-            `Failed to ${isEditing ? "update" : "create"} prescription.`
+            `Failed to ${isEditing ? 'update' : 'create'} prescription.`
         );
       }
     } catch (err) {
@@ -218,216 +187,203 @@ const PrescriptionForm = ({
     }
   };
 
-  // Helper functions to safely extract display data
   const getPatientName = () => {
     if (isEditing && prescription) {
-      if (
-        prescription.patient_id &&
-        typeof prescription.patient_id === "object" &&
-        prescription.patient_id.name
-      ) {
-        return prescription.patient_id.name;
-      }
-      if (prescription.patient && prescription.patient.name) {
-        return prescription.patient.name;
-      }
-      return "Patient";
+      return (
+        prescription.patient_id?.name || prescription.patient?.name || 'Patient'
+      );
     }
-    return appointment.patient_id?.name || "Patient";
+    return appointment.patient_id?.name || 'Patient';
   };
 
   const getAppointmentDate = () => {
     if (isEditing && prescription) {
-      if (
-        prescription.appointment_id &&
-        typeof prescription.appointment_id === "object" &&
-        prescription.appointment_id.date
-      ) {
-        return prescription.appointment_id.date;
-      }
-      if (prescription.appointment && prescription.appointment.date) {
-        return prescription.appointment.date;
-      }
-      return prescription.date || "No date";
+      return (
+        prescription.appointment_id?.date ||
+        prescription.appointment?.date ||
+        prescription.date ||
+        'No date'
+      );
     }
-    return appointment.date || "No date";
+    return appointment.date || 'No date';
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full relative max-h-[90vh] overflow-y-auto"
-        style={{ margin: "40px 0" }}
+        className="bg-white w-full max-w-3xl p-6 rounded-2xl shadow-xl relative overflow-y-auto max-h-[90vh] border border-purple-200"
       >
         <button
-          type="button"
           onClick={onClose}
-          className="absolute top-3 right-4 text-gray-400 text-2xl hover:text-gray-700"
+          type="button"
+          className="absolute top-4 right-5 text-gray-400 hover:text-red-500 text-2xl"
         >
-          &times;
+          <FiX />
         </button>
-        <h3 className="text-2xl font-bold text-purple-700 mb-6 text-center">
-          {isEditing ? "Edit Prescription" : "Create Prescription"}
-        </h3>
+
+        <h2 className="text-center text-3xl font-bold text-purple-700 mb-6">
+          {isEditing ? 'Edit Prescription' : 'Create Prescription'}
+        </h2>
+
         {error && (
-          <div className="mb-4 text-center text-red-600 font-semibold">
-            {error}
-          </div>
+          <p className="text-red-600 text-center mb-4 font-semibold">{error}</p>
         )}
 
-        {/* Patient and appointment info */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">
-            Patient
-          </label>
-          <div className="px-3 py-2 border border-gray-200 rounded bg-gray-50">
-            {getPatientName()}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Patient
+            </label>
+            <div className="px-4 py-2 border rounded-md bg-gray-100 font-semibold text-gray-800">
+              {getPatientName()}
+            </div>
           </div>
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">
-            Appointment Date
-          </label>
-          <div className="px-3 py-2 border border-gray-200 rounded bg-gray-50">
-            {getAppointmentDate()}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Appointment Date
+            </label>
+            <div className="px-4 py-2 border rounded-md bg-gray-100 font-semibold text-gray-800">
+              {getAppointmentDate()}
+            </div>
           </div>
         </div>
 
-        {/* Medicine search */}
         <MedicineSearchForPrescription
           onMedicineSelect={handleMedicineSelect}
         />
 
-        {/* Medicines section */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">
+        <div className="mt-6">
+          <label className="block text-base font-semibold text-gray-800 mb-2">
             Medicines
           </label>
           {medicines.map((med, i) => (
-            <div key={i} className="flex gap-2 mb-2 flex-wrap">
+            <div
+              key={i}
+              className="flex flex-wrap items-center gap-3 mb-4 bg-purple-50 p-3 rounded-md"
+            >
               <input
                 name="name"
-                placeholder="Medicine"
                 value={med.name}
-                onChange={(e) => handleMedChange(i, e)}
+                onChange={e => handleMedChange(i, e)}
+                placeholder="Medicine"
+                className="flex-1 min-w-[120px] px-3 py-2 border rounded"
                 required
-                className="w-1/3 px-3 py-2 border border-gray-300 rounded"
               />
               <input
                 name="strength"
-                placeholder="Strength (e.g. 500mg)"
                 value={med.strength}
-                onChange={(e) => handleMedChange(i, e)}
-                className="w-1/4 px-3 py-2 border border-gray-300 rounded"
+                onChange={e => handleMedChange(i, e)}
+                placeholder="Strength"
+                className="w-32 px-3 py-2 border rounded"
               />
-              <div className="w-1/4 flex gap-1">
-                <select
+              <select
+                name="timing"
+                value={
+                  timingOptions.some(opt => opt.value === med.timing)
+                    ? med.timing
+                    : 'custom'
+                }
+                onChange={e => handleTimingChange(i, e)}
+                className="w-40 px-3 py-2 border rounded"
+              >
+                {timingOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {!timingOptions.some(opt => opt.value === med.timing) && (
+                <input
                   name="timing"
-                  value={
-                    timingOptions.some((opt) => opt.value === med.timing)
-                      ? med.timing
-                      : "custom"
-                  }
-                  onChange={(e) => handleTimingChange(i, e)}
-                  required
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded"
-                >
-                  {timingOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                {!timingOptions.some((opt) => opt.value === med.timing) && (
-                  <input
-                    name="timing"
-                    placeholder="Custom timing"
-                    value={med.timing}
-                    onChange={(e) => handleMedChange(i, e)}
-                    required
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded"
-                  />
-                )}
-              </div>
+                  value={med.timing}
+                  onChange={e => handleMedChange(i, e)}
+                  placeholder="Custom timing"
+                  className="w-40 px-3 py-2 border rounded"
+                />
+              )}
               <input
                 name="duration"
-                placeholder="Duration (e.g. 10 days)"
                 value={med.duration}
-                onChange={(e) => handleMedChange(i, e)}
+                onChange={e => handleMedChange(i, e)}
+                placeholder="Duration"
+                className="w-32 px-3 py-2 border rounded"
                 required
-                className="w-1/4 px-3 py-2 border border-gray-300 rounded"
               />
               <input
                 name="instructions"
-                placeholder="Instructions"
                 value={med.instructions}
-                onChange={(e) => handleMedChange(i, e)}
-                className="w-full px-3 py-2 border border-gray-300 rounded"
+                onChange={e => handleMedChange(i, e)}
+                placeholder="Instructions"
+                className="flex-1 min-w-[150px] px-3 py-2 border rounded"
               />
               <button
                 type="button"
                 onClick={() => removeMedicine(i)}
-                className="text-red-500 font-bold px-2"
-                title="Remove"
+                className="text-red-600 hover:text-red-800"
               >
-                ×
+                <FiTrash />
               </button>
             </div>
           ))}
           <button
             type="button"
             onClick={addMedicine}
-            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
+            className="mt-2 inline-flex items-center gap-2 text-sm text-white bg-purple-700 px-4 py-2 rounded hover:bg-purple-800"
           >
-            + Add Medicine
+            <FiPlus /> Add Medicine
           </button>
         </div>
 
-        {/* Advice and follow-up */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">Advice</label>
+        <div className="mt-6">
+          <label className="block text-sm font-medium text-gray-700">
+            Advice
+          </label>
           <textarea
-            placeholder="Advice"
             value={advice}
-            onChange={(e) => setAdvice(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+            onChange={e => setAdvice(e.target.value)}
             rows={2}
-          />
+            className="w-full mt-1 px-3 py-2 border rounded focus:ring-2 focus:ring-purple-500"
+          ></textarea>
         </div>
-        <div className="mb-6">
-          <label className="block text-gray-700 font-medium mb-1">
+
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700">
             Follow-up Date
           </label>
-          <input
-            type="date"
-            placeholder="Follow-up Date"
-            value={followUpDate}
-            onChange={(e) => setFollowUpDate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+          <DatePicker
+            selected={followUpDate ? new Date(followUpDate) : null}
+            onChange={date =>
+              setFollowUpDate(date ? date.toISOString().split('T')[0] : '')
+            }
+            dateFormat="yyyy-MM-dd"
+            placeholderText="Select follow-up date"
+            className="w-full mt-1 px-3 py-2 border rounded focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            popperClassName="z-50"
+            wrapperClassName="w-full"
           />
         </div>
 
-        {/* Action buttons */}
-        <div className="flex justify-end gap-2">
+        <div className="mt-6 flex justify-end gap-3">
           <button
-            type="button"
             onClick={onClose}
-            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+            type="button"
+            className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
+            className="px-4 py-2 rounded bg-purple-700 text-white hover:bg-purple-800"
           >
-            {isEditing ? "Update Prescription" : "Save & Send"}
+            {isEditing ? 'Update Prescription' : 'Save & Send'}
           </button>
         </div>
+
         {message && (
-          <div className="mt-4 text-center text-green-700 font-semibold">
+          <p className="mt-4 text-green-600 text-center font-semibold">
             {message}
-          </div>
+          </p>
         )}
       </form>
     </div>

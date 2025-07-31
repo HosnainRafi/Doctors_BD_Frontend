@@ -1,131 +1,75 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { FaStar, FaRegStar, FaEdit, FaTrashAlt } from 'react-icons/fa';
-
-const StarRating = ({ rating }) => {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    stars.push(
-      i <= rating ? (
-        <FaStar key={i} className="text-yellow-400 text-lg" />
-      ) : (
-        <FaRegStar key={i} className="text-yellow-400 text-lg" />
-      )
-    );
-  }
-  return <div className="flex space-x-1">{stars}</div>;
-};
-
-const ReviewCard = ({ review, onEdit, onDelete }) => (
-  <div className="bg-white shadow-md rounded-lg p-4 mb-5 border border-gray-200 hover:shadow-lg transition-shadow duration-200">
-    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
-      <div>
-        <h4 className="text-md font-semibold text-gray-900 mb-1">
-          Dr. {review.doctor_id?.name}
-        </h4>
-        <p className="text-gray-700 flex-1 text-sm">
-          {review.comment || (
-            <em className="italic text-gray-400">No comment provided</em>
-          )}
-        </p>
-        <StarRating rating={review.rating} />
-      </div>
-
-      <div className="flex gap-3 mt-3 md:mt-0">
-        <button
-          onClick={() => onEdit(review)}
-          className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1 rounded-md text-xs font-medium shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-          aria-label="Edit Review"
-          title="Edit Review"
-        >
-          <FaEdit className="text-sm" /> Edit
-        </button>
-        <button
-          onClick={() => onDelete(review._id)}
-          className="flex items-center gap-1 bg-red-600 text-white px-3 py-1 rounded-md text-xs font-medium shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition"
-          aria-label="Delete Review"
-          title="Delete Review"
-        >
-          <FaTrashAlt className="text-sm" /> Delete
-        </button>
-      </div>
-    </div>
-  </div>
-);
+import ReviewCard from './components/ReviewCard';
+import { getAuthToken } from '../../../utils/getAuthToken';
+import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
+import axiosCommon from '../../../api/axiosCommon';
+import DeleteConfirmModal from '../../../Modal/DeleteConfirmModal';
+import { ImSpinner9 } from 'react-icons/im';
+import NoDataFound from './components/NoDataFound';
 
 const UserReviewToDoctor = () => {
   const [appointments, setAppointments] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [form, setForm] = useState({ doctor_id: '', rating: 5, comment: '' });
   const [editingId, setEditingId] = useState(null);
+  const [deletedId, setDeletedId] = useState(null);
   const [userId, setUserId] = useState('');
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem('userToken');
-  const email = token ? JSON.parse(atob(token.split('.')[1])).email : null;
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const token = getAuthToken();
 
   // Validation error state
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const fetchUserId = async () => {
-      if (!email) return;
-      setLoading(true);
+    (async () => {
       try {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/users?email=${encodeURIComponent(
-            email
-          )}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+        setLoading(true);
+        const id = await getUserIdByEmail();
+        console.log(id);
+        setUserId(id);
+        const appointmentRes = await axiosCommon.get('/appointments', {
+          params: { user_id: id },
+        });
+        setAppointments(
+          (appointmentRes.data?.data || []).filter(
+            a => a.status === 'completed'
+          )
         );
-        const data = await res.json();
-        if (data?.data?._id) {
-          setUserId(data.data._id);
-        } else {
-          toast.error('User not found for this email.');
-        }
-      } catch (err) {
-        toast.error('Error fetching user info.', err);
+      } catch (error) {
+        toast.error(error.message || 'Error fetching appointments');
       } finally {
         setLoading(false);
       }
-    };
-    fetchUserId();
-  }, [email, token]);
+    })();
+  }, [token]);
 
   useEffect(() => {
     if (!userId) return;
     (async () => {
       try {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/appointments?user_id=${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const data = await res.json();
-        setAppointments(
-          (data.data || []).filter(a => a.status === 'completed')
-        );
+        setLoading(true);
+        const reviewRes = await axiosCommon.get('/reviews', {
+          params: { patient_id: userId },
+        });
+        setReviews(reviewRes.data?.data || []);
       } catch (error) {
-        console.error('Error fetching appointments', error);
-      }
-    })();
-
-    (async () => {
-      try {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/reviews?patient_id=${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const data = await res.json();
-        setReviews(data.data || []);
-      } catch (error) {
-        console.error('Error fetching reviews', error);
+        toast.error(error.message || 'Error fetching reviews');
+      } finally {
+        setLoading(false);
       }
     })();
   }, [userId, token]);
 
-  // Validate form fields — returns true if valid, else false
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+  };
+  const openDeleteModal = id => {
+    setDeletedId(id);
+    setDeleteModalOpen(true);
+  };
+
   const validateForm = () => {
     const newErrors = {};
     if (!form.doctor_id) newErrors.doctor_id = 'Doctor selection is required.';
@@ -139,25 +83,14 @@ const UserReviewToDoctor = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (!validateForm()) return; // prevent submit if invalid
-
+    if (!validateForm()) return;
     try {
       if (editingId) {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/reviews/${editingId}`,
-          {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              rating: form.rating,
-              comment: form.comment,
-            }),
-          }
-        );
-        const data = await res.json();
+        const res = await axiosCommon.patch(`/reviews/${editingId}`, {
+          rating: form.rating,
+          comment: form.comment,
+        });
+        const data = res.data;
         if (data.success) {
           setReviews(reviews.map(r => (r._id === editingId ? data.data : r)));
           setEditingId(null);
@@ -168,23 +101,13 @@ const UserReviewToDoctor = () => {
           toast.error(data.message || 'Failed to update review.');
         }
       } else {
-        const res = await fetch(
-          'https://doctors-bd-backend.vercel.app/api/v1/reviews',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              doctor_id: form.doctor_id,
-              patient_id: userId,
-              rating: form.rating,
-              comment: form.comment,
-            }),
-          }
-        );
-        const data = await res.json();
+        const res = await axiosCommon.post('/reviews', {
+          doctor_id: form.doctor_id,
+          patient_id: userId,
+          rating: form.rating,
+          comment: form.comment,
+        });
+        const data = res.data;
         if (data.success) {
           setReviews([data.data, ...reviews]);
           setForm({ doctor_id: '', rating: 5, comment: '' });
@@ -195,24 +118,16 @@ const UserReviewToDoctor = () => {
         }
       }
     } catch (error) {
-      toast.error('An error occurred, please try again.');
-      console.error(error);
+      toast.error(error.message || 'An error occurred, please try again.');
     }
   };
 
-  const handleDelete = async id => {
-    if (!window.confirm('Delete this review?')) return;
+  const handleDelete = async () => {
     try {
-      await fetch(
-        `https://doctors-bd-backend.vercel.app/api/v1/reviews/${id}`,
-        {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setReviews(reviews.filter(r => r._id !== id));
+      await axiosCommon.delete(`/reviews/${deletedId}`);
+      setReviews(reviews.filter(r => r._id !== deletedId));
     } catch (error) {
-      console.error('Failed to delete review', error);
+      toast.error(error.message || 'Failed to delete review');
     }
   };
 
@@ -225,12 +140,6 @@ const UserReviewToDoctor = () => {
     });
     setErrors({});
   };
-
-  if (loading) {
-    return (
-      <div className="text-center py-10 text-lg font-semibold">Loading...</div>
-    );
-  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
@@ -359,21 +268,31 @@ const UserReviewToDoctor = () => {
       </form>
 
       <section className="max-w-4xl mx-auto">
-        {reviews.length === 0 ? (
-          <p className="text-center text-gray-400 text-sm py-10 italic">
-            No reviews yet.
-          </p>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <ImSpinner9 size={40} className="animate-spin text-purple-600" />
+          </div>
+        ) : reviews.length === 0 ? (
+          <NoDataFound message="   No reviews yet." />
         ) : (
           reviews.map(r => (
             <ReviewCard
               key={r._id}
               review={r}
               onEdit={handleEdit}
-              onDelete={handleDelete}
+              onDelete={openDeleteModal}
             />
           ))
         )}
       </section>
+      <DeleteConfirmModal
+        title="Confirm Delete"
+        subTitle="Are you sure you want to delete the review? This action cannot be undone."
+        buttonActionType="Delete Appointment"
+        isOpen={deleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 };

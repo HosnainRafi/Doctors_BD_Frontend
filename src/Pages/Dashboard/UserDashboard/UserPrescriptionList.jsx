@@ -5,6 +5,7 @@ import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
 import toast from 'react-hot-toast';
 import { getAuthToken } from '../../../utils/getAuthToken';
 import PrescriptionModal from '../../../Modal/PrescriptionModal';
+import NoDataFound from './components/NoDataFound';
 
 const UserPrescriptionList = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -47,9 +48,7 @@ const UserPrescriptionList = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {prescriptions.length === 0 ? (
-            <div className="col-span-full text-center text-gray-500 bg-white p-8 rounded-xl shadow border">
-              <p className="text-lg font-medium">No prescriptions found.</p>
-            </div>
+            <NoDataFound message="No prescriptions found." />
           ) : (
             prescriptions.map(p => (
               <div

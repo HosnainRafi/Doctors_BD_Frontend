@@ -7,11 +7,12 @@ import {
   FaUserShield,
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-import { ImSpinner10 } from 'react-icons/im';
+import { ImSpinner9 } from 'react-icons/im';
 import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
 import axiosCommon from '../../../api/axiosCommon';
 import DeleteConfirmModal from '../../../Modal/DeleteConfirmModal';
 import UserAddPatientModal from '../../../Modal/UserAddPatientModal';
+import NoDataFound from './components/NoDataFound';
 
 const UserPatientList = () => {
   const [patients, setPatients] = useState([]);
@@ -112,14 +113,12 @@ const UserPatientList = () => {
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <ImSpinner10 size={40} className="animate-spin text-purple-600" />
+          <ImSpinner9 size={40} className="animate-spin text-purple-600" />
         </div>
       ) : (
         <div className="space-y-4">
           {patients.length === 0 && userId && (
-            <div className="text-gray-400">
-              No patients found for this user.
-            </div>
+            <NoDataFound message="No patients found for this user." />
           )}
           {patients.map(patient => (
             <div

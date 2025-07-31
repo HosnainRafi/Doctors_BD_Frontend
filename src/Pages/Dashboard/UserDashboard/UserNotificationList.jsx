@@ -1,93 +1,59 @@
 import React, { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 import { FaBell, FaCheckCircle, FaExternalLinkAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { getAuthToken } from '../../../utils/getAuthToken';
+import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
+import axiosCommon from '../../../api/axiosCommon';
+import toast from 'react-hot-toast';
+import NoDataFound from './components/NoDataFound';
+import { ImSpinner9 } from 'react-icons/im';
 
 const UserNotificationList = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState('');
-  const token = localStorage.getItem('userToken');
-  const email = token ? JSON.parse(atob(token.split('.')[1])).email : null;
+  const [refetch, setRefetch] = useState(false);
+  const token = getAuthToken();
 
   useEffect(() => {
-    const fetchUserId = async () => {
-      if (!email) return;
+    const fetchNotifications = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/users?email=${encodeURIComponent(
-            email
-          )}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const data = await res.json();
-        if (data?.data?._id) {
-          setUserId(data.data._id);
-        } else {
-          toast.error('User not found for this email.');
-        }
-      } catch (err) {
-        toast.error('Error fetching user info.',err.message);
+        const id = await getUserIdByEmail();
+        setUserId(id);
+        const res = await axiosCommon.get(`/notifications?user_id=${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setNotifications(res.data.data || []);
+      } catch (error) {
+        toast.error(error.message || 'Error fetching notifications');
       } finally {
         setLoading(false);
       }
     };
-    fetchUserId();
-  }, [email, token]);
-
-  useEffect(() => {
-    if (!userId) return;
-    setLoading(true);
-    fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/notifications?user_id=${userId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    )
-      .then(res => res.json())
-      .then(data => {
-        setNotifications(data.data || []);
-        setLoading(false);
-      });
-  }, [userId, token]);
-
+    fetchNotifications();
+  }, [refetch, token]);
   const handleMarkAsRead = async id => {
-    await fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/notifications/${id}/read`,
-      {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
-      }
-    );
-    setNotifications(prev =>
-      prev.map(n => (n._id === id ? { ...n, isRead: true } : n))
-    );
+    try {
+      await axiosCommon.patch(`/notifications/${id}/read`, {});
+      setRefetch(!refetch);
+    } catch (error) {
+      toast.error(error.message || 'Error marking as read');
+    }
   };
 
   const handleMarkAllAsRead = async () => {
-    await fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/notifications/mark-all-read?user_id=${userId}`,
-      {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    try {
+      await axiosCommon.patch(`/notifications/mark-all-read`, null, {
+        params: { user_id: userId },
+      });
+      setRefetch(!refetch);
+    } catch (error) {
+      toast.error(error.message || 'Error marking all as read');
+    }
   };
-
-  if (loading)
-    return (
-      <div className="text-center py-20 text-gray-600 text-lg font-medium">
-        Loading notifications...
-      </div>
-    );
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -114,10 +80,12 @@ const UserNotificationList = () => {
         </button>
       </header>
 
-      {notifications.length === 0 ? (
-        <p className="text-center text-gray-500 text-lg py-20">
-          No notifications to show.
-        </p>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <ImSpinner9 size={40} className="animate-spin text-purple-600" />
+        </div>
+      ) : notifications.length === 0 ? (
+        <NoDataFound message="No notifications to show." />
       ) : (
         <ul className="space-y-4">
           {notifications.map(n => (

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import {
   FaUserMd,
@@ -9,68 +8,45 @@ import {
   FaMapMarkerAlt,
 } from 'react-icons/fa';
 import { MdOutlineEmail } from 'react-icons/md';
+import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
+import axiosCommon from './../../../api/axiosCommon';
+import { getAuthToken } from '../../../utils/getAuthToken';
+import toast from 'react-hot-toast';
+import NoDataFound from './components/NoDataFound';
+import { ImSpinner9 } from 'react-icons/im';
 
 const UserFollowUpList = () => {
   const [followUps, setFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [reminderMsg, setReminderMsg] = useState('');
-  const [userId, setUserId] = useState('');
 
-  const token = localStorage.getItem('userToken');
-  const email = token ? JSON.parse(atob(token.split('.')[1])).email : null;
-  console.log(email)
   const navigate = useNavigate();
-
   useEffect(() => {
-    const fetchUserId = async () => {
-      if (!email) return;
-      setLoading(true);
+    const fetchFollowUps = async () => {
       try {
-        const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/users?email=${encodeURIComponent(
-            email
-          )}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const data = await res.json();
-        if (data?.data?._id) {
-          setUserId(data.data._id);
-        } else {
-          toast.error('User not found for this email.');
-        }
-      } catch (err) {
-        toast.error('Error fetching user info.', err);
+        setLoading(true);
+        const token = getAuthToken();
+        const id = await getUserIdByEmail();
+        const response = await axiosCommon.get(`followups?user_id=${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setFollowUps(response.data.data || []);
+      } catch (error) {
+        toast.error(error.message || 'Failed to followup data');
       } finally {
         setLoading(false);
       }
     };
-    fetchUserId();
-  }, [email, token]);
-
-  useEffect(() => {
-    if (!userId) return;
-    setLoading(true);
-    fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/followups?user_id=${userId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    )
-      .then(res => res.json())
-      .then(data => {
-        setFollowUps(data.data || []);
-        setLoading(false);
-      });
-  }, [userId, token]);
+    fetchFollowUps();
+  }, []);
 
   const handleSendReminder = followUp => {
     alert(
       `Reminder sent to ${followUp.patient_id?.name} (${followUp.patient_id?.phone}) for follow-up on ${followUp.scheduled_date}.`
     );
-    setReminderMsg('Reminder sent!');
-    setTimeout(() => setReminderMsg(''), 2000);
+    toast.success('Reminder sent!');
   };
 
   const handleBookFollowUp = followUp => {
@@ -93,21 +69,18 @@ const UserFollowUpList = () => {
     });
   };
 
-  if (loading)
-    return (
-      <div className="text-center py-10 text-gray-600">
-        Loading follow-ups...
-      </div>
-    );
-
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-      <h2 className="text-3xl font-bold mb-8 text-gray-800 text-center sm:text-left">
+      <h2 className="text-3xl font-bold mb-8 text-purple-700 text-center">
         Follow-Up Appointments
       </h2>
 
-      {followUps.length === 0 ? (
-        <div className="text-center text-gray-500">No follow-ups found.</div>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <ImSpinner9 size={40} className="animate-spin text-purple-600" />
+        </div>
+      ) : followUps.length === 0 ? (
+        <NoDataFound message="No follow-ups found." />
       ) : (
         <div className="grid gap-6">
           {followUps.map(f => (
@@ -205,12 +178,6 @@ const UserFollowUpList = () => {
               )}
             </div>
           ))}
-        </div>
-      )}
-
-      {reminderMsg && (
-        <div className="mt-6 text-center text-green-600 font-medium">
-          {reminderMsg}
         </div>
       )}
     </div>

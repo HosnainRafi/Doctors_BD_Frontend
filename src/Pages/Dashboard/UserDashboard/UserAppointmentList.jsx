@@ -6,7 +6,7 @@ import {
   HiVideoCamera,
   HiX,
 } from 'react-icons/hi';
-import { ImSpinner10, ImSpinner9 } from 'react-icons/im';
+import {  ImSpinner9 } from 'react-icons/im';
 import toast from 'react-hot-toast';
 import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
 import axiosCommon from '../../../api/axiosCommon';
@@ -15,6 +15,7 @@ import { getAuthToken } from '../../../utils/getAuthToken';
 import DeleteConfirmModal from '../../../Modal/DeleteConfirmModal';
 import DoctorDetailsModal from '../../../Modal/DoctorDetailsModal';
 import RescheduleAppointmentModal from '../../../Modal/RescheduleAppointmentModal';
+import NoDataFound from './components/NoDataFound';
 
 const UserAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
@@ -181,12 +182,12 @@ const UserAppointmentList = () => {
 
       {loading && appointments.length === 0 ? (
         <div className="flex justify-center items-center h-64">
-          <ImSpinner10 size={40} className="animate-spin text-purple-600" />
+          <ImSpinner9 size={40} className="animate-spin text-purple-600" />
         </div>
       ) : (
         <div className="space-y-4">
           {appointments.length === 0 && (
-            <div className="text-gray-400">No appointments found.</div>
+            <NoDataFound message="No appointments found." />
           )}
 
           {appointments.map(a => (
@@ -381,7 +382,11 @@ const UserAppointmentList = () => {
                       className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-medium shadow-sm hover:bg-blue-700 transition"
                     >
                       <HiBell className="w-4 h-4" />
-                      {loading ? <ImSpinner9 className='animate-spin' /> : 'Send Reminder'}
+                      {loading ? (
+                        <ImSpinner9 className="animate-spin" />
+                      ) : (
+                        'Send Reminder'
+                      )}
                     </button>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import PrescriptionForm from './PrescriptionForm';
+import React, { useEffect, useState } from "react";
+import PrescriptionForm from "./PrescriptionForm";
 import {
   FaUser,
   FaVideo,
@@ -7,21 +7,21 @@ import {
   FaCheckCircle,
   FaTimesCircle,
   FaNotesMedical,
-} from 'react-icons/fa';
-import toast from 'react-hot-toast';
+} from "react-icons/fa";
+import toast from "react-hot-toast";
 
-const getStatusColor = status => {
+const getStatusColor = (status) => {
   switch (status) {
-    case 'pending':
-      return 'bg-yellow-100 text-yellow-800';
-    case 'confirmed':
-      return 'bg-green-100 text-green-800';
-    case 'completed':
-      return 'bg-blue-100 text-blue-800';
-    case 'cancelled':
-      return 'bg-red-100 text-red-800';
+    case "pending":
+      return "bg-yellow-100 text-yellow-800";
+    case "confirmed":
+      return "bg-green-100 text-green-800";
+    case "completed":
+      return "bg-blue-100 text-blue-800";
+    case "cancelled":
+      return "bg-red-100 text-red-800";
     default:
-      return 'bg-gray-100 text-gray-800';
+      return "bg-gray-100 text-gray-800";
   }
 };
 
@@ -32,11 +32,11 @@ const DoctorAppointmentList = () => {
   const [doctorId, setDoctorId] = useState(null);
   const [error, setError] = useState(null);
 
-  const doctorToken = localStorage.getItem('doctorToken');
+  const doctorToken = localStorage.getItem("doctorToken");
   let doctorEmail = null;
   try {
     doctorEmail = doctorToken
-      ? JSON.parse(atob(doctorToken.split('.')[1])).email
+      ? JSON.parse(atob(doctorToken.split(".")[1])).email
       : null;
   } catch (err) {
     doctorEmail = null;
@@ -46,7 +46,7 @@ const DoctorAppointmentList = () => {
   useEffect(() => {
     const fetchDoctorId = async () => {
       if (!doctorEmail) {
-        setError('Doctor email not found in token.');
+        setError("Doctor email not found in token.");
         setLoading(false);
         return;
       }
@@ -62,10 +62,10 @@ const DoctorAppointmentList = () => {
         if (data?.data?._id) {
           setDoctorId(data.data._id);
         } else {
-          setError('Doctor not found.');
+          setError("Doctor not found.");
         }
       } catch {
-        setError('Failed to fetch doctor info.');
+        setError("Failed to fetch doctor info.");
       } finally {
         setLoading(false);
       }
@@ -88,7 +88,7 @@ const DoctorAppointmentList = () => {
         const data = await res.json();
         setAppointments(data.data || []);
       } catch {
-        setError('Failed to fetch appointments.');
+        setError("Failed to fetch appointments.");
       } finally {
         setLoading(false);
       }
@@ -99,13 +99,14 @@ const DoctorAppointmentList = () => {
 
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = appointments.filter(
-    a => a.date > today && a.status !== 'cancelled'
+    (a) => a.date > today && a.status !== "cancelled"
   );
   const todayList = appointments.filter(
-    a => a.date === today && a.status !== 'cancelled'
+    (a) => a.date === today && a.status !== "cancelled"
   );
   const past = appointments.filter(
-    a => a.date < today || a.status === 'completed' || a.status === 'cancelled'
+    (a) =>
+      a.date < today || a.status === "completed" || a.status === "cancelled"
   );
 
   const handleStatusChange = async (id, status) => {
@@ -113,24 +114,24 @@ const DoctorAppointmentList = () => {
       await fetch(
         `https://doctors-bd-backend.vercel.app/api/v1/appointments/${id}`,
         {
-          method: 'PATCH',
+          method: "PATCH",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${doctorToken}`,
           },
           body: JSON.stringify({ status }),
         }
       );
-      setAppointments(prev =>
-        prev.map(a => (a._id === id ? { ...a, status } : a))
+      setAppointments((prev) =>
+        prev.map((a) => (a._id === id ? { ...a, status } : a))
       );
     } catch (err) {
       toast.error(err.message);
     }
   };
 
-  const handleStartVideoCall = appointment => {
-    window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, '_blank');
+  const handleStartVideoCall = (appointment) => {
+    window.open(`https://meet.jit.si/doctorbd-${appointment._id}`, "_blank");
   };
 
   const hasAnyAppointments =
@@ -249,7 +250,7 @@ const AppointmentTable = ({
             </td>
           </tr>
         )}
-        {appointments.map(a => (
+        {appointments.map((a) => (
           <tr key={a._id}>
             <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
               {a.date}
@@ -275,26 +276,26 @@ const AppointmentTable = ({
             </td>
             <td className="px-4 py-3 whitespace-nowrap">
               <div className="flex flex-wrap gap-2">
-                {!isPast && a.status === 'pending' && (
+                {!isPast && a.status === "pending" && (
                   <>
                     <button
-                      onClick={() => onStatusChange(a._id, 'confirmed')}
+                      onClick={() => onStatusChange(a._id, "confirmed")}
                       className="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold px-3 py-1 rounded shadow"
                     >
                       <FaCheckCircle className="inline-block mr-1" /> Accept
                     </button>
                     <button
-                      onClick={() => onStatusChange(a._id, 'cancelled')}
+                      onClick={() => onStatusChange(a._id, "cancelled")}
                       className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1 rounded shadow"
                     >
                       <FaTimesCircle className="inline-block mr-1" /> Cancel
                     </button>
                   </>
                 )}
-                {!isPast && a.status === 'confirmed' && (
+                {!isPast && a.status === "confirmed" && (
                   <>
                     <button
-                      onClick={() => onStatusChange(a._id, 'completed')}
+                      onClick={() => onStatusChange(a._id, "completed")}
                       className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1 rounded shadow"
                     >
                       <FaCheckCircle className="inline-block mr-1" /> Completed
@@ -307,12 +308,12 @@ const AppointmentTable = ({
                     </button>
                   </>
                 )}
-                {a.status === 'completed' && onCreatePrescription && (
+                {a.status === "completed" && onCreatePrescription && (
                   <button
                     onClick={() => onCreatePrescription(a)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1 rounded shadow"
                   >
-                    <FaNotesMedical className="inline-block mr-1" />{' '}
+                    <FaNotesMedical className="inline-block mr-1" />{" "}
                     Prescription
                   </button>
                 )}

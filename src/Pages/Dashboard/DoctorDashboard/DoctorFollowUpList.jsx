@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { FaCheck, FaEdit, FaSave, FaPaperPlane } from 'react-icons/fa';
-import { format } from 'date-fns';
+import React, { useEffect, useState } from "react";
+import { FaCheck, FaEdit, FaSave, FaPaperPlane } from "react-icons/fa";
+import { format } from "date-fns";
 
 const DoctorFollowUpList = () => {
   const [followUps, setFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState(null);
-  const [advice, setAdvice] = useState('');
+  const [advice, setAdvice] = useState("");
   const [doctorId, setDoctorId] = useState(null);
   const [error, setError] = useState(null);
 
-  const doctorToken = localStorage.getItem('doctorToken');
+  const doctorToken = localStorage.getItem("doctorToken");
   let doctorEmail = null;
   try {
     doctorEmail = doctorToken
-      ? JSON.parse(atob(doctorToken.split('.')[1])).email
+      ? JSON.parse(atob(doctorToken.split(".")[1])).email
       : null;
   } catch (err) {
     doctorEmail = null;
@@ -23,7 +23,7 @@ const DoctorFollowUpList = () => {
 
   useEffect(() => {
     if (!doctorEmail) {
-      setError('Doctor email not found in token.');
+      setError("Doctor email not found in token.");
       setLoading(false);
       return;
     }
@@ -35,17 +35,17 @@ const DoctorFollowUpList = () => {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data?.data?._id) {
           setDoctorId(data.data._id);
         } else {
-          setError('Doctor not found.');
+          setError("Doctor not found.");
           setLoading(false);
         }
       })
       .catch(() => {
-        setError('Failed to fetch doctor info.');
+        setError("Failed to fetch doctor info.");
         setLoading(false);
       });
   }, [doctorEmail, doctorToken]);
@@ -60,71 +60,71 @@ const DoctorFollowUpList = () => {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setFollowUps(data.data || []);
         setLoading(false);
       })
       .catch(() => {
-        setError('Failed to fetch follow-ups.');
+        setError("Failed to fetch follow-ups.");
         setLoading(false);
       });
   }, [doctorId, doctorToken]);
 
-  const handleComplete = async id => {
+  const handleComplete = async (id) => {
     await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/followups/${id}`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${doctorToken}`,
         },
-        body: JSON.stringify({ status: 'completed' }),
+        body: JSON.stringify({ status: "completed" }),
       }
     );
-    setFollowUps(prev =>
-      prev.map(f => (f._id === id ? { ...f, status: 'completed' } : f))
+    setFollowUps((prev) =>
+      prev.map((f) => (f._id === id ? { ...f, status: "completed" } : f))
     );
   };
 
   const handleEditAdvice = (id, currentAdvice) => {
     setEditId(id);
-    setAdvice(currentAdvice || '');
+    setAdvice(currentAdvice || "");
   };
 
-  const handleSaveAdvice = async id => {
+  const handleSaveAdvice = async (id) => {
     await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/followups/${id}`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${doctorToken}`,
         },
         body: JSON.stringify({ notes: advice }),
       }
     );
-    setFollowUps(prev =>
-      prev.map(f => (f._id === id ? { ...f, notes: advice } : f))
+    setFollowUps((prev) =>
+      prev.map((f) => (f._id === id ? { ...f, notes: advice } : f))
     );
     setEditId(null);
-    setAdvice('');
+    setAdvice("");
   };
 
   const handleSendReminder = (patientPhone, notes) => {
     alert(`Reminder sent to ${patientPhone}!\nAdvice: ${notes}`);
   };
 
-  const statusBadge = status => {
-    const base = 'px-2 py-1 rounded-full text-xs font-semibold';
-    if (status === 'completed') return `${base} bg-green-100 text-green-700`;
+  const statusBadge = (status) => {
+    const base = "px-2 py-1 rounded-full text-xs font-semibold";
+    if (status === "completed") return `${base} bg-green-100 text-green-700`;
     return `${base} bg-yellow-100 text-yellow-700`;
   };
 
-  const formatDate = dateString => {
+  const formatDate = (dateString) => {
     try {
-      return format(new Date(dateString), 'dd MMMM yyyy');
+      return format(new Date(dateString), "dd MMMM yyyy");
     } catch {
       return dateString;
     }
@@ -158,7 +158,7 @@ const DoctorFollowUpList = () => {
         Patient Follow-Ups
       </h2>
       <div className="space-y-6">
-        {followUps.map(f => (
+        {followUps.map((f) => (
           <div
             key={f._id}
             className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-6 flex flex-col md:flex-row md:justify-between gap-4"
@@ -166,7 +166,7 @@ const DoctorFollowUpList = () => {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xl font-semibold text-gray-800">
-                  {f.patient_id?.name || 'Unnamed Patient'}
+                  {f.patient_id?.name || "Unnamed Patient"}
                 </span>
                 <span className={statusBadge(f.status)}>{f.status}</span>
               </div>
@@ -178,7 +178,7 @@ const DoctorFollowUpList = () => {
                 {editId === f._id ? (
                   <input
                     value={advice}
-                    onChange={e => setAdvice(e.target.value)}
+                    onChange={(e) => setAdvice(e.target.value)}
                     placeholder="Enter advice..."
                     className="w-full md:w-3/4 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
@@ -195,7 +195,7 @@ const DoctorFollowUpList = () => {
             </div>
 
             <div className="flex flex-wrap md:flex-col gap-2 items-start md:items-end">
-              {f.status !== 'completed' && (
+              {f.status !== "completed" && (
                 <button
                   onClick={() => handleComplete(f._id)}
                   className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-md transition"
@@ -216,7 +216,7 @@ const DoctorFollowUpList = () => {
                   onClick={() => handleEditAdvice(f._id, f.notes)}
                   className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm px-4 py-2 rounded-md transition"
                 >
-                  <FaEdit /> {f.notes ? 'Edit' : 'Add'} Advice
+                  <FaEdit /> {f.notes ? "Edit" : "Add"} Advice
                 </button>
               )}
 

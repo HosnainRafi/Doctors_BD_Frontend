@@ -186,8 +186,8 @@ const DoctorProfile = () => {
                   <div className="flex items-center">
                     <div>
                       <h3 className="text-xs text-purple-700 font-bold uppercase tracking-widest mb-1">
-      Personal Information
-    </h3>
+                        Personal Information
+                      </h3>
                       <h3 className="text-2xl font-semibold text-purple-700">
                         {doctor.name}
                       </h3>
@@ -240,9 +240,9 @@ const DoctorProfile = () => {
               </div>
               <div className="border border-purple-700 p-5 rounded-2xl shadow-md bg-white">
                 <div>
-                   <h3 className="text-xs text-purple-700 font-bold uppercase tracking-widest mb-1">
-      Biography
-    </h3>
+                  <h3 className="text-xs text-purple-700 font-bold uppercase tracking-widest mb-1">
+                    Biography
+                  </h3>
                   <h2 className="font-semibold text-2xl text-purple-700 ">
                     About Me:
                   </h2>{" "}
@@ -254,9 +254,9 @@ const DoctorProfile = () => {
                   onSubmit={handleChangePassword}
                   className="space-y-3 pt-2"
                 >
-                   <h3 className="text-xs text-purple-700 font-bold uppercase tracking-widest ">
-      Security
-    </h3>
+                  <h3 className="text-xs text-purple-700 font-bold uppercase tracking-widest ">
+                    Security
+                  </h3>
                   <label className="block text-base font-medium text-gray-600">
                     Change Password
                   </label>

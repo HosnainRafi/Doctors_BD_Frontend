@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const DoctorEarnings = () => {
   const [earnings, setEarnings] = useState({
@@ -7,8 +7,8 @@ const DoctorEarnings = () => {
     appointments: [],
   });
 
-  const doctorToken = localStorage.getItem('doctorToken');
-  const doctorId = localStorage.getItem('doctorId');
+  const doctorToken = localStorage.getItem("doctorToken");
+  const doctorId = localStorage.getItem("doctorId");
 
   useEffect(() => {
     if (!doctorId) return;
@@ -18,8 +18,8 @@ const DoctorEarnings = () => {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then(res => res.json())
-      .then(data =>
+      .then((res) => res.json())
+      .then((data) =>
         setEarnings(data.data || { total: 0, count: 0, appointments: [] })
       );
   }, [doctorId, doctorToken]);
@@ -71,14 +71,14 @@ const DoctorEarnings = () => {
                   </td>
                 </tr>
               ) : (
-                earnings.appointments.map(a => (
+                earnings.appointments.map((a) => (
                   <tr
                     key={a._id}
                     className="border-t hover:bg-gray-50 transition-colors duration-200"
                   >
                     <td className="px-6 py-4">{a.date}</td>
                     <td className="px-6 py-4">{a.time}</td>
-                    <td className="px-6 py-4">{a.patient_id?.name || 'N/A'}</td>
+                    <td className="px-6 py-4">{a.patient_id?.name || "N/A"}</td>
                     <td className="px-6 py-4 text-right text-green-700 font-semibold">
                       {a.amount}
                     </td>

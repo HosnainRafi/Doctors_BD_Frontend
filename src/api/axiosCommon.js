@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
 const axiosCommon = axios.create({
-  baseURL: 'https://doctors-bd-backend.vercel.app/api/v1',
+  baseURL: "https://doctors-bd-backend.vercel.app/api/v1",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 

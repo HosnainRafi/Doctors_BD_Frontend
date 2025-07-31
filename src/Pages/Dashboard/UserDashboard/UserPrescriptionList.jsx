@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { ImSpinner9 } from 'react-icons/im';
-import axiosCommon from '../../../api/axiosCommon';
-import { getUserIdByEmail } from '../../../utils/getUserIdByEmail';
-import toast from 'react-hot-toast';
-import { getAuthToken } from '../../../utils/getAuthToken';
-import PrescriptionModal from '../../../Modal/PrescriptionModal';
-import NoDataFound from './components/NoDataFound';
+import { useEffect, useState } from "react";
+import { ImSpinner9 } from "react-icons/im";
+import axiosCommon from "../../../api/axiosCommon";
+import { getUserIdByEmail } from "../../../utils/getUserIdByEmail";
+import toast from "react-hot-toast";
+import { getAuthToken } from "../../../utils/getAuthToken";
+import PrescriptionModal from "../../../Modal/PrescriptionModal";
+import NoDataFound from "./components/NoDataFound";
 
 const UserPrescriptionList = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -26,7 +26,7 @@ const UserPrescriptionList = () => {
         });
         setPrescriptions(res.data.data || []);
       } catch (error) {
-        toast.error(error.message || 'Failed to fetch prescriptions');
+        toast.error(error.message || "Failed to fetch prescriptions");
         setPrescriptions([]);
       } finally {
         setLoading(false);
@@ -50,7 +50,7 @@ const UserPrescriptionList = () => {
           {prescriptions.length === 0 ? (
             <NoDataFound message="No prescriptions found." />
           ) : (
-            prescriptions.map(p => (
+            prescriptions.map((p) => (
               <div
                 key={p._id}
                 className="border border-purple-700 p-4 rounded-xl shadow-md bg-white space-y-3"
@@ -62,30 +62,30 @@ const UserPrescriptionList = () => {
 
                 <div className="text-sm text-gray-700 border border-purple-300 rounded-md p-3 space-y-2 shadow-sm">
                   <div>
-                    <span className="font-semibold">Date:</span>{' '}
-                    {new Date(p.date).toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
+                    <span className="font-semibold">Date:</span>{" "}
+                    {new Date(p.date).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
                     })}
                   </div>
                   <div>
-                    <span className="font-semibold">Time:</span>{' '}
+                    <span className="font-semibold">Time:</span>{" "}
                     {new Date(
                       `1970-01-01T${p.appointment_id?.time}`
-                    ).toLocaleTimeString('en-US', {
-                      hour: 'numeric',
-                      minute: '2-digit',
+                    ).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
                       hour12: true,
                     })}
                   </div>
                   {p.follow_up_date && (
                     <div>
-                      <span className="font-semibold">Follow-up Date:</span>{' '}
-                      {new Date(p.follow_up_date).toLocaleDateString('en-GB', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
+                      <span className="font-semibold">Follow-up Date:</span>{" "}
+                      {new Date(p.follow_up_date).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
                       })}
                     </div>
                   )}
@@ -95,14 +95,14 @@ const UserPrescriptionList = () => {
                   <h3 className="text-base font-semibold text-gray-800 mb-2">
                     Patient
                   </h3>
-                  <div>{p.patient_id?.name || 'Unknown Patient'}</div>
+                  <div>{p.patient_id?.name || "Unknown Patient"}</div>
                 </div>
 
                 <div className="text-sm text-gray-700 border border-purple-300 rounded-md p-3 shadow-sm">
                   <h3 className="text-base font-semibold text-gray-800 mb-2">
                     Doctor
                   </h3>
-                  <div>{p.registered_doctor_id?.name || 'Unknown Doctor'}</div>
+                  <div>{p.registered_doctor_id?.name || "Unknown Doctor"}</div>
                 </div>
 
                 <hr className="border-t border-purple-400 mt-6" />

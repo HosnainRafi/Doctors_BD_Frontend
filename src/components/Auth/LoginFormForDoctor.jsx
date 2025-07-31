@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { auth } from './firebase';
-import { ImSpinner9 } from 'react-icons/im';
+import React, { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { auth } from "./firebase";
+import { ImSpinner9 } from "react-icons/im";
 
 const DoctorLoginForm = () => {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = e =>
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -26,7 +26,7 @@ const DoctorLoginForm = () => {
         form.password
       );
       const token = await userCredential.user.getIdToken();
-      localStorage.setItem('doctorToken', token);
+      localStorage.setItem("doctorToken", token);
       console.log(token);
       console.log(form.email);
       // 2. Fetch doctor profile from your backend using email
@@ -36,16 +36,16 @@ const DoctorLoginForm = () => {
       );
       const data = await res.json();
       if (data.data && (!data.data.bmdc_number || !data.data.specialty)) {
-        localStorage.setItem('doctorId', data.data._id); // <-- Save backend doctorId
-        toast('Please complete your profile.');
-        navigate('/doctor/complete-profile');
+        localStorage.setItem("doctorId", data.data._id); // <-- Save backend doctorId
+        toast("Please complete your profile.");
+        navigate("/doctor/complete-profile");
       } else {
-        localStorage.setItem('doctorId', data.data._id); // <-- Save backend doctorId
-        toast.success('Login successful!');
-        navigate('/dashboard/doctor');
+        localStorage.setItem("doctorId", data.data._id); // <-- Save backend doctorId
+        toast.success("Login successful!");
+        navigate("/dashboard/doctor");
       }
     } catch (err) {
-      toast.error(err.message || 'Login failed.');
+      toast.error(err.message || "Login failed.");
     }
     setLoading(false);
   };
@@ -79,7 +79,7 @@ const DoctorLoginForm = () => {
         <input
           id="password"
           name="password"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           placeholder="Enter your password"
           value={form.password}
           onChange={handleChange}
@@ -93,7 +93,7 @@ const DoctorLoginForm = () => {
           onClick={() => setShowPassword(!showPassword)}
           className="absolute top-[48px] right-4 text-gray-600 hover:text-purple-700 focus:outline-none"
           tabIndex={-1}
-          aria-label={showPassword ? 'Hide password' : 'Show password'}
+          aria-label={showPassword ? "Hide password" : "Show password"}
         >
           {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
         </button>
@@ -108,7 +108,7 @@ const DoctorLoginForm = () => {
             <ImSpinner9 className="animate-spin text-xl" />
           </div>
         ) : (
-          'Login as Doctor'
+          "Login as Doctor"
         )}
       </button>
     </form>

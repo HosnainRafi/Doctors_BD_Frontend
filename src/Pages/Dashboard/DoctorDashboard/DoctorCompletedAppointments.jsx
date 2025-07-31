@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { FiSearch, FiCalendar, FiX, FiUser, FiClipboard } from 'react-icons/fi';
+import React, { useEffect, useState } from "react";
+import { FiSearch, FiCalendar, FiX, FiUser, FiClipboard } from "react-icons/fi";
 
 const DoctorCompletedAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [search, setSearch] = useState('');
-  const [date, setDate] = useState('');
+  const [search, setSearch] = useState("");
+  const [date, setDate] = useState("");
   const [selected, setSelected] = useState(null);
   const [doctorId, setDoctorId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const doctorToken = localStorage.getItem('doctorToken');
+  const doctorToken = localStorage.getItem("doctorToken");
   let doctorEmail = null;
 
   try {
     doctorEmail = doctorToken
-      ? JSON.parse(atob(doctorToken.split('.')[1])).email
+      ? JSON.parse(atob(doctorToken.split(".")[1])).email
       : null;
   } catch (err) {
     doctorEmail = null;
@@ -26,7 +26,7 @@ const DoctorCompletedAppointments = () => {
   useEffect(() => {
     const fetchDoctorId = async () => {
       if (!doctorEmail) {
-        setError('Doctor email not found in token.');
+        setError("Doctor email not found in token.");
         setLoading(false);
         return;
       }
@@ -42,10 +42,10 @@ const DoctorCompletedAppointments = () => {
         if (data?.data?._id) {
           setDoctorId(data.data._id);
         } else {
-          setError('Doctor not found.');
+          setError("Doctor not found.");
         }
       } catch {
-        setError('Failed to fetch doctor info.');
+        setError("Failed to fetch doctor info.");
       } finally {
         setLoading(false);
       }
@@ -69,12 +69,12 @@ const DoctorCompletedAppointments = () => {
         );
         const data = await response.json();
         const completed = (data.data || []).filter(
-          a => a.status === 'completed'
+          (a) => a.status === "completed"
         );
         setAppointments(completed);
         setFiltered(completed);
       } catch {
-        setError('Failed to fetch appointments.');
+        setError("Failed to fetch appointments.");
       } finally {
         setLoading(false);
       }
@@ -86,32 +86,32 @@ const DoctorCompletedAppointments = () => {
   useEffect(() => {
     let result = appointments;
     if (search) {
-      result = result.filter(a =>
+      result = result.filter((a) =>
         a.patient_id?.name?.toLowerCase().includes(search.toLowerCase())
       );
     }
     if (date) {
-      result = result.filter(a => a.date === date);
+      result = result.filter((a) => a.date === date);
     }
     setFiltered(result);
   }, [search, date, appointments]);
 
-  const handleSendReminder = patient => {
+  const handleSendReminder = (patient) => {
     alert(`Reminder sent to ${patient?.name} (${patient?.phone})`);
   };
 
-  const handleScheduleFollowUp = appointment => {
+  const handleScheduleFollowUp = (appointment) => {
     alert(`Schedule follow-up for ${appointment.patient_id?.name}`);
   };
 
-  const handleAddNote = appointment => {
+  const handleAddNote = (appointment) => {
     const note = prompt(
-      'Enter note for this appointment:',
-      appointment.note || ''
+      "Enter note for this appointment:",
+      appointment.note || ""
     );
     if (note !== null) {
-      setAppointments(prev =>
-        prev.map(a => (a._id === appointment._id ? { ...a, note } : a))
+      setAppointments((prev) =>
+        prev.map((a) => (a._id === appointment._id ? { ...a, note } : a))
       );
     }
   };
@@ -146,7 +146,7 @@ const DoctorCompletedAppointments = () => {
           <input
             type="text"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by patient name"
             className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-1 focus:ring-purple-600 transition shadow-sm"
           />
@@ -156,14 +156,14 @@ const DoctorCompletedAppointments = () => {
           <input
             type="date"
             value={date}
-            onChange={e => setDate(e.target.value)}
+            onChange={(e) => setDate(e.target.value)}
             className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-1 focus:ring-purple-600 transition shadow-sm"
           />
         </div>
         <button
           onClick={() => {
-            setSearch('');
-            setDate('');
+            setSearch("");
+            setDate("");
           }}
           className="w-full bg-purple-700 text-white font-semibold py-2 rounded-xl hover:bg-purple-800 transition"
         >
@@ -177,7 +177,7 @@ const DoctorCompletedAppointments = () => {
         </div>
       ) : (
         <div className="grid gap-6">
-          {filtered.map(a => (
+          {filtered.map((a) => (
             <div
               key={a._id}
               className="bg-white border border-gray-100 rounded-2xl shadow hover:shadow-lg transition p-6"
@@ -212,7 +212,7 @@ const DoctorCompletedAppointments = () => {
                     </a>
                   ) : (
                     <button
-                      onClick={() => alert('Open prescription form')}
+                      onClick={() => alert("Open prescription form")}
                       className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                     >
                       Write Rx
@@ -234,7 +234,7 @@ const DoctorCompletedAppointments = () => {
                     onClick={() => handleAddNote(a)}
                     className="px-3 py-1.5 text-sm border border-purple-600 text-purple-700 rounded-lg hover:bg-purple-50 transition"
                   >
-                    {a.note ? 'Edit Note' : 'Add Note'}
+                    {a.note ? "Edit Note" : "Add Note"}
                   </button>
                 </div>
               </div>
@@ -268,7 +268,7 @@ const DoctorCompletedAppointments = () => {
                 <span className="flex items-center gap-2 font-semibold text-gray-600">
                   <FiUser /> Patient Name:
                 </span>
-                <span>{selected.patient_id?.name || '-'}</span>
+                <span>{selected.patient_id?.name || "-"}</span>
               </div>
 
               <div className="flex justify-between items-center">
@@ -276,7 +276,7 @@ const DoctorCompletedAppointments = () => {
                   <FiCalendar /> Appointment Date:
                 </span>
                 <span>
-                  {selected.date || '-'} at {selected.time || '-'}
+                  {selected.date || "-"} at {selected.time || "-"}
                 </span>
               </div>
 

@@ -1,38 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import { useSearchParams } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import {
-  LocalizationProvider,
-  TimePicker,
-} from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import TextField from '@mui/material/TextField';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useSearchParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router-dom";
 import {
   FaUserInjured,
   FaUserMd,
   FaCalendarAlt,
   FaClock,
   FaRegFileAlt,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
 const UserBookAppointment = () => {
   const [searchParams] = useSearchParams();
-  const userId = searchParams.get('userId');
+  const userId = searchParams.get("userId");
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [form, setForm] = useState({
-    patient_id: '',
-    doctor_id: '',
-    registered_doctor_id: '',
+    patient_id: "",
+    doctor_id: "",
+    registered_doctor_id: "",
     date: new Date(),
     time: new Date(),
-    reason: '',
+    reason: "",
   });
   const navigate = useNavigate();
-  const token = localStorage.getItem('userToken');
+  const token = localStorage.getItem("userToken");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,16 +70,16 @@ const UserBookAppointment = () => {
     e.preventDefault();
 
     const timeFormatted = form.time
-      ? `${form.time.getHours().toString().padStart(2, '0')}:${form.time
+      ? `${form.time.getHours().toString().padStart(2, "0")}:${form.time
           .getMinutes()
           .toString()
-          .padStart(2, '0')}`
-      : '10:00';
+          .padStart(2, "0")}`
+      : "10:00";
 
     const body = {
       ...form,
       time: timeFormatted,
-      date: form.date.toISOString().split('T')[0],
+      date: form.date.toISOString().split("T")[0],
       user_id: userId,
     };
 
@@ -90,16 +87,16 @@ const UserBookAppointment = () => {
     else if (body.doctor_id) delete body.registered_doctor_id;
 
     Object.keys(body).forEach((key) => {
-      if (body[key] === '') delete body[key];
+      if (body[key] === "") delete body[key];
     });
 
     try {
       const res = await fetch(
-        'https://doctors-bd-backend.vercel.app/api/v1/appointments',
+        "https://doctors-bd-backend.vercel.app/api/v1/appointments",
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(body),
@@ -108,18 +105,18 @@ const UserBookAppointment = () => {
       const data = await res.json();
 
       if (data.success) {
-        toast.success('Appointment booked successfully!');
+        toast.success("Appointment booked successfully!");
         setForm({
-          patient_id: '',
-          doctor_id: '',
-          registered_doctor_id: '',
+          patient_id: "",
+          doctor_id: "",
+          registered_doctor_id: "",
           date: new Date(),
           time: new Date(),
-          reason: '',
+          reason: "",
         });
-        navigate('/dashboard/user/appointment')
+        navigate("/dashboard/user/appointment");
       } else {
-        toast.error(data.message || 'Failed to book appointment.');
+        toast.error(data.message || "Failed to book appointment.");
       }
     } catch (error) {
       toast.error(error.message);
@@ -205,7 +202,7 @@ const UserBookAppointment = () => {
                     fullWidth
                     required
                     sx={{
-                      backgroundColor: '#fff',
+                      backgroundColor: "#fff",
                       borderRadius: 1,
                     }}
                   />

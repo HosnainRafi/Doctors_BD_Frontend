@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaSearch } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
 
 const DoctorSearchBar = () => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const timeoutRef = useRef(null);
@@ -37,14 +37,14 @@ const DoctorSearchBar = () => {
     return () => clearTimeout(timeoutRef.current);
   }, [query]);
 
-  const handleDoctorClick = slug => {
+  const handleDoctorClick = (slug) => {
     setShowDropdown(false);
-    setQuery('');
+    setQuery("");
     navigate(`/doctor/${slug}`);
   };
 
   useEffect(() => {
-    const handleClickOutside = event => {
+    const handleClickOutside = (event) => {
       if (
         containerRef.current &&
         !containerRef.current.contains(event.target)
@@ -52,8 +52,8 @@ const DoctorSearchBar = () => {
         setShowDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -67,7 +67,7 @@ const DoctorSearchBar = () => {
           className="w-full border border-gray-300 rounded-md px-4 py-3 pr-16 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
           placeholder="Search doctors by name, specialty or location..."
           value={query}
-          onChange={e => {
+          onChange={(e) => {
             setQuery(e.target.value);
           }}
           onFocus={() => query && setShowDropdown(true)}
@@ -84,14 +84,14 @@ const DoctorSearchBar = () => {
       {showDropdown && (
         <div className="absolute z-50 top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-2 shadow-lg max-h-[300px] overflow-y-auto">
           {results.length > 0 ? (
-            results.map(doctor => (
+            results.map((doctor) => (
               <div
                 key={doctor._id}
                 onClick={() => handleDoctorClick(doctor.slug)}
                 className="flex items-center gap-4 px-4 py-3 hover:bg-purple-50 cursor-pointer transition-all duration-200 border-b last:border-b-0"
                 tabIndex={0}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
                     handleDoctorClick(doctor.slug);
                   }
                 }}

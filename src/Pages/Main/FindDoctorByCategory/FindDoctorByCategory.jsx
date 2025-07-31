@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import DoctorCard from '../../../components/DoctorCard';
-import { ColorRing } from 'react-loader-spinner';
+import React, { useEffect, useState } from "react";
+import DoctorCard from "../../../components/DoctorCard";
+import { ColorRing } from "react-loader-spinner";
 
 const FindDoctorByCategory = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -14,7 +14,7 @@ const FindDoctorByCategory = () => {
     (async () => {
       setLoading(true);
       const res = await fetch(
-        'https://doctors-bd-backend.vercel.app/api/v1/specialtyCategory'
+        "https://doctors-bd-backend.vercel.app/api/v1/specialtyCategory"
       );
       const data = await res.json();
       setCategoryList(data.data || []);
@@ -22,16 +22,16 @@ const FindDoctorByCategory = () => {
     })();
   }, []);
 
-  const toggleCategory = id => {
-    setSelectedCategories(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+  const toggleCategory = (id) => {
+    setSelectedCategories((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
   const handleSearch = async () => {
     if (!selectedCategories.length) return;
     setLoading(true);
-    const ids = selectedCategories.join(',');
+    const ids = selectedCategories.join(",");
     const res = await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/doctors?specialtyCategoryIds=${ids}`
     );
@@ -65,20 +65,20 @@ const FindDoctorByCategory = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-4">
-          {visibleCategories.map(cat => (
+          {visibleCategories.map((cat) => (
             <div
               key={cat._id}
               onClick={() => toggleCategory(cat._id)}
               className={`cursor-pointer border rounded-xl px-3 py-4 text-center transition-all duration-200 shadow-sm hover:shadow-md ${
                 selectedCategories.includes(cat._id)
-                  ? 'bg-purple-600 text-white border-purple-600'
-                  : 'bg-white hover:bg-purple-50 border-gray-200'
+                  ? "bg-purple-600 text-white border-purple-600"
+                  : "bg-white hover:bg-purple-50 border-gray-200"
               }`}
             >
               <div className="flex justify-center mb-2">
                 <img
                   className={`w-10 h-10 object-contain ${
-                    selectedCategories.includes(cat._id) ? 'filter invert' : ''
+                    selectedCategories.includes(cat._id) ? "filter invert" : ""
                   }`}
                   src={cat.icon}
                   alt={cat.name}
@@ -95,7 +95,7 @@ const FindDoctorByCategory = () => {
               onClick={() => setShowAllCategories(!showAllCategories)}
               className="text-purple-600 font-semibold underline"
             >
-              {showAllCategories ? 'Show Less' : 'Show More'}
+              {showAllCategories ? "Show Less" : "Show More"}
             </button>
           </div>
         )}
@@ -112,10 +112,10 @@ const FindDoctorByCategory = () => {
                 height="25"
                 width="25"
                 ariaLabel="loading"
-                colors={['#fff', '#fff', '#fff', '#fff', '#fff']}
+                colors={["#fff", "#fff", "#fff", "#fff", "#fff"]}
               />
             ) : (
-              'Search Doctors'
+              "Search Doctors"
             )}
           </button>
 
@@ -131,7 +131,7 @@ const FindDoctorByCategory = () => {
           <div className="mt-10">
             {doctorsList.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2  gap-6">
-                {doctorsList.map(doctor => (
+                {doctorsList.map((doctor) => (
                   <DoctorCard key={doctor._id} doctor={doctor} />
                 ))}
               </div>

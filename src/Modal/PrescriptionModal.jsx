@@ -1,12 +1,12 @@
-import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
 import {
   FaUser,
   FaCalendarAlt,
   FaStethoscope,
   FaFileDownload,
   FaNotesMedical,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
 export default function PrescriptionModal({ selected, setSelected }) {
   if (!selected) return null;
@@ -59,22 +59,22 @@ export default function PrescriptionModal({ selected, setSelected }) {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
                     <p>
-                      <span className="font-medium">Prescribed On:</span>{' '}
-                      {new Date(selected.date).toLocaleDateString('en-GB', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
+                      <span className="font-medium">Prescribed On:</span>{" "}
+                      {new Date(selected.date).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
                       })}
                     </p>
                     <p>
-                      <span className="font-medium">Follow-Up:</span>{' '}
+                      <span className="font-medium">Follow-Up:</span>{" "}
                       {selected.follow_up_date ? (
                         new Date(selected.follow_up_date).toLocaleDateString(
-                          'en-GB',
+                          "en-GB",
                           {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
                           }
                         )
                       ) : (
@@ -94,14 +94,14 @@ export default function PrescriptionModal({ selected, setSelected }) {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
                     <p>
-                      <span className="font-medium">Patient:</span>{' '}
-                      {selected.patient_id?.name || 'Unknown'}
+                      <span className="font-medium">Patient:</span>{" "}
+                      {selected.patient_id?.name || "Unknown"}
                     </p>
                     <p>
-                      <span className="font-medium">Doctor:</span>{' '}
+                      <span className="font-medium">Doctor:</span>{" "}
                       {selected.doctor_id?.name ||
                         selected.registered_doctor_id?.name ||
-                        'Unknown'}
+                        "Unknown"}
                     </p>
                   </div>
                 </section>
@@ -122,7 +122,7 @@ export default function PrescriptionModal({ selected, setSelected }) {
                           {med.dose && <> ({med.dose})</>}
                           {med.timing && (
                             <>
-                              {' '}
+                              {" "}
                               — <em>{med.timing}</em>
                             </>
                           )}

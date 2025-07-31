@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import DoctorCard from '../../../components/DoctorCard';
-import { ColorRing } from 'react-loader-spinner';
-import CircleSpinner from '../../../components/Spinner/CircleSpinner';
+import { useEffect, useState } from "react";
+import DoctorCard from "../../../components/DoctorCard";
+import { ColorRing } from "react-loader-spinner";
+import CircleSpinner from "../../../components/Spinner/CircleSpinner";
 
 const FindDoctorByHospital = () => {
-  const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [selectedHospitalId, setSelectedHospitalId] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedHospitalId, setSelectedHospitalId] = useState("");
 
   const [districts, setDistricts] = useState([]);
   const [hospitalList, setHospitalList] = useState([]);
@@ -17,7 +17,7 @@ const FindDoctorByHospital = () => {
     (async () => {
       setLoading(true);
       const response = await fetch(
-        'https://doctors-bd-backend.vercel.app/api/v1/districts'
+        "https://doctors-bd-backend.vercel.app/api/v1/districts"
       );
       const data = await response.json();
       setDistricts(data.data);
@@ -36,7 +36,7 @@ const FindDoctorByHospital = () => {
       })();
     } else {
       setHospitalList([]);
-      setSelectedHospitalId('');
+      setSelectedHospitalId("");
     }
   }, [selectedDistrict]);
 
@@ -44,7 +44,7 @@ const FindDoctorByHospital = () => {
     if (!selectedDistrict || !selectedHospitalId) return;
 
     const selectedHospital = hospitalList.find(
-      h => h._id === selectedHospitalId
+      (h) => h._id === selectedHospitalId
     );
     const selectedHospitalName = selectedHospital?.name;
 
@@ -73,11 +73,11 @@ const FindDoctorByHospital = () => {
           {/* 🔄 Updated to pass district name instead of ID */}
           <select
             value={selectedDistrict}
-            onChange={e => setSelectedDistrict(e.target.value)}
+            onChange={(e) => setSelectedDistrict(e.target.value)}
             className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-[48%] focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="">Select District</option>
-            {districts.map(d => (
+            {districts.map((d) => (
               <option key={d._id} value={d.name}>
                 {d.name}
               </option>
@@ -86,12 +86,12 @@ const FindDoctorByHospital = () => {
 
           <select
             value={selectedHospitalId}
-            onChange={e => setSelectedHospitalId(e.target.value)}
+            onChange={(e) => setSelectedHospitalId(e.target.value)}
             className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-[48%] focus:outline-none focus:ring-2 focus:ring-purple-500"
             disabled={!hospitalList.length}
           >
             <option value="">Select Hospital</option>
-            {hospitalList.map(h => (
+            {hospitalList.map((h) => (
               <option key={h._id} value={h._id}>
                 {h.name}
               </option>
@@ -111,10 +111,10 @@ const FindDoctorByHospital = () => {
                 ariaLabel="color-ring-loading"
                 wrapperStyle={{}}
                 wrapperClass="color-ring-wrapper"
-                colors={['#fff', '#fff', '#fff', '#fff', '#fff']}
+                colors={["#fff", "#fff", "#fff", "#fff", "#fff"]}
               />
             ) : (
-              'Search Doctors'
+              "Search Doctors"
             )}
           </button>
         </div>
@@ -123,7 +123,7 @@ const FindDoctorByHospital = () => {
         <CircleSpinner />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 mt-4 md:mt-12 max-w-7xl mx-auto gap-3 md:gap-6">
-          {doctorsList.map(doctor => (
+          {doctorsList.map((doctor) => (
             <DoctorCard key={doctor._id} doctor={doctor} />
           ))}
         </div>

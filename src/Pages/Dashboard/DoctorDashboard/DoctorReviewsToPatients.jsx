@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const DoctorReviewsToPatients = () => {
   const [reviews, setReviews] = useState([]);
-  const [reply, setReply] = useState('');
+  const [reply, setReply] = useState("");
   const [replyId, setReplyId] = useState(null);
   const [doctorId, setDoctorId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const doctorToken = localStorage.getItem('doctorToken');
+  const doctorToken = localStorage.getItem("doctorToken");
   let doctorEmail = null;
   try {
     doctorEmail = doctorToken
-      ? JSON.parse(atob(doctorToken.split('.')[1])).email
+      ? JSON.parse(atob(doctorToken.split(".")[1])).email
       : null;
   } catch (err) {
     doctorEmail = null;
@@ -21,7 +21,7 @@ const DoctorReviewsToPatients = () => {
 
   useEffect(() => {
     if (!doctorEmail) {
-      setError('Doctor email not found in token.');
+      setError("Doctor email not found in token.");
       setLoading(false);
       return;
     }
@@ -33,17 +33,17 @@ const DoctorReviewsToPatients = () => {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data?.data?._id) {
           setDoctorId(data.data._id);
         } else {
-          setError('Doctor not found.');
+          setError("Doctor not found.");
           setLoading(false);
         }
       })
       .catch(() => {
-        setError('Failed to fetch doctor info.');
+        setError("Failed to fetch doctor info.");
         setLoading(false);
       });
   }, [doctorEmail, doctorToken]);
@@ -58,31 +58,31 @@ const DoctorReviewsToPatients = () => {
         headers: { Authorization: `Bearer ${doctorToken}` },
       }
     )
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setReviews(data.data || []);
         setLoading(false);
       })
       .catch(() => {
-        setError('Failed to fetch reviews.');
+        setError("Failed to fetch reviews.");
         setLoading(false);
       });
   }, [doctorId, doctorToken]);
 
-  const handleReply = async id => {
+  const handleReply = async (id) => {
     await fetch(
       `https://doctors-bd-backend.vercel.app/api/v1/reviews/${id}/reply`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${doctorToken}`,
         },
         body: JSON.stringify({ reply }),
       }
     );
-    setReviews(reviews.map(r => (r._id === id ? { ...r, reply } : r)));
-    setReply('');
+    setReviews(reviews.map((r) => (r._id === id ? { ...r, reply } : r)));
+    setReply("");
     setReplyId(null);
   };
 
@@ -104,22 +104,22 @@ const DoctorReviewsToPatients = () => {
         </div>
       ) : (
         <ul className="space-y-8">
-          {reviews.map(r => (
+          {reviews.map((r) => (
             <li
               key={r._id}
               className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all"
             >
               <div className="flex items-center gap-4 mb-3">
                 <div className="bg-purple-100 text-purple-700 font-semibold w-12 h-12 rounded-full flex items-center justify-center text-xl">
-                  {r.patient_id?.name?.[0] || 'U'}
+                  {r.patient_id?.name?.[0] || "U"}
                 </div>
                 <div>
                   <div className="font-semibold text-lg text-gray-800">
-                    {r.patient_id?.name || 'Unknown'}
+                    {r.patient_id?.name || "Unknown"}
                   </div>
                   <div className="text-yellow-500 text-sm mt-1">
-                    {'★'.repeat(r.rating)}
-                    {'☆'.repeat(5 - r.rating)}
+                    {"★".repeat(r.rating)}
+                    {"☆".repeat(5 - r.rating)}
                   </div>
                 </div>
               </div>
@@ -137,7 +137,7 @@ const DoctorReviewsToPatients = () => {
                   <input
                     type="text"
                     value={reply}
-                    onChange={e => setReply(e.target.value)}
+                    onChange={(e) => setReply(e.target.value)}
                     className="w-full sm:w-2/3 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 shadow-sm"
                     placeholder="Write your reply..."
                   />

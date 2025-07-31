@@ -30,31 +30,67 @@ const UserBookAppointment = () => {
     time: new Date(),
     reason: "",
   });
-
-  // eslint-disable-next-line no-unused-vars
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const token = localStorage.getItem("userToken");
+
+  // Use environment variable with fallback
   const backendUrl = "https://doctors-bd-backend.vercel.app";
 
   useEffect(() => {
+    console.log("Environment check:");
+    console.log("Backend URL:", backendUrl);
+    console.log("User ID:", userId);
+    console.log("Token exists:", !!token);
+  }, [backendUrl, userId, token]);
+
+  useEffect(() => {
     const fetchData = async () => {
+      if (!userId || !token) {
+        toast.error("User ID or token is missing");
+        return;
+      }
+
       try {
+        console.log("Fetching patients...");
         const patientRes = await fetch(
           `${backendUrl}/api/v1/patients?user_id=${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+
+        console.log("Patient response status:", patientRes.status);
+
+        if (!patientRes.ok) {
+          const errorData = await patientRes.json();
+          throw new Error(errorData.message || "Failed to fetch patients");
+        }
+
         const patientData = await patientRes.json();
+        console.log("Patient data:", patientData);
         setPatients(patientData.data || []);
+
+        console.log("Fetching doctors...");
         const doctorRes = await fetch(
-          `${backendUrl}/api/v1/registered-doctors`
+          `${backendUrl}/api/v1/registered-doctors`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
+
+        console.log("Doctor response status:", doctorRes.status);
+
+        if (!doctorRes.ok) {
+          const errorData = await doctorRes.json();
+          throw new Error(errorData.message || "Failed to fetch doctors");
+        }
+
         const doctorData = await doctorRes.json();
+        console.log("Doctor data:", doctorData);
         setDoctors(doctorData.data || []);
       } catch (err) {
-        toast.error(err.message);
+        console.error("Fetch error:", err);
+        toast.error(err.message || "Failed to fetch data");
       }
     };
-    if (userId && token) fetchData();
+
+    fetchData();
   }, [userId, token, backendUrl]);
 
   const handleChange = (e) => {
@@ -73,30 +109,32 @@ const UserBookAppointment = () => {
     e.preventDefault();
     setLoading(true);
 
-    const timeFormatted = form.time
-      ? `${form.time.getHours().toString().padStart(2, "0")}:${form.time
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}`
-      : "10:00";
-
-    const body = {
-      ...form,
-      time: timeFormatted,
-      date: form.date.toISOString().split("T")[0],
-      user_id: userId,
-    };
-
-    if (body.registered_doctor_id) delete body.doctor_id;
-    else if (body.doctor_id) delete body.registered_doctor_id;
-
-    Object.keys(body).forEach((key) => {
-      if (body[key] === "") delete body[key];
-    });
-
     try {
+      const timeFormatted = form.time
+        ? `${form.time.getHours().toString().padStart(2, "0")}:${form.time
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}`
+        : "10:00";
+
+      const body = {
+        ...form,
+        time: timeFormatted,
+        date: form.date.toISOString().split("T")[0],
+        user_id: userId,
+      };
+
+      if (body.registered_doctor_id) delete body.doctor_id;
+      else if (body.doctor_id) delete body.registered_doctor_id;
+
+      Object.keys(body).forEach((key) => {
+        if (body[key] === "") delete body[key];
+      });
+
+      console.log("Submitting appointment data:", body);
+
       // First create the appointment
-      const res = await fetch(`${backendUrl}/api/v1/appointments`, {
+      const appointmentRes = await fetch(`${backendUrl}/api/v1/appointments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,12 +143,22 @@ const UserBookAppointment = () => {
         body: JSON.stringify(body),
       });
 
-      const data = await res.json();
+      console.log("Appointment response status:", appointmentRes.status);
 
-      if (data.success) {
-        const appointmentId = data.data._id;
+      if (!appointmentRes.ok) {
+        const errorData = await appointmentRes.json();
+        throw new Error(errorData.message || "Failed to book appointment");
+      }
+
+      const appointmentData = await appointmentRes.json();
+      console.log("Appointment response data:", appointmentData);
+
+      if (appointmentData.success) {
+        const appointmentId = appointmentData.data._id;
+        console.log("Appointment created with ID:", appointmentId);
 
         // Now initiate payment
+        console.log("Initiating payment...");
         const paymentRes = await fetch(
           `${backendUrl}/api/v1/payment/initiate/${appointmentId}`,
           {
@@ -122,21 +170,37 @@ const UserBookAppointment = () => {
           }
         );
 
+        console.log("Payment response status:", paymentRes.status);
+
+        if (!paymentRes.ok) {
+          const paymentError = await paymentRes.json();
+          throw new Error(paymentError.message || "Failed to initiate payment");
+        }
+
         const paymentData = await paymentRes.json();
+        console.log("Payment response data:", paymentData);
 
         if (paymentData.success) {
+          console.log(
+            "Payment initiated successfully, redirecting to:",
+            paymentData.data.GatewayPageURL
+          );
           // Redirect to SSLCommerz payment gateway
           window.location.href = paymentData.data.GatewayPageURL;
         } else {
-          toast.error(paymentData.message || "Failed to initiate payment.");
-          setLoading(false);
+          throw new Error(paymentData.message || "Failed to initiate payment");
         }
       } else {
-        toast.error(data.message || "Failed to book appointment.");
-        setLoading(false);
+        throw new Error(
+          appointmentData.message || "Failed to book appointment"
+        );
       }
     } catch (error) {
-      toast.error(error.message);
+      console.error("Submission error:", error);
+      toast.error(
+        error.message || "An error occurred while booking appointment"
+      );
+    } finally {
       setLoading(false);
     }
   };

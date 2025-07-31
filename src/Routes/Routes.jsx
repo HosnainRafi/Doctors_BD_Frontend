@@ -7,8 +7,8 @@ import PaymentRoutes from './PaymentRoutes';
 
 const router = createBrowserRouter([
   MainRoutes,
-  PaymentRoutes,
   ...AuthRoutes,
+  PaymentRoutes,
   UserDashboardRoutes,
   DoctorDashboardRoutes,
 ]);

@@ -1,32 +1,34 @@
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { FiEdit, FiEye, FiEyeOff } from "react-icons/fi";
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { FiEdit, FiEye, FiEyeOff } from 'react-icons/fi';
+import { getAuthDoctorToken } from '../../../utils/getAuthDoctorToken';
+import { getDoctorIdByEmail } from '../../../utils/getDoctorIdByEmail';
+import axiosCommon from '../../../api/axiosCommon';
 
-// Example specialties and degrees (you can fetch from backend if you want)
 const SPECIALTIES = [
-  "General Physician",
-  "Cardiology",
-  "Dermatology",
-  "Pediatrics",
-  "Neurology",
-  "Orthopedics",
-  "Psychiatry",
-  "Urology",
-  "Gastroenterology",
-  "Oncology",
-  "Other",
+  'General Physician',
+  'Cardiology',
+  'Dermatology',
+  'Pediatrics',
+  'Neurology',
+  'Orthopedics',
+  'Psychiatry',
+  'Urology',
+  'Gastroenterology',
+  'Oncology',
+  'Other',
 ];
 const DEGREES = [
-  "MBBS",
-  "FCPS",
-  "MD",
-  "MS",
-  "MRCP",
-  "FRCS",
-  "BCS (Health)",
-  "DGO",
-  "DLO",
-  "Other",
+  'MBBS',
+  'FCPS',
+  'MD',
+  'MS',
+  'MRCP',
+  'FRCS',
+  'BCS (Health)',
+  'DGO',
+  'DLO',
+  'Other',
 ];
 
 const DoctorProfile = () => {
@@ -34,28 +36,24 @@ const DoctorProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = localStorage.getItem("doctorId"); // <-- FIXED
+  const doctorToken = getAuthDoctorToken();
+  const [doctorId, setDoctorId] = useState(null);
 
   useEffect(() => {
-    if (!doctorId) {
-      setError("Doctor ID not found. Please login again.");
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
-      {
-        headers: { Authorization: `Bearer ${doctorToken}` },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.data) {
+    const fetchDoctor = async () => {
+      try {
+        setLoading(true);
+        const id = await getDoctorIdByEmail();
+        setDoctorId(id);
+        const response = await axiosCommon.get(`/registered-doctors/${id}`, {
+          headers: {
+            Authorization: `Bearer ${doctorToken}`,
+          },
+        });
+        const data = response.data;
+        if (data?.data) {
           setDoctor(data.data);
           setForm({
             ...data.data,
@@ -63,120 +61,114 @@ const DoctorProfile = () => {
             degree_names: data.data.degree_names || [],
           });
         } else {
-          setError("Doctor not found.");
+          toast.error('Doctor not found.');
         }
+      } catch (error) {
+        toast.error(error.message || 'Failed to fetch doctor profile.');
+      } finally {
         setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to fetch doctor profile.");
-        setLoading(false);
-      });
-  }, [doctorId, doctorToken]);
+      }
+    };
 
-  const handleChange = (e) => {
+    fetchDoctor();
+  }, [doctorToken]);
+
+  const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // For multi-select specialties and degrees
-  // const handleSpecialtiesChange = e => {
-  //   const options = Array.from(
-  //     e.target.selectedOptions,
-  //     option => option.value
-  //   );
-  //   setForm({ ...form, specialties: options });
-  // };
-  const handleSpecialtiesChange = (e) => {
+  const handleSpecialtiesChange = e => {
     const value = e.target.value;
-    setForm((prev) => ({
+    setForm(prev => ({
       ...prev,
       specialties: prev.specialties.includes(value)
-        ? prev.specialties.filter((s) => s !== value)
+        ? prev.specialties.filter(s => s !== value)
         : [...prev.specialties, value],
     }));
   };
 
-  // const handleDegreesChange = e => {
-  //   const options = Array.from(
-  //     e.target.selectedOptions,
-  //     option => option.value
-  //   );
-  //   setForm({ ...form, degree_names: options });
-  // };
-  const handleDegreesChange = (e) => {
+  const handleDegreesChange = e => {
     const value = e.target.value;
-    setForm((prev) => ({
+    setForm(prev => ({
       ...prev,
       degree_names: prev.degree_names.includes(value)
-        ? prev.degree_names.filter((d) => d !== value)
+        ? prev.degree_names.filter(d => d !== value)
         : [...prev.degree_names, value],
     }));
   };
 
-  // Handle profile photo upload
-  const handlePhotoChange = async (e) => {
+  const handlePhotoChange = async e => {
     const file = e.target.files[0];
     if (!file) return;
-    // For demo, use local URL. In production, upload to S3/Cloudinary/backend and set the returned URL.
+
     setForm({ ...form, photo: URL.createObjectURL(file) });
   };
 
-  const handleSave = async (e) => {
+  const handleSave = async e => {
     e.preventDefault();
-    const res = await fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${doctorToken}`,
-        },
-        body: JSON.stringify(form),
+    try {
+      const res = await axiosCommon.patch(
+        `/registered-doctors/${doctorId}`,
+        form,
+        {
+          headers: {
+            Authorization: `Bearer ${doctorToken}`,
+          },
+        }
+      );
+
+      const data = res.data;
+
+      if (data.success) {
+        setDoctor(data.data);
+        setEditMode(false);
+        toast.success('Profile updated!');
+      } else {
+        toast.error(data.message || 'Failed to update profile.');
       }
-    );
-    const data = await res.json();
-    if (data.success) {
-      setDoctor(data.data);
-      setEditMode(false);
-      toast.success("Profile updated!");
-    } else toast.error(data.message || "Failed to update profile.");
+    } catch (error) {
+      toast.error(error.message || 'Failed to update profile.');
+    }
   };
 
-  // Change password
-  const handleChangePassword = async (e) => {
+  const handleChangePassword = async e => {
     e.preventDefault();
-    const res = await fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${doctorToken}`,
-        },
-        body: JSON.stringify({ password }),
+    try {
+      const res = await axiosCommon.patch(
+        `/registered-doctors/${doctorId}`,
+        { password },
+        {
+          headers: {
+            Authorization: `Bearer ${doctorToken}`,
+          },
+        }
+      );
+
+      const data = res.data;
+
+      if (data.success) {
+        setPassword('');
+        toast.success('Password changed!');
+      } else {
+        toast.error(data.message || 'Failed to change password.');
       }
-    );
-    const data = await res.json();
-    if (data.success) {
-      setPassword("");
-      toast.success("Password changed!");
-    } else toast.error(data.message || "Failed to change password.");
+    } catch (error) {
+      toast.error(error.message || 'Failed to change password.');
+    }
   };
 
   if (loading) return <div>Loading profile...</div>;
-  if (error) return <div className="text-red-600">{error}</div>;
-  if (!doctor) return null;
 
   return (
     <div className="max-w-4xl mx-auto mt-10 bg-white rounded-2xl shadow-md px-6 py-8">
       <div className="flex flex-col items-center ">
         <img
-          src={doctor.photo || "https://i.pravatar.cc/150"}
+          src={doctor.photo || 'https://i.pravatar.cc/150'}
           alt="Profile"
           className="w-40 h-40 rounded-full border-4 border-purple-700 object-cover shadow"
         />
         <h2 className=" text-3xl font-bold text-purple-700">My Profile</h2>
       </div>
-      {/* <h3 className="text-3xl font-bold text-purple-700 mb-2">My Profile</h3> */}
       <div className="bg-gray-50 p-4 rounded">
         {!editMode ? (
           <>
@@ -193,7 +185,7 @@ const DoctorProfile = () => {
                       </h3>
                       <p className="text-base text-gray-500">
                         {doctor.specialty ||
-                          (doctor.specialties && doctor.specialties.join(", "))}
+                          (doctor.specialties && doctor.specialties.join(', '))}
                       </p>
                     </div>
                   </div>
@@ -207,7 +199,7 @@ const DoctorProfile = () => {
 
                 <div className="space-y-3">
                   <div>
-                    <span className="font-medium text-gray-600">Email:</span>{" "}
+                    <span className="font-medium text-gray-600">Email:</span>{' '}
                     <a
                       href={`mailto:${doctor.email}`}
                       className="text-blue-600 hover:underline"
@@ -216,7 +208,7 @@ const DoctorProfile = () => {
                     </a>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-600">Phone:</span>{" "}
+                    <span className="font-medium text-gray-600">Phone:</span>{' '}
                     <a
                       href={`tel:${doctor.phone}`}
                       className="text-blue-600 hover:underline"
@@ -225,11 +217,11 @@ const DoctorProfile = () => {
                     </a>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-600">Degrees:</span>{" "}
-                    {doctor.degree_names && doctor.degree_names.join(", ")}
+                    <span className="font-medium text-gray-600">Degrees:</span>{' '}
+                    {doctor.degree_names && doctor.degree_names.join(', ')}
                   </div>
                   <div>
-                    <span className="font-medium text-gray-600">BMDC No:</span>{" "}
+                    <span className="font-medium text-gray-600">BMDC No:</span>{' '}
                     {doctor.bmdc_number}
                   </div>
                   {/* <div>
@@ -245,7 +237,7 @@ const DoctorProfile = () => {
                   </h3>
                   <h2 className="font-semibold text-2xl text-purple-700 ">
                     About Me:
-                  </h2>{" "}
+                  </h2>{' '}
                   <p className="text-sm text-gray-700 mt-1">{doctor.bio}</p>
                 </div>
               </div>
@@ -262,17 +254,17 @@ const DoctorProfile = () => {
                   </label>
                   <div className="relative">
                     <input
-                      type={showPassword ? "text" : "password"}
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="New Password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={e => setPassword(e.target.value)}
                       className="w-full px-4 py-3 pr-10 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                       minLength={6}
                       required
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPassword((v) => !v)}
+                      onClick={() => setShowPassword(v => !v)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-700 text-xl"
                       aria-label="Toggle password visibility"
                     >
@@ -297,7 +289,7 @@ const DoctorProfile = () => {
           >
             <div className="flex items-center gap-4">
               <img
-                src={form.photo || "https://i.ibb.co/2kR5zq0/doctor-avatar.png"}
+                src={form.photo || 'https://i.ibb.co/2kR5zq0/doctor-avatar.png'}
                 alt="Profile"
                 className="w-20 h-20 rounded-full object-cover border-2 border-purple-500"
               />
@@ -349,12 +341,12 @@ const DoctorProfile = () => {
               </label>
               <select
                 name="specialty"
-                value={form.specialty || ""}
+                value={form.specialty || ''}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-purple-500"
               >
                 <option value="">Select Main Specialty</option>
-                {SPECIALTIES.map((s) => (
+                {SPECIALTIES.map(s => (
                   <option key={s} value={s}>
                     {s}
                   </option>
@@ -367,7 +359,7 @@ const DoctorProfile = () => {
                 Other Specialties
               </label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {SPECIALTIES.map((s) => (
+                {SPECIALTIES.map(s => (
                   <label key={s} className="flex items-center gap-2 text-sm">
                     <input
                       type="checkbox"
@@ -388,7 +380,7 @@ const DoctorProfile = () => {
                 Degrees
               </label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {DEGREES.map((d) => (
+                {DEGREES.map(d => (
                   <label key={d} className="flex items-center gap-2 text-sm">
                     <input
                       type="checkbox"

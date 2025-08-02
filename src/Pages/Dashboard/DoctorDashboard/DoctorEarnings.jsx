@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import { getAuthDoctorToken } from '../../../utils/getAuthDoctorToken';
+import { getDoctorIdByEmail } from '../../../utils/getDoctorIdByEmail';
+import axiosCommon from '../../../api/axiosCommon';
 
 const DoctorEarnings = () => {
   const [earnings, setEarnings] = useState({
@@ -7,30 +10,27 @@ const DoctorEarnings = () => {
     appointments: [],
   });
 
-  const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = localStorage.getItem("doctorId");
-
   useEffect(() => {
-    if (!doctorId) return;
-    fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/appointments/earnings/${doctorId}`,
-      {
-        headers: { Authorization: `Bearer ${doctorToken}` },
+    const fetchEarnings = async () => {
+      try {
+        const doctorToken = getAuthDoctorToken();
+        const id = await getDoctorIdByEmail();
+        const res = await axiosCommon.get(`/appointments/earnings/${id}`, {
+          headers: { Authorization: `Bearer ${doctorToken}` },
+        });
+        setEarnings(res.data.data || { total: 0, count: 0, appointments: [] });
+      } catch (error) {
+        console.error('Failed to fetch earnings:', error);
       }
-    )
-      .then((res) => res.json())
-      .then((data) =>
-        setEarnings(data.data || { total: 0, count: 0, appointments: [] })
-      );
-  }, [doctorId, doctorToken]);
+    };
+    fetchEarnings();
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <h2 className="text-4xl font-bold text-purple-700 mb-8 text-center">
         Earnings Dashboard
       </h2>
-
-      {/* Summary Card */}
       <div className="bg-gradient-to-br from-purple-50 via-white to-green-50 p-6 rounded-2xl shadow-md mb-8 border border-purple-100 flex flex-col sm:flex-row sm:items-center sm:justify-between transition-all duration-300">
         <div className="mb-4 sm:mb-0">
           <p className="text-gray-600 text-sm mb-1">Total Earnings</p>
@@ -48,7 +48,6 @@ const DoctorEarnings = () => {
         </div>
       </div>
 
-      {/* Earnings Table */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-gray-700">
@@ -71,14 +70,14 @@ const DoctorEarnings = () => {
                   </td>
                 </tr>
               ) : (
-                earnings.appointments.map((a) => (
+                earnings.appointments.map(a => (
                   <tr
                     key={a._id}
                     className="border-t hover:bg-gray-50 transition-colors duration-200"
                   >
                     <td className="px-6 py-4">{a.date}</td>
                     <td className="px-6 py-4">{a.time}</td>
-                    <td className="px-6 py-4">{a.patient_id?.name || "N/A"}</td>
+                    <td className="px-6 py-4">{a.patient_id?.name || 'N/A'}</td>
                     <td className="px-6 py-4 text-right text-green-700 font-semibold">
                       {a.amount}
                     </td>

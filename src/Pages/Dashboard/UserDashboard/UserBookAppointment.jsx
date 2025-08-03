@@ -15,6 +15,16 @@ import {
   FaCreditCard,
 } from "react-icons/fa";
 
+// Helper function to format currency
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("en-BD", {
+    style: "currency",
+    currency: "BDT",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount || 0);
+};
+
 const UserBookAppointment = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId");
@@ -22,6 +32,7 @@ const UserBookAppointment = () => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [doctorFee, setDoctorFee] = useState(0); // State to store the doctor's fee
   const [form, setForm] = useState({
     patient_id: "",
     doctor_id: "",
@@ -30,12 +41,10 @@ const UserBookAppointment = () => {
     time: new Date(),
     reason: "",
   });
-
   const token = localStorage.getItem("userToken");
   const backendUrl = "https://doctors-bd-backend.vercel.app";
 
   useEffect(() => {
-    // This effect correctly fetches initial data and does not need to change.
     if (typeof window !== "undefined") {
       const storedToken = localStorage.getItem("userToken");
       if (!userId || !storedToken) {
@@ -73,6 +82,47 @@ const UserBookAppointment = () => {
       fetchData();
     }
   }, [userId]);
+
+  // Fetch doctor's fee when a doctor is selected
+  // Fetch doctor's indicative fee when a doctor is selected
+  useEffect(() => {
+    const fetchDoctorFee = async () => {
+      if (form.registered_doctor_id) {
+        try {
+          const response = await fetch(
+            `${backendUrl}/api/v1/registered-doctors/${form.registered_doctor_id}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          if (response.ok) {
+            const doctorData = await response.json();
+            const doctor = doctorData.data;
+            const consultation = doctor.consultation;
+            let feeToShow = 0;
+
+            // Show the standard fee with VAT as the base price.
+            // The backend will handle the logic for follow-ups or discounts.
+            if (consultation) {
+              feeToShow =
+                consultation.standard_fee_with_vat ||
+                consultation.standard_fee ||
+                0;
+            }
+            setDoctorFee(feeToShow);
+          } else {
+            // If fetching the doctor fails, reset the fee
+            setDoctorFee(0);
+          }
+        } catch (err) {
+          console.error("Error fetching doctor fee:", err);
+          setDoctorFee(0);
+        }
+      } else {
+        setDoctorFee(0); // Reset fee when no doctor is selected
+      }
+    };
+
+    fetchDoctorFee();
+  }, [form.registered_doctor_id, token, backendUrl]);
 
   const validateForm = () => {
     if (!form.patient_id) {
@@ -120,7 +170,6 @@ const UserBookAppointment = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-
     setLoading(true);
     try {
       const timeFormatted = form.time
@@ -214,7 +263,6 @@ const UserBookAppointment = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* The payment status notification is REMOVED from this component */}
       <form
         onSubmit={handleSubmit}
         className="bg-white border border-purple-100 rounded-2xl shadow-xl p-10"
@@ -277,6 +325,7 @@ const UserBookAppointment = () => {
               required
             />
           </div>
+
           <div className="flex-1">
             <label className="text-gray-800 font-medium mb-2 flex items-center gap-2">
               <FaClock className="text-purple-700" /> Time
@@ -287,9 +336,7 @@ const UserBookAppointment = () => {
                 onChange={handleTimeChange}
                 minTime={getMinTime()}
                 maxTime={new Date(0, 0, 0, 20, 0)} // 8:00 PM max
-                renderInput={(
-                  params // renderInput is used for older MUI versions
-                ) => (
+                renderInput={(params) => (
                   <TextField
                     {...params}
                     fullWidth
@@ -360,30 +407,55 @@ const UserBookAppointment = () => {
           </div>
         </div>
 
+        {/* Consultation Fee Section */}
         <div className="bg-purple-50 p-4 rounded-lg mb-6 border border-purple-200">
           <div className="flex items-center gap-3">
             <FaCreditCard className="text-purple-700 text-xl" />
             <div>
-              <h3 className="font-semibold text-purple-800">Appointment Fee</h3>
-              <p className="text-purple-600">
-                BDT 500 (This is a test payment)
+              <h3 className="font-semibold text-purple-800">
+                Consultation Fee
+              </h3>
+              <p className="text-lg text-purple-700 font-bold">
+                {doctorFee > 0
+                  ? formatCurrency(doctorFee)
+                  : "Please select a doctor to see the fee"}
               </p>
+              {doctorFee > 0 && (
+                <p className="text-xs text-purple-500 mt-1">
+                  Note: The final amount may be lower for follow-up appointments
+                  or active promotions.
+                </p>
+              )}
             </div>
           </div>
         </div>
 
         <button
           type="submit"
-          disabled={loading || paymentLoading}
+          disabled={loading || paymentLoading || doctorFee === 0}
           className="w-full bg-purple-700 hover:bg-purple-800 transition-colors text-white font-semibold text-lg py-3 rounded-lg shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
         >
           {loading && !paymentLoading && (
             <>
               <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5"
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
                 viewBox="0 0 24 24"
               >
-                ...
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Creating Appointment...
             </>
@@ -391,10 +463,24 @@ const UserBookAppointment = () => {
           {paymentLoading && (
             <>
               <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5"
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
                 viewBox="0 0 24 24"
               >
-                ...
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Redirecting to Payment...
             </>

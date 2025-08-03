@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { getAuthDoctorToken } from '../../../utils/getAuthDoctorToken';
-import { getDoctorIdByEmail } from '../../../utils/getDoctorIdByEmail';
-import axiosCommon from '../../../api/axiosCommon';
-import { ImSpinner9 } from 'react-icons/im';
+import { useEffect, useState } from "react";
+import { getAuthDoctorToken } from "../../../utils/getAuthDoctorToken";
+import { getDoctorIdByEmail } from "../../../utils/getDoctorIdByEmail";
+import axiosCommon from "../../../api/axiosCommon";
+import { ImSpinner9 } from "react-icons/im";
 
 const DoctorEarnings = () => {
   const [earnings, setEarnings] = useState({
@@ -23,7 +23,7 @@ const DoctorEarnings = () => {
         });
         setEarnings(res.data.data || { total: 0, count: 0, appointments: [] });
       } catch (error) {
-        console.error('Failed to fetch earnings:', error);
+        console.error("Failed to fetch earnings:", error);
       } finally {
         setLoading(false);
       }
@@ -81,7 +81,7 @@ const DoctorEarnings = () => {
                       </td>
                     </tr>
                   ) : (
-                    earnings.appointments.map(a => (
+                    earnings.appointments.map((a) => (
                       <tr
                         key={a._id}
                         className="border-t hover:bg-gray-50 transition-colors duration-200"
@@ -89,7 +89,7 @@ const DoctorEarnings = () => {
                         <td className="px-6 py-4">{a.date}</td>
                         <td className="px-6 py-4">{a.time}</td>
                         <td className="px-6 py-4">
-                          {a.patient_id?.name || 'N/A'}
+                          {a.patient_id?.name || "N/A"}
                         </td>
                         <td className="px-6 py-4 text-right text-green-700 font-semibold">
                           {a.amount}

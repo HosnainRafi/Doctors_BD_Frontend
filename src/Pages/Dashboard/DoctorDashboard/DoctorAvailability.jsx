@@ -1,35 +1,42 @@
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { FiPlus, FiTrash2, FiWifiOff, FiWifi } from "react-icons/fi";
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { FiPlus, FiTrash2, FiWifiOff, FiWifi } from 'react-icons/fi';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { getAuthDoctorToken } from '../../../utils/getAuthDoctorToken';
+import { getDoctorIdByEmail } from '../../../utils/getDoctorIdByEmail';
+import { ImSpinner9 } from 'react-icons/im';
 
 const DoctorAvailability = () => {
-  const [slots, setSlots] = useState([{ date: "", time: "" }]);
-  const [blockedSlots, setBlockedSlots] = useState([{ date: "", time: "" }]);
+  const [slots, setSlots] = useState([{ date: '', time: '' }]);
+  const [blockedSlots, setBlockedSlots] = useState([{ date: '', time: '' }]);
   const [isOnline, setIsOnline] = useState(false);
+  const [doctorId, setDoctorId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const doctorToken = localStorage.getItem("doctorToken");
-  const doctorId = localStorage.getItem("doctorId");
+  const doctorToken = getAuthDoctorToken();
 
   useEffect(() => {
-    if (!doctorId) return;
     const fetchData = async () => {
       try {
+        const id = await getDoctorIdByEmail();
+        setDoctorId(id);
         const res = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
+          `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${id}`,
           {
             headers: { Authorization: `Bearer ${doctorToken}` },
           }
         );
         const data = await res.json();
-        setSlots(data.data?.availableSlots || [{ date: "", time: "" }]);
+        setSlots(data.data?.availableSlots || [{ date: '', time: '' }]);
         setIsOnline(data.data?.isOnline || false);
-        setBlockedSlots(data.data?.blockedSlots || [{ date: "", time: "" }]);
+        setBlockedSlots(data.data?.blockedSlots || [{ date: '', time: '' }]);
       } catch (error) {
-        toast.error(error.message || "Failed to update availability.");
+        toast.error(error.message || 'Failed to update availability.');
       }
     };
     fetchData();
-  }, [doctorId, doctorToken]);
+  }, [doctorToken]);
 
   const handleSlotChange = (i, e) => {
     const newSlots = [...slots];
@@ -37,8 +44,20 @@ const DoctorAvailability = () => {
     setSlots(newSlots);
   };
 
-  const addSlot = () => setSlots([...slots, { date: "", time: "" }]);
-  const removeSlot = (i) => setSlots(slots.filter((_, idx) => idx !== i));
+  const handleDateChange = (i, date) => {
+    const newSlots = [...slots];
+    newSlots[i].date = date.toISOString().split('T')[0];
+    setSlots(newSlots);
+  };
+
+  const handleBlockedDateChange = (i, date) => {
+    const newBlocked = [...blockedSlots];
+    newBlocked[i].date = date.toISOString().split('T')[0];
+    setBlockedSlots(newBlocked);
+  };
+
+  const addSlot = () => setSlots([...slots, { date: '', time: '' }]);
+  const removeSlot = i => setSlots(slots.filter((_, idx) => idx !== i));
 
   const handleBlockedSlotChange = (i, e) => {
     const newBlocked = [...blockedSlots];
@@ -47,59 +66,60 @@ const DoctorAvailability = () => {
   };
 
   const addBlockedSlot = () =>
-    setBlockedSlots([...blockedSlots, { date: "", time: "" }]);
-  const removeBlockedSlot = (i) =>
+    setBlockedSlots([...blockedSlots, { date: '', time: '' }]);
+  const removeBlockedSlot = i =>
     setBlockedSlots(blockedSlots.filter((_, idx) => idx !== i));
 
   const handleOnlineToggle = async () => {
     if (!doctorId) {
-      toast.error("Doctor ID not found. Please login again.");
+      toast.error('Doctor ID not found. Please login again.');
       return;
     }
     try {
       await fetch(
         `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
         {
-          method: "PATCH",
+          method: 'PATCH',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${doctorToken}`,
           },
           body: JSON.stringify({ isOnline: !isOnline }),
         }
       );
       setIsOnline(!isOnline);
-      toast.success(`You're now ${!isOnline ? "Online" : "Offline"}`);
+      toast.success(`You're now ${!isOnline ? 'Online' : 'Offline'}`);
     } catch (error) {
-      toast.error(error.message || "Failed to update availability.");
+      toast.error(error.message || 'Failed to update availability.');
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    if (!doctorId) {
-      toast.error("Doctor ID not found. Please login again.");
-      return;
-    }
     try {
+      setLoading(true);
       const res = await fetch(
         `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/${doctorId}`,
         {
-          method: "PATCH",
+          method: 'PATCH',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${doctorToken}`,
           },
           body: JSON.stringify({ availableSlots: slots, blockedSlots }),
         }
       );
       const data = await res.json();
-      if (data.success) toast.success("Availability updated!");
-      else toast.error(data.message || "Failed to update.");
+      if (data.success) toast.success('Availability updated!');
+      else toast.error(data.message || 'Failed to update.');
     } catch (error) {
-      toast.error(error.message || "Failed to update availability.");
+      toast.error(error.message || 'Failed to update availability.');
+    } finally {
+      setLoading(false);
     }
   };
+
+  const today = new Date(); // For minDate
 
   return (
     <form
@@ -116,8 +136,8 @@ const DoctorAvailability = () => {
           onClick={handleOnlineToggle}
           className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold shadow-md transition-all duration-200 ${
             isOnline
-              ? "bg-green-600 text-white hover:bg-green-700"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              ? 'bg-green-600 text-white hover:bg-green-700'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
           {isOnline ? (
@@ -125,7 +145,7 @@ const DoctorAvailability = () => {
           ) : (
             <FiWifiOff className="text-lg" />
           )}
-          {isOnline ? "Online" : "Offline"}
+          {isOnline ? 'Online' : 'Offline'}
         </button>
       </div>
 
@@ -139,19 +159,20 @@ const DoctorAvailability = () => {
             key={i}
             className="group flex flex-col sm:flex-row gap-4 items-center mb-4 bg-gray-50 hover:bg-purple-50 p-4 rounded-xl border border-purple-100 transition"
           >
-            <input
-              name="date"
-              type="date"
-              value={slot.date}
-              onChange={(e) => handleSlotChange(i, e)}
+            <DatePicker
+              selected={slot.date ? new Date(slot.date) : null}
+              onChange={date => handleDateChange(i, date)}
+              minDate={today}
               className="w-full sm:w-1/2 border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none transition"
+              placeholderText="Select date"
+              dateFormat="dd-MM-yyyy"
               required
             />
             <input
               name="time"
               type="time"
               value={slot.time}
-              onChange={(e) => handleSlotChange(i, e)}
+              onChange={e => handleSlotChange(i, e)}
               className="w-full sm:w-1/2 border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none transition"
               required
             />
@@ -184,19 +205,20 @@ const DoctorAvailability = () => {
             key={i}
             className="group flex flex-col sm:flex-row gap-4 items-center mb-4 bg-red-50 hover:bg-red-100 p-4 rounded-xl border border-red-200 transition"
           >
-            <input
-              name="date"
-              type="date"
-              value={slot.date}
-              onChange={(e) => handleBlockedSlotChange(i, e)}
+            <DatePicker
+              selected={slot.date ? new Date(slot.date) : null}
+              onChange={date => handleBlockedDateChange(i, date)}
+              minDate={today}
               className="w-full sm:w-1/2 border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none transition"
+              placeholderText="Select date"
+              dateFormat="dd-MM-yyyy"
               required
             />
             <input
               name="time"
               type="time"
               value={slot.time}
-              onChange={(e) => handleBlockedSlotChange(i, e)}
+              onChange={e => handleBlockedSlotChange(i, e)}
               className="w-full sm:w-1/2 border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none transition"
               required
             />
@@ -225,7 +247,14 @@ const DoctorAvailability = () => {
           type="submit"
           className="bg-purple-700 text-white px-6 py-3 rounded-full font-semibold hover:bg-purple-800 transition shadow-lg"
         >
-          Save Availability
+          {loading ? (
+            <div className="flex gap-2 items-center">
+              <ImSpinner9 className="animate-spin" />
+              Updating...
+            </div>
+          ) : (
+            'Save Availability'
+          )}
         </button>
       </div>
     </form>

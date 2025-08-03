@@ -47,7 +47,7 @@ export default function FindYourDoctor() {
             </h3>
             <img
               className="h-[150px] object-contain w-full"
-              src="../../../src/assets/district.png"
+              src="/src/assets/district.png"
               alt="District"
               draggable={false}
             />
@@ -73,7 +73,7 @@ export default function FindYourDoctor() {
             </h3>
             <img
               className="h-[150px] object-contain w-full"
-              src="../../../src/assets/category.png"
+              src="/src/assets/category.png"
               alt="Category"
               draggable={false}
             />
@@ -100,7 +100,7 @@ export default function FindYourDoctor() {
             </h3>
             <img
               className="h-[150px] object-contain w-full"
-              src="../../../src/assets/hospital.png"
+              src="/src/assets/hospital.png"
               alt="Hospital"
               draggable={false}
             />

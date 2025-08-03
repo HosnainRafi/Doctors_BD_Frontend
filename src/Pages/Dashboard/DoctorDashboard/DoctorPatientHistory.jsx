@@ -8,17 +8,20 @@ import { getAuthDoctorToken } from '../../../utils/getAuthDoctorToken';
 import { getDoctorIdByEmail } from '../../../utils/getDoctorIdByEmail';
 import axiosCommon from '../../../api/axiosCommon';
 import toast from 'react-hot-toast';
+import { ImSpinner9 } from 'react-icons/im';
 
 const DoctorPatientHistory = () => {
   const [patients, setPatients] = useState([]);
   const [selectedPatientIndex, setSelectedPatientIndex] = useState(0);
   const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [prescriptions, setPrescriptions] = useState([]);
 
   const doctorToken = getAuthDoctorToken();
   useEffect(() => {
     const fetchRegisteredPatients = async () => {
       try {
+        setLoading(true);
         const id = await getDoctorIdByEmail();
         const response = await axiosCommon.get(
           `/appointments/registered-doctor/${id}`,
@@ -43,6 +46,8 @@ const DoctorPatientHistory = () => {
         }
       } catch (error) {
         toast.error(error.message || 'Failed to fetch registered patients:');
+      } finally {
+        setLoading(false);
       }
     };
     fetchRegisteredPatients();
@@ -51,6 +56,7 @@ const DoctorPatientHistory = () => {
   const fetchPatientHistory = async patient => {
     if (!patient) return;
     try {
+      setLoading(true);
       const [appointmentsRes, prescriptionsRes] = await Promise.all([
         axiosCommon.get(`/appointments`, {
           params: { patient_id: patient._id },
@@ -66,6 +72,8 @@ const DoctorPatientHistory = () => {
       setPrescriptions(prescriptionsRes.data?.data || []);
     } catch (error) {
       toast.error(error.message || 'Failed to fetch patient history:');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,10 +95,10 @@ const DoctorPatientHistory = () => {
 
   return (
     <div className="max-w-6xl mx-auto mb-10 md:px-4">
-      <h3 className="text-2xl font-bold text-purple-800 mb-6 text-center sm:text-left">
+      <h3 className="text-3xl my-4 font-bold text-center text-purple-800 mb-6">
         Patient History
       </h3>
-      <div className="my-12">
+      <div className="my-8">
         <Tabs selectedIndex={selectedPatientIndex} onSelect={handleTabSelect}>
           <TabList>
             {patients.map(p => (
@@ -103,123 +111,129 @@ const DoctorPatientHistory = () => {
             ))}
           </TabList>
 
-          {patients.map(patient => (
-            <TabPanel key={patient._id}>
-              <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 md:p-8 border border-gray-200">
-                <h4 className="text-lg sm:text-xl font-semibold text-purple-700 mb-5">
-                  {patient.name}'s Records
-                </h4>
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <ImSpinner9 size={40} className="animate-spin text-purple-600" />
+            </div>
+          ) : (
+            patients.map(patient => (
+              <TabPanel key={patient._id}>
+                <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 md:p-8 border border-gray-200">
+                  <h4 className="text-lg sm:text-xl font-semibold text-purple-700 mb-5">
+                    {patient.name}'s Records
+                  </h4>
 
-                <div className="mb-6">
-                  <h5 className="font-semibold text-blue-700 mb-3">
-                    Appointments
-                  </h5>
-                  {appointments.length === 0 ? (
-                    <p className="text-gray-400 text-sm">
-                      No appointments found.
-                    </p>
-                  ) : (
-                    <div className="space-y-5">
-                      {appointments.map(a => (
-                        <div
-                          key={a._id}
-                          className="bg-white border border-gray-200 shadow rounded-xl p-4 sm:p-5 transition-all hover:shadow-md"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
-                            <h3 className="text-base sm:text-lg font-semibold text-purple-700">
-                              {a?.patient_id?.name}
-                            </h3>
-                            <span
-                              className={`text-xs font-semibold px-2 py-1 mt-2 sm:mt-0 rounded-full capitalize ${
-                                a.status === 'completed'
-                                  ? 'bg-green-100 text-green-700'
-                                  : a.status === 'pending'
-                                  ? 'bg-yellow-100 text-yellow-700'
-                                  : 'bg-red-100 text-red-700'
-                              }`}
-                            >
-                              {a.status}
-                            </span>
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-700 mb-3">
-                            <div>
-                              <span className="font-medium text-gray-500">
-                                Age:
-                              </span>{' '}
-                              {a?.patient_id?.age}
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-500">
-                                Gender:
-                              </span>{' '}
-                              {a?.patient_id?.gender}
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-500">
-                                Reason:
-                              </span>{' '}
-                              {a?.patient_id?.reason}
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-500">
-                                Weight:
-                              </span>{' '}
-                              {a?.patient_id?.weight} kg
-                            </div>
-                            <div className="sm:col-span-2">
-                              <span className="font-medium text-gray-500">
-                                Address:
-                              </span>{' '}
-                              {a?.patient_id?.address}
-                            </div>
-                          </div>
-
-                          <div className="text-sm text-gray-600 border-t pt-3">
-                            <span className="text-purple-600 font-medium">
-                              {formatDateTime(a.date, a.time)}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <h5 className="font-semibold text-green-700 mb-3">
-                    Prescriptions
-                  </h5>
-                  {prescriptions.length === 0 ? (
-                    <p className="text-gray-400 text-sm">
-                      No prescriptions found.
-                    </p>
-                  ) : (
-                    <ul className="space-y-3">
-                      {prescriptions.map(p => (
-                        <li
-                          key={p._id}
-                          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-gray-50 px-4 py-3 rounded-md border border-gray-100 shadow-sm"
-                        >
-                          <span className="text-sm text-gray-700">
-                            {formatDateTime(p.date)}
-                          </span>
-                          <a
-                            href={`https://doctors-bd-backend.vercel.app/api/v1/prescriptions/${p._id}/pdf`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-md text-xs"
+                  <div className="mb-6">
+                    <h5 className="font-semibold text-blue-700 mb-3">
+                      Appointments
+                    </h5>
+                    {appointments.length === 0 ? (
+                      <p className="text-gray-400 text-sm">
+                        No appointments found.
+                      </p>
+                    ) : (
+                      <div className="space-y-5">
+                        {appointments.map(a => (
+                          <div
+                            key={a._id}
+                            className="bg-white border border-gray-200 shadow rounded-xl p-4 sm:p-5 transition-all hover:shadow-md"
                           >
-                            <FiDownload /> Download
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
+                              <h3 className="text-base sm:text-lg font-semibold text-purple-700">
+                                {a?.patient_id?.name}
+                              </h3>
+                              <span
+                                className={`text-xs font-semibold px-2 py-1 mt-2 sm:mt-0 rounded-full capitalize ${
+                                  a.status === 'completed'
+                                    ? 'bg-green-100 text-green-700'
+                                    : a.status === 'pending'
+                                    ? 'bg-yellow-100 text-yellow-700'
+                                    : 'bg-red-100 text-red-700'
+                                }`}
+                              >
+                                {a.status}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-700 mb-3">
+                              <div>
+                                <span className="font-medium text-gray-500">
+                                  Age:
+                                </span>{' '}
+                                {a?.patient_id?.age}
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-500">
+                                  Gender:
+                                </span>{' '}
+                                {a?.patient_id?.gender}
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-500">
+                                  Reason:
+                                </span>{' '}
+                                {a?.patient_id?.reason}
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-500">
+                                  Weight:
+                                </span>{' '}
+                                {a?.patient_id?.weight} kg
+                              </div>
+                              <div className="sm:col-span-2">
+                                <span className="font-medium text-gray-500">
+                                  Address:
+                                </span>{' '}
+                                {a?.patient_id?.address}
+                              </div>
+                            </div>
+
+                            <div className="text-sm text-gray-600 border-t pt-3">
+                              <span className="text-purple-600 font-medium">
+                                {formatDateTime(a.date, a.time)}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <h5 className="font-semibold text-green-700 mb-3">
+                      Prescriptions
+                    </h5>
+                    {prescriptions.length === 0 ? (
+                      <p className="text-gray-400 text-sm">
+                        No prescriptions found.
+                      </p>
+                    ) : (
+                      <ul className="space-y-3">
+                        {prescriptions.map(p => (
+                          <li
+                            key={p._id}
+                            className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-gray-50 px-4 py-3 rounded-md border border-gray-100 shadow-sm"
+                          >
+                            <span className="text-sm text-gray-700">
+                              {formatDateTime(p.date)}
+                            </span>
+                            <a
+                              href={`https://doctors-bd-backend.vercel.app/api/v1/prescriptions/${p._id}/pdf`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-md text-xs"
+                            >
+                              <FiDownload /> Download
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </TabPanel>
-          ))}
+              </TabPanel>
+            ))
+          )}
         </Tabs>
       </div>
     </div>

@@ -9,6 +9,7 @@ import {
   FaCalendarCheck,
   FaBell,
   FaCommentDots,
+  FaUserMd,
 } from 'react-icons/fa';
 import { MdSpaceDashboard } from 'react-icons/md';
 
@@ -78,6 +79,17 @@ const UserDashboardSidebar = ({ isOpen, onClose }) => {
           >
             <MdSpaceDashboard />
             Dashboard
+          </Link>
+          <Link
+            to="/dashboard/user/find-all-doctor"
+            className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
+              isActive('/dashboard/user/find-all-doctor')
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-700 hover:bg-gray-100 hover:pl-8'
+            }`}
+          >
+            <FaUserMd />
+            Find All Doctor
           </Link>
 
           <Link

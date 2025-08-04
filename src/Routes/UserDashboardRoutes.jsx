@@ -9,6 +9,7 @@ import UserPrescriptionList from '../Pages/Dashboard/UserDashboard/UserPrescript
 import UserFollowUpList from '../Pages/Dashboard/UserDashboard/UserFollowUpList';
 import UserNotificationList from '../Pages/Dashboard/UserDashboard/UserNotificationList';
 import UserReviewToDoctor from '../Pages/Dashboard/UserDashboard/UserReviewToDoctor';
+import FindAllDoctor from '../Pages/Dashboard/UserDashboard/FindAllDoctor';
 
 const UserDashboardRoutes = {
   path: '/dashboard/user',
@@ -16,6 +17,7 @@ const UserDashboardRoutes = {
   children: [
     { index: true, element: <UserDashboard /> },
     { path: 'patients', element: <UserPatientList /> },
+    { path: 'find-all-doctor', element: <FindAllDoctor /> },
     { path: 'appointment', element: <UserAppointmentList /> },
     { path: 'book-appointment', element: <UserBookAppointment /> },
     { path: 'prescriptions', element: <UserPrescriptionList /> },

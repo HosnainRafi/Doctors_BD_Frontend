@@ -1,13 +1,14 @@
-import React, { useState } from "react";
 import {
   createUserWithEmailAndPassword,
-  updateProfile,
   sendEmailVerification,
+  updateProfile,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
-import { auth } from "./firebase";
 import { ImSpinner9 } from "react-icons/im";
+import { useNavigate } from "react-router-dom";
+import { auth } from "./firebase";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const UserRegisterForm = () => {
   const [form, setForm] = useState({
@@ -18,7 +19,7 @@ const UserRegisterForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const [showPassword, setShowPassword] = useState(false);
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -108,7 +109,7 @@ const UserRegisterForm = () => {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700 transition placeholder-gray-400 bg-gray-50"
           />
         </div>
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <label
             htmlFor="password"
             className="block mb-2 text-gray-700 font-medium"
@@ -125,7 +126,35 @@ const UserRegisterForm = () => {
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700 transition placeholder-gray-400 bg-gray-50"
           />
+        </div> */}
+        <div className="mb-6 relative">
+          <label
+            htmlFor="password"
+            className="block mb-2 text-gray-700 font-medium"
+          >
+            Password
+          </label>
+
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-700 focus:border-blue-700 transition placeholder-gray-400 bg-gray-50"
+          />
+
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-10 transform translate-y-1/2 text-gray-500 hover:text-blue-700 focus:outline-none"
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
         </div>
+
         <button
           type="submit"
           className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition"

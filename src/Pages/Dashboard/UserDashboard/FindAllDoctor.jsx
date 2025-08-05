@@ -1,114 +1,187 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
+// You can fetch these from an API later for dynamic filters
 const districts = [
-  'Dhaka',
-  'Chattogram',
-  'Rajshahi',
-  'Khulna',
-  'Barishal',
-  'Sylhet',
-  'Rangpur',
-  'Mymensingh',
+  "Dhaka",
+  "Chattogram",
+  "Rajshahi",
+  "Khulna",
+  "Barishal",
+  "Sylhet",
+  "Rangpur",
+  "Mymensingh",
+  "Bagerhat",
+  "Bandarban",
+  "Barguna",
+  "Bhola",
+  "Bogra",
+  "Brahmanbaria",
+  "Chandpur",
+  "Chapainawabganj",
+  "Chuadanga",
+  "Comilla",
+  "Cox's Bazar",
+  "Dinajpur",
+  "Faridpur",
+  "Feni",
+  "Gaibandha",
+  "Gazipur",
+  "Gopalganj",
+  "Habiganj",
+  "Jamalpur",
+  "Jashore",
+  "Jhalokati",
+  "Jhenaidah",
+  "Joypurhat",
+  "Khagrachari",
+  "Kishoreganj",
+  "Kurigram",
+  "Kushtia",
+  "Lakshmipur",
+  "Lalmonirhat",
+  "Madaripur",
+  "Magura",
+  "Manikganj",
+  "Meherpur",
+  "Moulvibazar",
+  "Munshiganj",
+  "Naogaon",
+  "Narail",
+  "Narayanganj",
+  "Narsingdi",
+  "Natore",
+  "Netrokona",
+  "Nilphamari",
+  "Noakhali",
+  "Pabna",
+  "Panchagarh",
+  "Patuakhali",
+  "Pirojpur",
+  "Rajbari",
+  "Rangamati",
+  "Shariatpur",
+  "Sherpur",
+  "Sirajganj",
+  "Sunamganj",
+  "Tangail",
+  "Thakurgaon",
 ];
-
 const categories = [
-  'Orthopedics',
-  'Cardiology',
-  'Dermatology',
-  'Neurology',
-  'Pediatrics',
-  'ENT',
+  "Allergy & Immunology",
+  "Anesthesiology",
+  "Cardiology (Heart)",
+  "Cardiothoracic Surgery",
+  "Colorectal Surgery",
+  "Dentistry (Dental)",
+  "Dermatology (Skin)",
+  "Endocrinology (Diabetes & Hormones)",
+  "ENT (Ear, Nose, Throat)",
+  "Family Medicine",
+  "Gastroenterology (Digestive)",
+  "General Physician",
+  "General Surgery",
+  "Geriatrics (Elderly Care)",
+  "Gynecology & Obstetrics (OB/GYN)",
+  "Hematology (Blood)",
+  "Hepatology (Liver)",
+  "Homeopathy",
+  "Infectious Disease",
+  "Internal Medicine",
+  "Infertility Specialist",
+  "Nephrology (Kidney)",
+  "Neurology (Brain & Nerves)",
+  "Neurosurgery",
+  "Oncology (Cancer)",
+  "Ophthalmology (Eye)",
+  "Orthopedics (Bone & Joint)",
+  "Pediatrics (Child Care)",
+  "Physical Medicine & Rehabilitation",
+  "Plastic Surgery",
+  "Psychiatry (Mental Health)",
+  "Pulmonology (Lungs)",
+  "Radiology",
+  "Rheumatology (Arthritis)",
+  "Urology (Urinary)",
+  "Vascular Surgery",
 ];
-
-const genders = ['Male', 'Female', 'Other'];
-
-const mockDoctors = [
-  {
-    id: 1,
-    name: 'Dr. Ahsan Habib',
-    district: 'Dhaka',
-    category: 'Cardiology',
-    price: 800,
-    gender: 'Male',
-    experience: 12,
-    hospital: 'Square Hospital',
-  },
-  {
-    id: 2,
-    name: 'Dr. Nusrat Jahan',
-    district: 'Dhaka',
-    category: 'Cardiology',
-    price: 600,
-    gender: 'Female',
-    experience: 8,
-    hospital: 'Labaid Diagnostic',
-  },
-  {
-    id: 3,
-    name: 'Dr. Arif Hossain',
-    district: 'Chattogram',
-    category: 'Orthopedics',
-    price: 650,
-    gender: 'Male',
-    experience: 10,
-    hospital: 'CMCH',
-  },
-];
+const genders = ["Male", "Female", "Other"];
 
 const FindAllDoctor = () => {
   const [filters, setFilters] = useState({
-    district: '',
-    category: '',
-    hospital: '',
-    gender: '',
-    minPrice: '',
-    maxPrice: '',
-    minExp: '',
+    district: "",
+    specialty: "", // Changed from 'category' to 'specialty' to match backend
+    hospital: "",
+    gender: "",
+    minPrice: "",
+    maxPrice: "",
+    minExp: "",
   });
 
-  const [filteredDoctors, setFilteredDoctors] = useState([]);
-  const [availableHospitals, setAvailableHospitals] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const { district, category } = filters;
-    if (district && category) {
-      const hospitals = mockDoctors
-        .filter(doc => doc.district === district && doc.category === category)
-        .map(doc => doc.hospital);
-      setAvailableHospitals([...new Set(hospitals)]);
-    } else {
-      setAvailableHospitals([]);
+  // Function to fetch doctors from the API
+  const fetchDoctors = async (currentFilters) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Build query string only with active filters
+      const params = new URLSearchParams();
+      Object.entries(currentFilters).forEach(([key, value]) => {
+        if (value) {
+          params.append(key, value);
+        }
+      });
+
+      // Replace with your actual API base URL. Make sure it's correct.
+      // e.g., http://localhost:5000/api/v1/registered-doctors/search
+      const response = await fetch(
+        `http://localhost:5000/api/v1/registered-doctors/search?${params.toString()}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok. Please try again.");
+      }
+
+      const result = await response.json();
+      setDoctors(result.data);
+    } catch (err) {
+      setError(err.message || "Failed to fetch doctors.");
+    } finally {
+      setIsLoading(false);
     }
-  }, [filters.district, filters.category]);
+  };
 
-  const handleChange = e => {
+  // Fetch all doctors on initial component load (with no filters)
+  useEffect(() => {
+    fetchDoctors(filters);
+  }, []);
+
+  const handleChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
-  const handleSearch = () => {
-    const { district, category, hospital, gender, minPrice, maxPrice, minExp } =
-      filters;
-    const results = mockDoctors.filter(doc => {
-      return (
-        (district ? doc.district === district : true) &&
-        (category ? doc.category === category : true) &&
-        (hospital ? doc.hospital === hospital : true) &&
-        (gender ? doc.gender === gender : true) &&
-        (minPrice ? doc.price >= parseInt(minPrice) : true) &&
-        (maxPrice ? doc.price <= parseInt(maxPrice) : true) &&
-        (minExp ? doc.experience >= parseInt(minExp) : true)
-      );
-    });
-    setFilteredDoctors(results);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchDoctors(filters);
+  };
+
+  // Helper to get the primary hospital name from the experiences array
+  const getHospitalName = (doctor) => {
+    if (doctor.experiences && doctor.experiences.length > 0) {
+      return doctor.experiences[0].organization_name;
+    }
+    return "N/A";
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
       <h1 className="text-4xl font-bold text-purple-700 mb-8 text-center">
-        Find a Doctor
+        Find Your Doctor
       </h1>
 
-      <div className="bg-white rounded-xl shadow-xl p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-6 mb-10">
+      <div className="bg-white rounded-xl shadow-xl p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             District
@@ -119,8 +192,8 @@ const FindAllDoctor = () => {
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-purple-700"
           >
-            <option value="">Select District</option>
-            {districts.map(d => (
+            <option value="">Any District</option>
+            {districts.map((d) => (
               <option key={d} value={d}>
                 {d}
               </option>
@@ -130,16 +203,16 @@ const FindAllDoctor = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Category
+            Specialty
           </label>
           <select
-            name="category"
-            value={filters.category}
+            name="specialty"
+            value={filters.specialty}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-purple-700"
           >
-            <option value="">Select Category</option>
-            {categories.map(c => (
+            <option value="">Any Specialty</option>
+            {categories.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
@@ -147,26 +220,19 @@ const FindAllDoctor = () => {
           </select>
         </div>
 
-        {availableHospitals.length > 0 && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Hospital / Clinic
-            </label>
-            <select
-              name="hospital"
-              value={filters.hospital}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-purple-700"
-            >
-              <option value="">Select Hospital</option>
-              {availableHospitals.map(h => (
-                <option key={h} value={h}>
-                  {h}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Hospital / Clinic Name
+          </label>
+          <input
+            type="text"
+            name="hospital"
+            value={filters.hospital}
+            onChange={handleChange}
+            placeholder="e.g. Square"
+            className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-purple-700"
+          />
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -178,8 +244,8 @@ const FindAllDoctor = () => {
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-purple-700"
           >
-            <option value="">Select Gender</option>
-            {genders.map(g => (
+            <option value="">Any Gender</option>
+            {genders.map((g) => (
               <option key={g} value={g}>
                 {g}
               </option>
@@ -236,33 +302,55 @@ const FindAllDoctor = () => {
       <div className="mb-10 text-center">
         <button
           onClick={handleSearch}
-          className="bg-purple-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-800 transition"
+          disabled={isLoading}
+          className="bg-purple-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-800 transition disabled:bg-purple-400 disabled:cursor-not-allowed"
         >
-          Search Doctors
+          {isLoading ? "Searching..." : "Search Doctors"}
         </button>
       </div>
 
+      {error && (
+        <p className="text-center text-red-500 font-semibold p-4">{error}</p>
+      )}
+
+      {isLoading && (
+        <p className="text-center text-gray-500 col-span-full">
+          Loading doctors...
+        </p>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredDoctors.length > 0 ? (
-          filteredDoctors.map(doc => (
+        {!isLoading &&
+          doctors.length > 0 &&
+          doctors.map((doc) => (
             <div
-              key={doc.id}
-              className="p-6 border rounded-xl shadow-md hover:shadow-xl transition"
+              key={doc._id}
+              className="p-6 border rounded-xl shadow-md hover:shadow-xl transition flex flex-col items-start"
             >
               <h3 className="text-xl font-bold text-purple-700">{doc.name}</h3>
-              <p className="text-gray-700">{doc.category} Specialist</p>
-              <p className="text-sm text-gray-500">Hospital: {doc.hospital}</p>
-              <p className="text-sm text-gray-500">District: {doc.district}</p>
-              <p className="text-sm text-gray-500">Gender: {doc.gender}</p>
-              <p className="text-sm text-gray-500">
-                Experience: {doc.experience} yrs
+              <p className="text-gray-700">
+                {doc.specialties?.join(", ")} Specialist
               </p>
-              <p className="text-green-600 font-semibold mt-2">৳ {doc.price}</p>
+              <p className="text-sm text-gray-500">
+                Hospital: {getHospitalName(doc)}
+              </p>
+              <p className="text-sm text-gray-500">
+                District: {doc.district || "N/A"}
+              </p>
+              <p className="text-sm text-gray-500">
+                Gender: {doc.gender || "N/A"}
+              </p>
+              <p className="text-sm text-gray-500">
+                Experience: {doc.total_experience_years || 0} yrs
+              </p>
+              <p className="text-green-600 font-semibold mt-auto pt-2">
+                Fee: ৳ {doc.consultation?.standard_fee || "N/A"}
+              </p>
             </div>
-          ))
-        ) : (
+          ))}
+        {!isLoading && !error && doctors.length === 0 && (
           <p className="text-center text-gray-500 col-span-full">
-            No doctors found. Try adjusting filters.
+            No doctors found. Try adjusting your search filters.
           </p>
         )}
       </div>

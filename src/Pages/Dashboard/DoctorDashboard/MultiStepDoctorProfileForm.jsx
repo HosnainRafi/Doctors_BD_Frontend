@@ -1,17 +1,42 @@
 import React, { useState, useEffect } from "react";
 
 const SPECIALTIES = [
+  "Allergy & Immunology",
+  "Anesthesiology",
+  "Cardiology (Heart)",
+  "Cardiothoracic Surgery",
+  "Colorectal Surgery",
+  "Dentistry (Dental)",
+  "Dermatology (Skin)",
+  "Endocrinology (Diabetes & Hormones)",
+  "ENT (Ear, Nose, Throat)",
+  "Family Medicine",
+  "Gastroenterology (Digestive)",
   "General Physician",
-  "Cardiology",
-  "Dermatology",
-  "Pediatrics",
-  "Neurology",
-  "Orthopedics",
-  "Psychiatry",
-  "Urology",
-  "Gastroenterology",
-  "Oncology",
-  "Other",
+  "General Surgery",
+  "Geriatrics (Elderly Care)",
+  "Gynecology & Obstetrics (OB/GYN)",
+  "Hematology (Blood)",
+  "Hepatology (Liver)",
+  "Homeopathy",
+  "Infectious Disease",
+  "Internal Medicine",
+  "Infertility Specialist",
+  "Nephrology (Kidney)",
+  "Neurology (Brain & Nerves)",
+  "Neurosurgery",
+  "Oncology (Cancer)",
+  "Ophthalmology (Eye)",
+  "Orthopedics (Bone & Joint)",
+  "Pediatrics (Child Care)",
+  "Physical Medicine & Rehabilitation",
+  "Plastic Surgery",
+  "Psychiatry (Mental Health)",
+  "Pulmonology (Lungs)",
+  "Radiology",
+  "Rheumatology (Arthritis)",
+  "Urology (Urinary)",
+  "Vascular Surgery",
 ];
 const DEGREES = [
   "MBBS",
@@ -26,6 +51,74 @@ const DEGREES = [
   "Other",
 ];
 
+// --- NEW ---: Constants for the new fields
+const DISTRICTS = [
+  "Dhaka",
+  "Chattogram",
+  "Rajshahi",
+  "Khulna",
+  "Barishal",
+  "Sylhet",
+  "Rangpur",
+  "Mymensingh",
+  "Bagerhat",
+  "Bandarban",
+  "Barguna",
+  "Bhola",
+  "Bogra",
+  "Brahmanbaria",
+  "Chandpur",
+  "Chapainawabganj",
+  "Chuadanga",
+  "Comilla",
+  "Cox's Bazar",
+  "Dinajpur",
+  "Faridpur",
+  "Feni",
+  "Gaibandha",
+  "Gazipur",
+  "Gopalganj",
+  "Habiganj",
+  "Jamalpur",
+  "Jashore",
+  "Jhalokati",
+  "Jhenaidah",
+  "Joypurhat",
+  "Khagrachari",
+  "Kishoreganj",
+  "Kurigram",
+  "Kushtia",
+  "Lakshmipur",
+  "Lalmonirhat",
+  "Madaripur",
+  "Magura",
+  "Manikganj",
+  "Meherpur",
+  "Moulvibazar",
+  "Munshiganj",
+  "Naogaon",
+  "Narail",
+  "Narayanganj",
+  "Narsingdi",
+  "Natore",
+  "Netrokona",
+  "Nilphamari",
+  "Noakhali",
+  "Pabna",
+  "Panchagarh",
+  "Patuakhali",
+  "Pirojpur",
+  "Rajbari",
+  "Rangamati",
+  "Shariatpur",
+  "Sherpur",
+  "Sirajganj",
+  "Sunamganj",
+  "Tangail",
+  "Thakurgaon",
+];
+const GENDERS = ["Male", "Female", "Other"];
+
 const initialForm = {
   name: "",
   email: "",
@@ -37,6 +130,8 @@ const initialForm = {
   additional_qualifications: [],
   photo: "",
   bio: "",
+  district: "", // <-- NEW
+  gender: "", // <-- NEW
   experiences: [
     {
       organization_name: "",
@@ -156,6 +251,7 @@ const MultiStepDoctorProfileForm = ({
 
   // Convert number fields before submit
   const convertNumbers = (obj) => {
+    // ... (This function remains unchanged)
     const consultation = { ...obj.consultation };
     if (consultation.standard_fee !== "")
       consultation.standard_fee = Number(consultation.standard_fee);
@@ -199,6 +295,7 @@ const MultiStepDoctorProfileForm = ({
 
   // Submit
   const handleSubmit = async (e) => {
+    // ... (This function remains unchanged)
     e.preventDefault();
     setMessage("");
     const payload = { ...convertNumbers(form), profileCompleted: true };
@@ -224,53 +321,96 @@ const MultiStepDoctorProfileForm = ({
   const Step1 = (
     <>
       <h3 className="text-xl font-bold mb-4">Basic Information</h3>
+      {/* --- Disabled fields --- */}
       <input
         name="name"
         value={form.name}
         disabled
         className="w-full mb-2 px-3 py-2 border rounded bg-gray-100"
-        placeholder="Full Name"
-        required
       />
       <input
         name="email"
         value={form.email}
         disabled
         className="w-full mb-2 px-3 py-2 border rounded bg-gray-100"
-        placeholder="Email"
-        required
       />
       <input
         name="phone"
         value={form.phone}
         disabled
         className="w-full mb-2 px-3 py-2 border rounded bg-gray-100"
-        placeholder="Phone"
-        required
       />
       <input
         name="bmdc_number"
         value={form.bmdc_number}
         disabled
-        className="w-full mb-2 px-3 py-2 border rounded bg-gray-100"
-        placeholder="BMDC Number"
-        required
+        className="w-full mb-4 px-3 py-2 border rounded bg-gray-100"
       />
+
+      {/* --- NEW: District Field --- */}
+      <div className="mb-4">
+        <label className="block text-gray-700 font-medium mb-1">District</label>
+        <select
+          name="district"
+          value={form.district || ""}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded"
+          required
+        >
+          <option value="">Select your district</option>
+          {DISTRICTS.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* --- NEW: Gender Field --- */}
+      <div className="mb-4">
+        <label className="block text-gray-700 font-medium mb-1">Gender</label>
+        <select
+          name="gender"
+          value={form.gender || ""}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border rounded"
+          required
+        >
+          <option value="">Select your gender</option>
+          {GENDERS.map((g) => (
+            <option key={g} value={g}>
+              {g}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* --- Photo and Bio --- */}
+      <label className="block text-gray-700 font-medium mb-1">
+        Profile Photo
+      </label>
       <input
         type="file"
         accept="image/*"
         onChange={handlePhotoChange}
-        className="block mb-2"
+        className="block mb-2 text-sm"
       />
+
+      <label className="block text-gray-700 font-medium mb-1 mt-4">
+        Short Bio
+      </label>
       <textarea
         name="bio"
-        value={form.bio}
+        value={form.bio || ""}
         onChange={handleChange}
         className="w-full mb-2 px-3 py-2 border rounded"
-        placeholder="Short Bio"
+        placeholder="Write a short introduction about yourself..."
       />
     </>
   );
+
+  // Step 2, 3, 4 and the rest of the component remain unchanged.
+  // ...
 
   // Step 2: Specialties & Degrees
   const Step2 = (

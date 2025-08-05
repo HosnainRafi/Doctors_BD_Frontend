@@ -1,5 +1,5 @@
-import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
 import {
   FiUser,
   FiMail,
@@ -8,34 +8,86 @@ import {
   FiBriefcase,
   FiBookOpen,
   FiFileText,
-} from 'react-icons/fi';
-import { ImSpinner9 } from 'react-icons/im';
+} from "react-icons/fi";
+import { ImSpinner9 } from "react-icons/im";
 
 const SPECIALTIES = [
-  'General Physician',
-  'Cardiology',
-  'Dermatology',
-  'Pediatrics',
-  'Neurology',
-  'Orthopedics',
-  'Psychiatry',
-  'Urology',
-  'Gastroenterology',
-  'Oncology',
-  'Other',
+  "Dhaka",
+  "Chattogram",
+  "Rajshahi",
+  "Khulna",
+  "Barishal",
+  "Sylhet",
+  "Rangpur",
+  "Mymensingh",
+  "Bagerhat",
+  "Bandarban",
+  "Barguna",
+  "Bhola",
+  "Bogra",
+  "Brahmanbaria",
+  "Chandpur",
+  "Chapainawabganj",
+  "Chuadanga",
+  "Comilla",
+  "Cox's Bazar",
+  "Dinajpur",
+  "Faridpur",
+  "Feni",
+  "Gaibandha",
+  "Gazipur",
+  "Gopalganj",
+  "Habiganj",
+  "Jamalpur",
+  "Jashore",
+  "Jhalokati",
+  "Jhenaidah",
+  "Joypurhat",
+  "Khagrachari",
+  "Kishoreganj",
+  "Kurigram",
+  "Kushtia",
+  "Lakshmipur",
+  "Lalmonirhat",
+  "Madaripur",
+  "Magura",
+  "Manikganj",
+  "Meherpur",
+  "Moulvibazar",
+  "Munshiganj",
+  "Naogaon",
+  "Narail",
+  "Narayanganj",
+  "Narsingdi",
+  "Natore",
+  "Netrokona",
+  "Nilphamari",
+  "Noakhali",
+  "Pabna",
+  "Panchagarh",
+  "Patuakhali",
+  "Pirojpur",
+  "Rajbari",
+  "Rangamati",
+  "Shariatpur",
+  "Sherpur",
+  "Sirajganj",
+  "Sunamganj",
+  "Tangail",
+  "Thakurgaon",
 ];
 
 const DEGREES = [
-  'MBBS',
-  'FCPS',
-  'MD',
-  'MS',
-  'MRCP',
-  'FRCS',
-  'BCS (Health)',
-  'DGO',
-  'DLO',
-  'Other',
+  "MBBS",
+  "FCPS",
+  "MD",
+  "MS",
+  "MRCP",
+  "FRCS",
+  "BCS (Health)",
+  "DGO",
+  "DLO",
+  "Other",
 ];
 
 const DoctorProfileEditModal = ({
@@ -90,7 +142,7 @@ const DoctorProfileEditModal = ({
                     <img
                       src={
                         form.photo ||
-                        'https://i.ibb.co/2kR5zq0/doctor-avatar.png'
+                        "https://i.ibb.co/2kR5zq0/doctor-avatar.png"
                       }
                       alt="Profile"
                       className="w-20 h-20 rounded-full object-cover border-2 border-purple-500"
@@ -173,12 +225,12 @@ const DoctorProfileEditModal = ({
                     </label>
                     <select
                       name="specialty"
-                      value={form.specialty || ''}
+                      value={form.specialty || ""}
                       onChange={handleChange}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200"
                     >
                       <option value="">Select Main Specialty</option>
-                      {SPECIALTIES.map(s => (
+                      {SPECIALTIES.map((s) => (
                         <option key={s} value={s}>
                           {s}
                         </option>
@@ -191,7 +243,7 @@ const DoctorProfileEditModal = ({
                       <FiBriefcase /> Other Specialties
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
-                      {SPECIALTIES.map(s => (
+                      {SPECIALTIES.map((s) => (
                         <label
                           key={s}
                           className="flex items-center gap-2 p-2 bg-gray-100 rounded hover:bg-purple-50 transition"
@@ -216,7 +268,7 @@ const DoctorProfileEditModal = ({
                       <FiBookOpen /> Degrees
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
-                      {DEGREES.map(d => (
+                      {DEGREES.map((d) => (
                         <label
                           key={d}
                           className="flex items-center gap-2 p-2 bg-gray-100 rounded hover:bg-purple-50 transition"
@@ -266,7 +318,7 @@ const DoctorProfileEditModal = ({
                       {editProfileLoading ? (
                         <ImSpinner9 className="animate-spin" />
                       ) : (
-                        'Save'
+                        "Save"
                       )}
                     </button>
                   </div>

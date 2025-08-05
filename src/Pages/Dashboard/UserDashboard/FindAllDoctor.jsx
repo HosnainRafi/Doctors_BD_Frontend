@@ -135,9 +135,9 @@ const FindAllDoctor = () => {
       });
 
       // Replace with your actual API base URL. Make sure it's correct.
-      // e.g., http://localhost:5000/api/v1/registered-doctors/search
+      // e.g., https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/search
       const response = await fetch(
-        `http://localhost:5000/api/v1/registered-doctors/search?${params.toString()}`
+        `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/search?${params.toString()}`
       );
 
       if (!response.ok) {

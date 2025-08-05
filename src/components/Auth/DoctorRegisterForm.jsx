@@ -78,7 +78,7 @@ const DoctorRegisterForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Doctor Registration</h2>
+      {/* <h2 className="text-xl font-bold mb-4">Doctor Registration</h2> */}
       {["name", "email", "phone", "password", "bmdc_number", "specialty"].map(
         (field) => (
           <input

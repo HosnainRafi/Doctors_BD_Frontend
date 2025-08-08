@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ImSpinner9 } from 'react-icons/im';
 import { useNavigate } from 'react-router-dom';
+import { getAuthDoctorToken } from './../../utils/getAuthDoctorToken';
+import axiosCommon from './../../api/axiosCommon';
 
 const DoctorProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
@@ -8,25 +10,22 @@ const DoctorProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const doctorToken = localStorage.getItem('doctorToken');
+    const doctorToken = getAuthDoctorToken();
     if (!doctorToken) {
       navigate('/login/doctor');
       return;
     }
-    // Get email from token
+
     const payload = JSON.parse(atob(doctorToken.split('.')[1]));
     const email = payload.email;
 
-    fetch(
-      `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/by-email?email=${encodeURIComponent(
-        email
-      )}`,
-      {
+    axiosCommon
+      .get(`/registered-doctors/by-email`, {
+        params: { email },
         headers: { Authorization: `Bearer ${doctorToken}` },
-      }
-    )
-      .then(res => res.json())
-      .then(data => {
+      })
+      .then(res => {
+        const data = res.data;
         if (data.success && data.data && data.data.profileCompleted) {
           setProfileComplete(true);
         } else {

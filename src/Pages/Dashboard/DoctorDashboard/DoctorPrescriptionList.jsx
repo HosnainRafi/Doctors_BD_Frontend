@@ -1,109 +1,77 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 import {
   FaDownload,
   FaRegEye,
   FaTimes,
   FaSpinner,
   FaEdit,
-} from "react-icons/fa";
-import toast from "react-hot-toast";
-import PrescriptionForm from "./PrescriptionForm";
+} from 'react-icons/fa';
+import toast from 'react-hot-toast';
+import PrescriptionForm from './PrescriptionForm';
+import { getAuthDoctorToken } from '../../../utils/getAuthDoctorToken';
+import { getDoctorIdByEmail } from '../../../utils/getDoctorIdByEmail';
+import axiosCommon from '../../../api/axiosCommon';
 
 const DoctorPrescriptionList = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [editingPrescription, setEditingPrescription] = useState(null);
-  const [doctorId, setDoctorId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const doctorToken = localStorage.getItem("doctorToken");
-  let doctorEmail = null;
-  try {
-    doctorEmail = doctorToken
-      ? JSON.parse(atob(doctorToken.split(".")[1])).email
-      : null;
-  } catch (err) {
-    doctorEmail = null;
-    console.log(err);
-  }
-
-  useEffect(() => {
-    const fetchDoctorId = async () => {
-      if (!doctorEmail) {
-        toast.error("Doctor email not found in token.");
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `https://doctors-bd-backend.vercel.app/api/v1/registered-doctors/by-email?email=${doctorEmail}`,
-          { headers: { Authorization: `Bearer ${doctorToken}` } }
-        );
-        const data = await response.json();
-        if (data?.data?._id) {
-          setDoctorId(data.data._id);
-        } else {
-          toast.error("Doctor not found.");
-        }
-      } catch {
-        toast.error("Failed to fetch doctor info.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDoctorId();
-  }, [doctorEmail, doctorToken]);
 
   const fetchPrescriptions = useCallback(async () => {
-    if (!doctorId) return;
     setLoading(true);
+    const id = await getDoctorIdByEmail();
+    const token = getAuthDoctorToken();
     try {
-      const response = await fetch(
-        `https://doctors-bd-backend.vercel.app/api/v1/prescriptions/registered-doctor/${doctorId}`,
-        { headers: { Authorization: `Bearer ${doctorToken}` } }
+      const response = await axiosCommon.get(
+        `prescriptions/registered-doctor/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      const data = await response.json();
-      setPrescriptions(data.data || []);
+      setPrescriptions(response.data.data || []);
     } catch {
-      toast.error("Failed to fetch prescriptions.");
+      toast.error('Failed to fetch prescriptions.');
     } finally {
       setLoading(false);
     }
-  }, [doctorId, doctorToken]);
+  }, []);
 
   useEffect(() => {
     fetchPrescriptions();
   }, [fetchPrescriptions]);
 
   // Helper function to get display data safely
-  const getPatientInfo = (patient) => {
-    if (!patient) return { name: "Unknown Patient", phone: "" };
+  const getPatientInfo = patient => {
+    if (!patient) return { name: 'Unknown Patient', phone: '' };
 
     // If patient is already populated
-    if (typeof patient === "object" && patient.name) {
+    if (typeof patient === 'object' && patient.name) {
       return {
-        name: patient.name || "Unknown Patient",
-        phone: patient.phone || "",
+        name: patient.name || 'Unknown Patient',
+        phone: patient.phone || '',
       };
     }
 
     // If patient is just an ID
-    return { name: "Patient", phone: "" };
+    return { name: 'Patient', phone: '' };
   };
 
-  const getAppointmentInfo = (appointment) => {
-    if (!appointment) return { date: "No date", time: "" };
+  const getAppointmentInfo = appointment => {
+    if (!appointment) return { date: 'No date', time: '' };
 
     // If appointment is already populated
-    if (typeof appointment === "object" && appointment.date) {
+    if (typeof appointment === 'object' && appointment.date) {
       return {
-        date: appointment.date || "No date",
-        time: appointment.time || "",
+        date: appointment.date || 'No date',
+        time: appointment.time || '',
       };
     }
 
     // If appointment is just an ID
-    return { date: "No date", time: "" };
+    return { date: 'No date', time: '' };
   };
 
   return (
@@ -125,7 +93,7 @@ const DoctorPrescriptionList = () => {
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {prescriptions.map((p) => {
+        {prescriptions.map(p => {
           const patientInfo = getPatientInfo(p.patient_id);
           const appointmentInfo = getAppointmentInfo(p.appointment_id);
 
@@ -147,7 +115,7 @@ const DoctorPrescriptionList = () => {
                   <span className="font-medium">Date:</span> {p.date}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <span className="font-medium">Appointment:</span>{" "}
+                  <span className="font-medium">Appointment:</span>{' '}
                   {appointmentInfo.date} {appointmentInfo.time}
                 </p>
               </div>
@@ -192,7 +160,7 @@ const DoctorPrescriptionList = () => {
           onUpdated={() => {
             fetchPrescriptions();
             setEditingPrescription(null);
-            toast.success("Prescription updated successfully");
+            toast.success('Prescription updated successfully');
           }}
         />
       )}
@@ -211,7 +179,7 @@ const DoctorPrescriptionList = () => {
             </h4>
             <div className="space-y-4 text-gray-700">
               <div>
-                <strong>Patient:</strong>{" "}
+                <strong>Patient:</strong>{' '}
                 {getPatientInfo(selected.patient_id).name}
               </div>
               <div>
@@ -223,7 +191,7 @@ const DoctorPrescriptionList = () => {
                   {selected.medicines.map((med, i) => (
                     <li key={i}>
                       <span className="font-medium">{med.name}</span> (
-                      {med.timing}, {med.duration}){" "}
+                      {med.timing}, {med.duration}){' '}
                       {med.instructions && (
                         <span className="text-gray-500">
                           - {med.instructions}
@@ -234,11 +202,11 @@ const DoctorPrescriptionList = () => {
                 </ul>
               </div>
               <div>
-                <strong>Advice:</strong>{" "}
+                <strong>Advice:</strong>{' '}
                 {selected.advice || <span className="text-gray-400">None</span>}
               </div>
               <div>
-                <strong>Follow-up Date:</strong>{" "}
+                <strong>Follow-up Date:</strong>{' '}
                 {selected.follow_up_date || (
                   <span className="text-gray-400">None</span>
                 )}

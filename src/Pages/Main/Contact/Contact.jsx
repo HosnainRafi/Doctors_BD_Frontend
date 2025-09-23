@@ -10,11 +10,11 @@ import {
 const Contact = () => {
   const handleContactSubmit = (event) => {
     event.preventDefault();
-    const name=event.target.name.value;
-    const email=event.target.email.value;
-    const message=event.target.message.value;
-    console.log("Form submitted",{name, email, message});
-  }
+    const name = event.target.name.value;
+    const email = event.target.email.value;
+    const message = event.target.message.value;
+    console.log("Form submitted", { name, email, message });
+  };
   return (
     <div>
       <section className="py-24">
@@ -47,7 +47,10 @@ const Contact = () => {
                     className="w-full h-48 shadow-sm resize-none text-gray-600 placeholder-text-400 text-lg font-normal leading-7 rounded-lg border border-gray-200 focus:outline-none px-4 py-4 mb-8"
                     placeholder="Phone"
                   ></textarea>
-                  <button className="bg-purple-700 text-white px-6 py-2 rounded-lg hover:bg-purple-800 transition w-full" type="submit">
+                  <button
+                    className="bg-purple-700 text-white px-6 py-2 rounded-lg hover:bg-purple-800 transition w-full"
+                    type="submit"
+                  >
                     Submit
                   </button>
                 </form>
@@ -63,19 +66,19 @@ const Contact = () => {
                   <div className="flex items-center mb-6">
                     <FaPhone className="text-black text-xl" />
                     <h5 className="text-black text-base font-normal leading-6 ml-5">
-                      01521565259
+                      01754659997
                     </h5>
                   </div>
                   <div className="flex items-center mb-6">
                     <FaEnvelope className="text-black text-xl" />
                     <h5 className="text-black text-base font-normal leading-6 ml-5">
-                      care.point24@gmail.com
+                      rhosnain@gmail.com
                     </h5>
                   </div>
                   <div className="flex items-center mb-6">
                     <FaMapMarkerAlt className="text-black text-xl" />
                     <h5 className="text-black text-base font-normal leading-6 ml-5">
-                      Los Sontosh,Tangail
+                      Dhaka,Bangladesh
                     </h5>
                   </div>
 

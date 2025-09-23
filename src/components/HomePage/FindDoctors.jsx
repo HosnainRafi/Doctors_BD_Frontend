@@ -1,19 +1,19 @@
 /* eslint-disable no-unused-vars */
 
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function FindYourDoctor() {
   const navigate = useNavigate();
 
   const handleDistrictClick = () => {
-    navigate('/find-doctor-by-district');
+    navigate("/find-doctor-by-district");
   };
   const handleCategoryClick = () => {
-    navigate('/find-doctor-by-category');
+    navigate("/find-doctor-by-category");
   };
   const handleHospitalClick = () => {
-    navigate('/find-doctor-by-hospital');
+    navigate("/find-doctor-by-hospital");
   };
 
   // Animation variants for the cards
@@ -22,7 +22,7 @@ export default function FindYourDoctor() {
     onscreen: {
       opacity: 1,
       y: 0,
-      transition: { type: 'spring', bounce: 0.3, duration: 0.7 },
+      transition: { type: "spring", bounce: 0.3, duration: 0.7 },
     },
   };
 
@@ -86,7 +86,7 @@ export default function FindYourDoctor() {
             </button>
           </motion.div>
 
-          <motion.div
+          {/* <motion.div
             onClick={handleHospitalClick}
             className="cursor-pointer bg-blue-50 hover:bg-blue-100 p-4 rounded-2xl shadow-md flex flex-col gap-4 justify-between"
             variants={cardVariants}
@@ -110,7 +110,7 @@ export default function FindYourDoctor() {
             <button className="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-md transition">
               View Hospitals
             </button>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
     </section>

@@ -32,7 +32,7 @@ export default function FindYourDoctor() {
         <h2 className="text-3xl md:text-4xl font-semibold text-purple-700 mb-8 text-center">
           Find Your Doctor
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <motion.div
             onClick={handleDistrictClick}
             className="cursor-pointer bg-purple-50 hover:bg-purple-100 p-4 rounded-2xl shadow-md flex flex-col gap-4 justify-between"

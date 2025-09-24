@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FaHome,
@@ -11,7 +11,6 @@ import {
   FaCommentDots,
   FaUserMd,
 } from 'react-icons/fa';
-import { MdSpaceDashboard } from 'react-icons/md';
 
 const UserDashboardSidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
@@ -69,7 +68,7 @@ const UserDashboardSidebar = ({ isOpen, onClose }) => {
             Home
           </Link>
 
-          <Link
+          {/* <Link
             to="/dashboard/user"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${
               isActive('/dashboard/user')
@@ -79,7 +78,7 @@ const UserDashboardSidebar = ({ isOpen, onClose }) => {
           >
             <MdSpaceDashboard />
             Dashboard
-          </Link>
+          </Link> */}
           <Link
             to="/dashboard/user/find-all-doctor"
             className={`flex items-center gap-3 px-6 py-3 font-semibold rounded-md transition-all duration-200 ${

@@ -16,7 +16,11 @@ const DoctorsCard = ({ doctor }) => {
           <div>
             <img
               className="rounded-lg w-32 h-44 object-cover object-top"
-              src={doctor.photo}
+              src={
+                doctor.gender?.toLowerCase() === 'female'
+                  ? 'https://i.postimg.cc/VvY6jMps/doctor-female.jpg'
+                  : 'https://i.postimg.cc/cL5n0DjR/dorcot-male.jpg'
+              }
               alt={doctor.name}
             />
           </div>
